@@ -51,11 +51,13 @@ public final class UI {
     public UI() {
          /* Generate City-List at runtime, the number of cities should not be static */
         CITY_MENU = generateCityWithIndex(cities);
-        startFromBeginning();
+
     }
 
+
+
     /**
-     * starts a new User Interaction,
+     * starts a new User Interaction.
      */
     public void startFromBeginning() {
 
@@ -77,14 +79,15 @@ public final class UI {
             selectedCity = cities[selectedOption];
             timePeriod = getTimePeriod();
 
-        } else if (selectedOption == 2) { /* All cities */
+        } else if (selectedOption == 2) { /* All cities are considered */
             timePeriod = getTimePeriod();
+
         }
 
     }
 
     /**
-     * Read user input, which is always a number. This number indicates an action.
+     * Read user input, which is always a number. This number indicates the next action to take.
      * @return Number, which is the action the user takes.
      */
     public int readOptionFromUser() {
