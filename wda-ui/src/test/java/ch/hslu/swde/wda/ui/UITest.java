@@ -20,9 +20,9 @@ class UITest {
 
     @Test
     void testisValidDateFromStringDifferentFormat() {
-
+        // The validDate method should be able to handle both formats
         String testDate = "27.11.2020";
-        assertFalse(UI.isValidDate(testDate));
+        assertTrue(UI.isValidDate(testDate));
     }
 
 

@@ -17,23 +17,9 @@ import java.util.stream.IntStream;
  */
 public final class UI {
     private static final Logger Log = LogManager.getLogger(UI.class);
-    private static final String SELECT_TIMESPAN_END = "Enddatum: ";
-
-    /* Menu Constants */
-
-    private final String CITY_MENU;
-    private static final String WELCOME_MENU = "Hallo! Bitte loggen sie sich ein.";
-    private static final String SELECT_TIMESPAN_START = "Startdatum angeben. Erwartetes Format ist \"dd-MM-yyyy\"";
-    private static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
-            "Beenden [0]";
-    private static final String MENU_START = "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
-            "alle " + "Ortschaften laden [2] " + "     " +
-            "Beenden " + "[0]";
-
-    /* Start-Menu */
-    private String currentMenu;
-
-
+    /**
+     * Hardcoded cities. This is only for local testing.
+     */
     private static final String[] cities = {"Lausanne", "Geneva", "Nyon", "Biel", "Bern", "Thun", "Adelboden",
             "Interlaken",
             "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
@@ -41,91 +27,67 @@ public final class UI {
             "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
             "Winterthur", "Frauenfeld", "St. Gallen"};
 
+    private static final String SELECT_TIMESPAN_END = "Enddatum: ";
+    private final String CITY_MENU;
+    private static final String WELCOME_MENU = "Hallo! Bitte loggen sie sich ein.";
+    private static final String SELECT_TIMESPAN_START = "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \nEnter drücken für das default Datum.";
+    private static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
+            "Beenden [0]";
+    private static final String MENU_START = "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
+            "alle " + "Ortschaften laden [2] " + "     " +
+            "Beenden " + "[0]";
+
+    private String currentMenu;
+
+
     final static String DATE_FORMAT = "dd-MM-yyyy";
+    private static final String[] DEFAULT_DATE = {"27-11-2020", "30-11-2020"};
+    private static int DEFAULT_DATE_STATE = -1;
+
+    private static final String MIN_DATE_VALUE = "01-01-2020"; // minimum and maximum legal value, inclusive
+    private static final String MAX_DATE_VALUE = "31-12-2020";
+
 
     public UI() {
-         /* dynamically generated City List, it should be possible to add more
-        cities */
+         /* Generate City-List at runtime, the number of cities should not be static */
         CITY_MENU = generateCityWithIndex(cities);
-        execute();
+        startFromBeginning();
     }
 
+    /**
+     * starts a new User Interaction,
+     */
+    public void startFromBeginning() {
 
-    public void execute() {
+        String selectedCity = "";
+        String[] timePeriod = new String[2]; // [0] ->  startDate
+                                            //  [1] ->  endDate
 
 
         showLogin();
         currentMenu = MENU_START;
 
         showActiveMenu();
-        int selectedOption = eingabeEinlesen();
-        if (selectedOption == 1) { /* Ony one city is asked */
+        int selectedOption = readOptionFromUser();
+        if (selectedOption == 1) { /* Ony one city is requested */
 
             currentMenu = CITY_MENU;
             showActiveMenu();
-            selectedOption = eingabeEinlesen(); /* The city of interest*/
-            String selectedCity = cities[selectedOption];
+            selectedOption = readOptionFromUser();
+            selectedCity = cities[selectedOption];
+            timePeriod = getTimePeriod();
 
-        } else if (selectedOption == 2) { /* Data of all cities */
-            currentMenu = TIMESPAN;
-            showActiveMenu();
-            selectedOption = eingabeEinlesen();
-            if (selectedOption == 1) {
-                currentMenu = SELECT_TIMESPAN_START;
-                showActiveMenu();
-                String startDate = readDate();
-                currentMenu = SELECT_TIMESPAN_END;
-                showActiveMenu();
-                String endDate = readDate();
-            } else if (selectedOption == 2) { /* no constraints. All cities,  of all time */
-
-            }
+        } else if (selectedOption == 2) { /* All cities */
+            timePeriod = getTimePeriod();
         }
 
     }
 
     /**
-     * Try to parse the period of time. If successful, return both the Start and Enddate as String
-     * If the function was not sucessful, it returns an empty String array of length 1.
+     * Read user input, which is always a number. This number indicates an action.
+     * @return Number, which is the action the user takes.
      */
-    private String readDate() {
-        Scanner sc = new Scanner(System.in);
-        String str = " ";
-        String dates = "";
-
-
-        do { /* Loop until valid date  */
-            if (str.isEmpty()) {
-                // Just insert a default value here, so I don't have to type it all the time
-                System.out.println("Read Enter Key.");
-            }
-            try {
-                str = sc.nextLine();
-                if (isValidDate(str)) {
-                    dates = str;
-                } else {
-                    System.out.println("Anderes Datumformat erwartet!");
-                }
-            } catch (Exception e) {
-                /* Clear the current Buffer */
-                sc.nextLine();
-                showActiveMenu();
-            }
-        } while (Objects.equals(dates, "") && !str.equals("0"));
-        return dates;
-    }
-
-
-    private void showActiveMenu() {
-        System.out.println();
-        System.out.println(currentMenu);
-        System.out.print("Ihre Wahl: ");
-    }
-
-    /**
-     * Read user input, which is a number for menu selection
-     */
-    private int eingabeEinlesen() {
+    public int readOptionFromUser() {
 
         Scanner sc = new Scanner(System.in);
         int eingabe = -1;
@@ -161,7 +123,82 @@ public final class UI {
         return eingabe;
     }
 
+
+    /**
+     * Asks the user to specify a Timespan. If the user does not want to restric search,
+     * we simply select the largest possible value for the date interval.
+     * @return Array with index 0 representing start- and index 1 representing the end date.
+     */
+    public String[] getTimePeriod() {
+        String[] timeframe = new String[2];
+
+        currentMenu = TIMESPAN;
+        showActiveMenu();
+        int selectedOption = readOptionFromUser();
+        if (selectedOption == 1) {
+            currentMenu = SELECT_TIMESPAN_START;
+            showActiveMenu();
+            String startDate = tryToParseDate();
+            timeframe[0] = startDate;
+            currentMenu = SELECT_TIMESPAN_END;
+            showActiveMenu();
+            String endDate = tryToParseDate();
+            timeframe[1] = endDate;
+        } else if (selectedOption == 2) { // No constraints. All cities / Of All time
+            timeframe[0] = MIN_DATE_VALUE;
+            timeframe[1] = MAX_DATE_VALUE;
+        }
+        return timeframe;
+    }
+
+    /**
+     * Try to parse a single Date.
+     */
+    private String tryToParseDate() {
+        Scanner sc = new Scanner(System.in);
+        String input = " ";
+        String date = "";
+
+        do { // Loop until valid date
+            if (!input.isEmpty()) {
+                try {
+                    input = sc.nextLine();
+                    if (isValidDate(input)) {
+                        date = input;
+                    } else if (!input.isEmpty()){
+                        System.out.println("Anderes Datumformat erwartet!");
+                    }
+                } catch (Exception e) {
+                    /* Clear the current Buffer */
+                    sc.nextLine();
+                    showActiveMenu();
+                }
+            } else { // On Enter key: just use the default date
+                System.out.println("Benutze das Standard Datum.");
+                DEFAULT_DATE_STATE++;
+                date = DEFAULT_DATE[DEFAULT_DATE_STATE];
+            }
+        } while (Objects.equals(date, ""));
+        return date;
+    }
+
+
+    public void showActiveMenu() {
+        System.out.println();
+        System.out.println(currentMenu);
+        System.out.print("Ihre Wahl: ");
+    }
+
+
+
+    /**
+     * Expects a Date as String,  for example "27.11.2020"
+     * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT
+     */
     public static boolean isValidDate(String date) {
+        if (date.contains(".")) {
+            date = date.replaceAll("\\.", "-");
+        }
         try {
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             df.setLenient(false);
@@ -172,6 +209,10 @@ public final class UI {
         }
     }
 
+    /**
+     * Ask the user to Log in
+     * @return List with the username and password.
+     */
     private List<String> showLogin() {
         System.out.println(WELCOME_MENU);
         List<String> list = new ArrayList<>();
@@ -198,9 +239,8 @@ public final class UI {
     }
 
     /**
-     * Write each city as a String, with it's coresponding index. This is then used to display all possible cities to
-     * the user.
-     *
+     * For each city, write it's name and coresponding index.
+     * We then dislay this String on the Cosole, so that a sinle city can be selected by user.
      * @param cities
      */
     public final String generateCityWithIndex(final String[] cities) {
