@@ -17,13 +17,13 @@ import java.util.stream.IntStream;
  */
 public final class UI {
     private static final Logger Log = LogManager.getLogger(UI.class);
+    private static final String SELECT_TIMESPAN_END = "Enddatum: ";
 
     /* Menu Constants */
 
     private final String CITY_MENU;
     private static final String WELCOME_MENU = "Hallo! Bitte loggen sie sich ein.";
-    private static final String SELECT_TIMESPAN = "Zeitspanne angeben. Erwartetes Format ist \"dd-MM-yyyy - " +
-            "dd-MM-yyyy\" Enter drücken für default Wert 27-11-2020 - 30-11-2020";
+    private static final String SELECT_TIMESPAN_START = "Startdatum angeben. Erwartetes Format ist \"dd-MM-yyyy\"";
     private static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
             "Beenden [0]";
     private static final String MENU_START = "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
@@ -59,7 +59,7 @@ public final class UI {
 
         showActiveMenu();
         int selectedOption = eingabeEinlesen();
-        if (selectedOption == 1) { /* Ony one city is asked*/
+        if (selectedOption == 1) { /* Ony one city is asked */
 
             currentMenu = CITY_MENU;
             showActiveMenu();
@@ -70,20 +70,16 @@ public final class UI {
             currentMenu = TIMESPAN;
             showActiveMenu();
             selectedOption = eingabeEinlesen();
-           if (selectedOption == 1) {
-                currentMenu = SELECT_TIMESPAN;
-                 System.out.print("Beispiel: 12-25-2020 - 13-25-2020");
+            if (selectedOption == 1) {
+                currentMenu = SELECT_TIMESPAN_START;
                 showActiveMenu();
-                String[] timeSpan = tryToParseTimeFrame();
-                if (timeSpan.length > 1) {
-                    Log.info("Parse Date successful");
-                } else {
-                    Log.info("Parse Date not successful");
+                String startDate = readDate();
+                currentMenu = SELECT_TIMESPAN_END;
+                showActiveMenu();
+                String endDate = readDate();
+            } else if (selectedOption == 2) { /* no constraints. All cities,  of all time */
 
-                }
-           } else  if (selectedOption == 2) { /* no constraints. All cities,  of all time */
-
-           }
+            }
         }
 
     }
@@ -92,20 +88,31 @@ public final class UI {
      * Try to parse the period of time. If successful, return both the Start and Enddate as String
      * If the function was not sucessful, it returns an empty String array of length 1.
      */
-    private String[] tryToParseTimeFrame() {
+    private String readDate() {
         Scanner sc = new Scanner(System.in);
+        String str = " ";
+        String dates = "";
 
 
-
-        String str = sc.nextLine();
-        if (str == "") {
-            Log.info("default value");
-        }
-        String[] dates = str.split(" - ");
-        if (isValidDate(dates[0]) && isValidDate(dates[1])) {
-            return dates;
-        }
-        return new String[0];
+        do { /* Loop until valid date  */
+            if (str.isEmpty()) {
+                // Just insert a default value here, so I don't have to type it all the time
+                System.out.println("Read Enter Key.");
+            }
+            try {
+                str = sc.nextLine();
+                if (isValidDate(str)) {
+                    dates = str;
+                } else {
+                    System.out.println("Anderes Datumformat erwartet!");
+                }
+            } catch (Exception e) {
+                /* Clear the current Buffer */
+                sc.nextLine();
+                showActiveMenu();
+            }
+        } while (Objects.equals(dates, "") && !str.equals("0"));
+        return dates;
     }
 
 
@@ -131,7 +138,7 @@ public final class UI {
                 break;
         }
         if (currentMenu.equals(CITY_MENU)) {
-            List<Integer> validCityIndices = IntStream.rangeClosed(0, cities.length-1)
+            List<Integer> validCityIndices = IntStream.rangeClosed(0, cities.length - 1)
                     .boxed().collect(Collectors.toList());
             validMenuValues = validCityIndices;
         }
@@ -154,8 +161,7 @@ public final class UI {
         return eingabe;
     }
 
-    public static boolean isValidDate(String date)
-    {
+    public static boolean isValidDate(String date) {
         try {
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             df.setLenient(false);
@@ -169,7 +175,6 @@ public final class UI {
     private List<String> showLogin() {
         System.out.println(WELCOME_MENU);
         List<String> list = new ArrayList<>();
-
         Scanner sc = new Scanner(System.in);
 
         try {
@@ -177,6 +182,8 @@ public final class UI {
             System.out.print("Benutzername: ");
             String name = sc.nextLine();
             System.out.print("Passwort: ");
+            // TODO: insert logic to for password and login validity
+            // only allow Strings within a certain length (on the client)
             String vorname = sc.nextLine();
             list.add(name);
             list.add(vorname);
@@ -191,7 +198,9 @@ public final class UI {
     }
 
     /**
-     * For each city, display it with corresponding number
+     * Write each city as a String, with it's coresponding index. This is then used to display all possible cities to
+     * the user.
+     *
      * @param cities
      */
     public final String generateCityWithIndex(final String[] cities) {
@@ -202,7 +211,6 @@ public final class UI {
         line.append("\n Bitte den Index der gewünschten Ortschaft eingeben.");
         return line.toString();
     }
-
 
 
 }
