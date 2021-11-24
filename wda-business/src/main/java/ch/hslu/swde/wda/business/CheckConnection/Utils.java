@@ -1,10 +1,10 @@
-package ch.hslu.swde.wda.ui;
+package ch.hslu.swde.wda.business.CheckConnection;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class Utils {
+public final class Utils {
 
     /**
      * Pings a HTTP URL, by sending a HTTP request.
