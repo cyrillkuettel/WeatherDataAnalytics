@@ -60,11 +60,33 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
+<<<<<<< HEAD
         <dependency>
         	<groupId>org.json</groupId>
         	<artifactId>json</artifactId>
         	<version>20210307</version>
         </dependency>
+=======
+        	<!-- JPA libraries -->
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.jpa -->
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.jpa</artifactId>
+
+		</dependency>
+
+		<!-- PostgreSQL driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+
+		</dependency>
+>>>>>>> branch 'master' of https://gitlab.enterpriselab.ch/swde-21hs01/g07/g07-wda.git
     </dependencies>
 
     <build>

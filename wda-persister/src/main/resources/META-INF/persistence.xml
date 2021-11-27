@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0"
+	xsi:schemalocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+	<persistence-unit name="SwdeWda"
+		transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<class>ch.hslu.swde.wda.domain.City</class>
+		<class>ch.hslu.swde.wda.domain.Weather</class>
+		<class>ch.hslu.swde.wda.domain.WeatherData</class>
+
+		<validation-mode>AUTO</validation-mode>
+
+		<properties>
+			<property name="jakarta.persistence.jdbc.driver"
+				value="org.postgresql.Driver" />
+			<property name="jakarta.persistence.jdbc.url"
+				value="jdbc:postgresql://stud.el.eee.intern:5432/wda_g07_db_test" />
+			<property name="jakarta.persistence.jdbc.user"
+				value="swde_user_hs21" />
+			<property name="jakarta.persistence.jdbc.password"
+				value="swde_user_hs21_pwd" />
+
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="sql-script" />
+
+			<property name="eclipselink.ddl-generation"
+				value="drop-and-create-tables" />
+
+			<!-- SQL-Statements ausgeben (JPA-Provider spezifisch, nur während der 
+				Entwicklungszeit sinnvoll!) -->
+			<property name="eclipselink.logging.level.sql" value="FINE" />
+			<property name="eclipselink.logging.parameters" value="true" />
+
+		</properties>
+	</persistence-unit>
+
+</persistence>
