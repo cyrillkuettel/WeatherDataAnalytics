@@ -121,6 +121,7 @@ public class ConnectionJSON {
 						  }
 					  Map.put("LAST_UPDATE_DATE", hold[0]);
 					  Map.put("LAST_UPDATE_TIME", hold[1]);
+					  ObjectMaker.create(Map);
 					  //call class objectmaker here
 					  
 					  }
