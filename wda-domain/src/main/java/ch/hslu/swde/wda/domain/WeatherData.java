@@ -1,7 +1,8 @@
 package ch.hslu.swde.wda.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;import jakarta.persistence.Entity;
+import java.sql.Timestamp;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -38,8 +39,8 @@ public class WeatherData implements Serializable {
 	public WeatherData() {
 	}
 
-	public WeatherData(City city, Weather weather, Timestamp timestamp, float temp, int pressure,
-			float humidity, float windspeed, float winddirection) {
+	public WeatherData(City city, Weather weather, Timestamp timestamp, float temp, int pressure, float humidity,
+			float windspeed, float winddirection) {
 
 		this.city = city;
 		this.weather = weather;
@@ -79,11 +80,11 @@ public class WeatherData implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	public float getCurrent_temp_celcius() {
+	public float getTemp() {
 		return temp;
 	}
 
-	public void setCurrent_temp_celcius(float temp) {
+	public void setTemp(float temp) {
 		this.temp = temp;
 	}
 
@@ -117,6 +118,14 @@ public class WeatherData implements Serializable {
 
 	public void setWinddirection(float winddirection) {
 		this.winddirection = winddirection;
+	}
+
+	@Override
+	public String toString() {
+		return "Weatherdata: [City: ZIP=" + city.getZIPCode() + "City: Name=" + city.getName() + ", Weather: Summary="
+				+ weather.getSummary() + ", Weather: Description=" + weather.getDescription() + ", Timestamp="
+				+ timestamp + ", Temperatur=" + temp + ", Pressure=" + pressure + ", Humidity=" + humidity
+				+ ", Windspeed=" + windspeed + ", Winddirection=" + winddirection + "]";
 	}
 
 }
