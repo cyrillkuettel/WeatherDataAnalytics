@@ -1,79 +1,118 @@
 package ch.hslu.swde.wda.domain;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class WeatherData {
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-	
-	private int WeatherdataID;
-	private int ZIPCode;
-	private int WeatherID;
-	
+@Entity
+@Table(name= "weatherData")
+public class WeatherData implements Serializable {
+
+	@Id
+	@GeneratedValue
+	private int weatherdataID;
+	private int zipCode;
+	private int weatherID;
+
 	Timestamp timestamp;
-	
-	private float Current_temp_celcius;
-	private int Pressure;
-	private float Humidity;
-	private float Windspeed;
-	private float Winddirection;
-	
-	
+
+	private float current_temp_celcius;
+	private int pressure;
+	private float humidity;
+	private float windspeed;
+	private float winddirection;
+
+	public WeatherData() {
+	}
+
+	public WeatherData(int weatherdataID, int zipCode, int weatherID, Timestamp timestamp, float current_temp_celcius,
+			int pressure, float humidity, float windspeed, float winddirection) {
+
+		this.weatherdataID = weatherdataID;
+		this.zipCode = zipCode;
+		this.weatherID = weatherID;
+		this.timestamp = timestamp;
+		this.current_temp_celcius = current_temp_celcius;
+		this.pressure = pressure;
+		this.humidity = humidity;
+		this.windspeed = windspeed;
+		this.winddirection = winddirection;
+	}
+
 	public int getWeatherdataID() {
-		return WeatherdataID;
+		return weatherdataID;
 	}
+
 	public void setWeatherdataID(int weatherdataID) {
-		WeatherdataID = weatherdataID;
+		this.weatherdataID = weatherdataID;
 	}
-	public int getZIPCode() {
-		return ZIPCode;
+
+	public int getZipCode() {
+		return zipCode;
 	}
-	public void setZIPCode(int zIPCode) {
-		ZIPCode = zIPCode;
+
+	public void setZipCode(int zipCode) {
+		this.zipCode = zipCode;
 	}
+
 	public int getWeatherID() {
-		return WeatherID;
+		return weatherID;
 	}
+
 	public void setWeatherID(int weatherID) {
-		WeatherID = weatherID;
+		this.weatherID = weatherID;
 	}
+
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
+
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
+
 	public float getCurrent_temp_celcius() {
-		return Current_temp_celcius;
+		return current_temp_celcius;
 	}
+
 	public void setCurrent_temp_celcius(float current_temp_celcius) {
-		Current_temp_celcius = current_temp_celcius;
+		this.current_temp_celcius = current_temp_celcius;
 	}
+
 	public int getPressure() {
-		return Pressure;
+		return pressure;
 	}
+
 	public void setPressure(int pressure) {
-		Pressure = pressure;
+		this.pressure = pressure;
 	}
+
 	public float getHumidity() {
-		return Humidity;
+		return humidity;
 	}
+
 	public void setHumidity(float humidity) {
-		Humidity = humidity;
+		this.humidity = humidity;
 	}
+
 	public float getWindspeed() {
-		return Windspeed;
+		return windspeed;
 	}
+
 	public void setWindspeed(float windspeed) {
-		Windspeed = windspeed;
+		this.windspeed = windspeed;
 	}
+
 	public float getWinddirection() {
-		return Winddirection;
+		return winddirection;
 	}
+
 	public void setWinddirection(float winddirection) {
-		Winddirection = winddirection;
+		this.winddirection = winddirection;
 	}
-	
-	
-	
-	
+
 }

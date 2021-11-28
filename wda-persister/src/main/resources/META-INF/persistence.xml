@@ -29,7 +29,7 @@
 				value="sql-script" />
 
 			<property name="eclipselink.ddl-generation"
-				value="drop-and-create-tables" />
+				value="create-or-extend-tables" />
 
 			<!-- SQL-Statements ausgeben (JPA-Provider spezifisch, nur während der 
 				Entwicklungszeit sinnvoll!) -->

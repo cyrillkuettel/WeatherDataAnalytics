@@ -1,29 +1,54 @@
 package ch.hslu.swde.wda.domain;
 
-public class Weather {
-	
-	private int WeatherID;
-	private String Summary;
-	private String Description;
-	
-	
+import java.io.Serializable;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "weather")
+public class Weather implements Serializable {
+
+	@Id
+	@GeneratedValue
+	private int weatherID;
+	private String summary;
+	private String description;
+
+	public Weather() {
+	}
+
+	public Weather(int weatherID, String summary, String description) {
+		super();
+		this.weatherID = weatherID;
+		this.summary = summary;
+		this.description = description;
+	}
+
 	public int getWeatherID() {
-		return WeatherID;
+		return weatherID;
 	}
+
 	public void setWeatherID(int weatherID) {
-		WeatherID = weatherID;
+		this.weatherID = weatherID;
 	}
+
 	public String getSummary() {
-		return Summary;
+		return summary;
 	}
+
 	public void setSummary(String summary) {
-		Summary = summary;
+		this.summary = summary;
 	}
+
 	public String getDescription() {
-		return Description;
+		return description;
 	}
+
 	public void setDescription(String description) {
-		Description = description;
+		this.description = description;
 	}
 
 }

@@ -15,7 +15,6 @@ public class City implements Serializable{
 	
 	private static final long serialVersionUID = 2514335275204941450L;
 	@Id
-	@GeneratedValue
 	private int zipCode;
 	private String name;
 	private float longitude;
