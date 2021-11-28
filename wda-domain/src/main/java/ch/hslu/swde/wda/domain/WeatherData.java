@@ -41,7 +41,7 @@ public class WeatherData implements Serializable {
 	public WeatherData() {
 	}
 
-	public WeatherData( int zipCode, City city, Weather weather, Timestamp timestamp, float current_temp_celcius,
+	public WeatherData( City city, Weather weather, Timestamp timestamp, float current_temp_celcius,
 			int pressure, float humidity, float windspeed, float winddirection) {
 
 		
@@ -59,9 +59,6 @@ public class WeatherData implements Serializable {
 		return weatherdataID;
 	}
 
-	public void setWeatherdataID(int weatherdataID) {
-		this.weatherdataID = weatherdataID;
-	}
 
 	public City getCity() {
 		return city;

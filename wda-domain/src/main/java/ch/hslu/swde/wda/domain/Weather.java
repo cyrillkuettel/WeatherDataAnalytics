@@ -36,10 +36,6 @@ public class Weather implements Serializable {
 		return weatherID;
 	}
 
-	public void setWeatherID(int weatherID) {
-		this.weatherID = weatherID;
-	}
-
 	public String getSummary() {
 		return summary;
 	}
