@@ -18,7 +18,6 @@ public static void insertCity(List<Weather> weather) {
 		em.persist(w);
 		}
 		
-		
 		em.getTransaction().commit();  
 		em.close();
 		
