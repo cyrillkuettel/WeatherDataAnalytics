@@ -38,7 +38,7 @@ public class DbHelper {
 
 	/**
 	 * This Query returns a single City based on the Name of a City specified as 
-	 * @param name - Cityname
+	 * @param name - Cityname which should be inserted into where-condition
 	 * @return a single City-Entity matching with the where-condition
 	 */
 	public static City selectCity(String name) {
@@ -49,7 +49,7 @@ public class DbHelper {
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c where c.name = :name", City.class);
 		tQry.setParameter("name", name);
 
-		/* Get the single City-Entity from DB (matched by WHERE-Clause */
+		/* Get the single City-Entity from DB (matched by WHERE-condition */
 		City city = tQry.getSingleResult();
 
 		em.close();

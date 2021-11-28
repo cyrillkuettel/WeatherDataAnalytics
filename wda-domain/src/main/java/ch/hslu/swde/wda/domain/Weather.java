@@ -11,12 +11,17 @@ import jakarta.persistence.Table;
 @Table(name = "weather")
 public class Weather implements Serializable {
 
+	private static final long serialVersionUID = -6898834628008175086L;
+	
+	
 	@Id
 	@GeneratedValue
 	private int weatherID;
 	private String summary;
 	private String description;
 
+	
+	
 	public Weather() {
 	}
 

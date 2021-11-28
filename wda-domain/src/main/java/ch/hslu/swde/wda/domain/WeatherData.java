@@ -4,19 +4,31 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name= "weatherData")
 public class WeatherData implements Serializable {
 
+
+	private static final long serialVersionUID = 5740070809225824469L;
+
 	@Id
 	@GeneratedValue
 	private int weatherdataID;
-	private int zipCode;
-	private int weatherID;
+	
+	@ManyToOne (fetch = FetchType.LAZY)
+	@JoinColumn(name = "zipCode")
+	private City city;
+	
+	@ManyToOne (fetch = FetchType.LAZY)
+	@JoinColumn(name = "weatherID")
+	private Weather weather;
 
 	Timestamp timestamp;
 
@@ -29,12 +41,12 @@ public class WeatherData implements Serializable {
 	public WeatherData() {
 	}
 
-	public WeatherData( int zipCode, int weatherID, Timestamp timestamp, float current_temp_celcius,
+	public WeatherData( int zipCode, City city, Weather weather, Timestamp timestamp, float current_temp_celcius,
 			int pressure, float humidity, float windspeed, float winddirection) {
 
 		
-		this.zipCode = zipCode;
-		this.weatherID = weatherID;
+		this.city = city;
+		this.weather = weather;
 		this.timestamp = timestamp;
 		this.current_temp_celcius = current_temp_celcius;
 		this.pressure = pressure;
@@ -51,20 +63,20 @@ public class WeatherData implements Serializable {
 		this.weatherdataID = weatherdataID;
 	}
 
-	public int getZipCode() {
-		return zipCode;
+	public City getCity() {
+		return city;
 	}
 
-	public void setZipCode(int zipCode) {
-		this.zipCode = zipCode;
+	public void setCity(City city) {
+		this.city = city;
 	}
 
-	public int getWeatherID() {
-		return weatherID;
+	public Weather getWeather() {
+		return weather;
 	}
 
-	public void setWeatherID(int weatherID) {
-		this.weatherID = weatherID;
+	public void setWeatherID(Weather weather) {
+		this.weather = weather;
 	}
 
 	public Timestamp getTimestamp() {
