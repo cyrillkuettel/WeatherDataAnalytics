@@ -12,22 +12,21 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name= "weatherdata")
+@Table(name = "weatherdata")
 public class WeatherData implements Serializable {
-
 
 	private static final long serialVersionUID = 5740070809225824469L;
 
 	@Id
 	@GeneratedValue
 	private int weatherdataID;
-	
-	@ManyToOne (fetch = FetchType.LAZY)
-	@JoinColumn(name = "zipCode")
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "zipcode")
 	private City city;
-	
-	@ManyToOne (fetch = FetchType.LAZY)
-	@JoinColumn(name = "weatherID")
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "weatherid")
 	private Weather weather;
 
 	Timestamp timestamp;
@@ -41,10 +40,9 @@ public class WeatherData implements Serializable {
 	public WeatherData() {
 	}
 
-	public WeatherData( City city, Weather weather, Timestamp timestamp, float current_temp_celcius,
-			int pressure, float humidity, float windspeed, float winddirection) {
+	public WeatherData(City city, Weather weather, Timestamp timestamp, float current_temp_celcius, int pressure,
+			float humidity, float windspeed, float winddirection) {
 
-		
 		this.city = city;
 		this.weather = weather;
 		this.timestamp = timestamp;
@@ -58,7 +56,6 @@ public class WeatherData implements Serializable {
 	public int getWeatherdataID() {
 		return weatherdataID;
 	}
-
 
 	public City getCity() {
 		return city;
