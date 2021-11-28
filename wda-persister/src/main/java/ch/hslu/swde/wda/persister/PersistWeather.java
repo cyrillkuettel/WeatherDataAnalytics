@@ -7,7 +7,7 @@ import jakarta.persistence.EntityManager;
 
 public class PersistWeather {
 	
-public static void insertCity(List<Weather> weather) {
+public static void insertWeather(List<Weather> weather) {
 		
 
 		EntityManager em = JpaUtil.createEntityManager();

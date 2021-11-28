@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name= "weatherData")
+@Table(name= "weatherdata")
 public class WeatherData implements Serializable {
 
 
