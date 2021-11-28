@@ -1,9 +1,7 @@
 package ch.hslu.swde.wda.domain;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-
-import jakarta.persistence.Entity;
+import java.sql.Timestamp;import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,19 +17,19 @@ public class WeatherData implements Serializable {
 
 	@Id
 	@GeneratedValue
-	private int weatherdataID;
+	private int weatherdataid;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "zipcode")
+	@JoinColumn(name = "city")
 	private City city;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "weatherid")
+	@JoinColumn(name = "weather")
 	private Weather weather;
 
 	Timestamp timestamp;
 
-	private float current_temp_celcius;
+	private float temp;
 	private int pressure;
 	private float humidity;
 	private float windspeed;
@@ -40,13 +38,13 @@ public class WeatherData implements Serializable {
 	public WeatherData() {
 	}
 
-	public WeatherData(City city, Weather weather, Timestamp timestamp, float current_temp_celcius, int pressure,
+	public WeatherData(City city, Weather weather, Timestamp timestamp, float temp, int pressure,
 			float humidity, float windspeed, float winddirection) {
 
 		this.city = city;
 		this.weather = weather;
 		this.timestamp = timestamp;
-		this.current_temp_celcius = current_temp_celcius;
+		this.temp = temp;
 		this.pressure = pressure;
 		this.humidity = humidity;
 		this.windspeed = windspeed;
@@ -54,7 +52,7 @@ public class WeatherData implements Serializable {
 	}
 
 	public int getWeatherdataID() {
-		return weatherdataID;
+		return weatherdataid;
 	}
 
 	public City getCity() {
@@ -82,11 +80,11 @@ public class WeatherData implements Serializable {
 	}
 
 	public float getCurrent_temp_celcius() {
-		return current_temp_celcius;
+		return temp;
 	}
 
-	public void setCurrent_temp_celcius(float current_temp_celcius) {
-		this.current_temp_celcius = current_temp_celcius;
+	public void setCurrent_temp_celcius(float temp) {
+		this.temp = temp;
 	}
 
 	public int getPressure() {
