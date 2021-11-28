@@ -20,9 +20,8 @@ public class Weather implements Serializable {
 	public Weather() {
 	}
 
-	public Weather(int weatherID, String summary, String description) {
-		super();
-		this.weatherID = weatherID;
+	public Weather( String summary, String description) {
+
 		this.summary = summary;
 		this.description = description;
 	}
