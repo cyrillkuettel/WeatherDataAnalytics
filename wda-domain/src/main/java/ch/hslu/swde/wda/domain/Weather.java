@@ -23,6 +23,7 @@ public class Weather implements Serializable {
 	public Weather( String summary, String description) {
 
 		
+		
 		this.summary = summary;
 		this.description = description;
 	}

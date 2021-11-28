@@ -33,6 +33,7 @@ public class WeatherData implements Serializable {
 			int pressure, float humidity, float windspeed, float winddirection) {
 
 		
+		
 		this.zipCode = zipCode;
 		this.weatherID = weatherID;
 		this.timestamp = timestamp;
