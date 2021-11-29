@@ -28,16 +28,18 @@ public final class UI {
             "Winterthur", "Frauenfeld", "St. Gallen"};
 
     private static final String SELECT_TIMESPAN_END = "Enddatum: ";
-    private final String CITY_MENU;
-    private static final String WELCOME_MENU = "Hallo! Bitte loggen sie sich ein.";
+    private final String SHOW_CITY_MENU;
+    private static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
     private static final String SELECT_TIMESPAN_START = "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \nEnter drücken für das default Datum.";
     private static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
             "Beenden [0]";
-    private static final String MENU_START = "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
+
+    private static final String SELECT_DATA_OR_ALL_MENU = "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
             "alle " + "Ortschaften laden [2] " + "     " +
             "Beenden " + "[0]";
 
     private String currentMenu;
+    private static final String CREATE_NEW_USER_MENU = "Neuer Mitarbeiter.";
 
 
     final static String DATE_FORMAT = "dd-MM-yyyy";
@@ -50,7 +52,7 @@ public final class UI {
 
     public UI() {
          /* Generate City-List at runtime, the number of cities should not be static */
-        CITY_MENU = generateCityWithIndex(cities);
+        SHOW_CITY_MENU = generateCityWithIndex(cities);
 
     }
 
@@ -60,20 +62,38 @@ public final class UI {
      * starts a new User Interaction.
      */
     public void startFromBeginning() {
-
+        int selectedOption;
         String selectedCity = "";
-        String[] timePeriod = new String[2]; // [0] ->  startDate
-                                            //  [1] ->  endDate
+        String[] timePeriod = new String[2]; // index [0] ->  startDate
+                                             // index [1] ->  endDate
 
+        currentMenu = WELCOME_MENU;
+        showActiveMenu();
+        selectedOption = readOptionFromUser();
+        if (selectedOption == 1) {  //  Einloggen
+            String[] creds;
+            int totalLoginAttempts = 0;
+            do {
+                creds = startLoginProcess(totalLoginAttempts);
+                totalLoginAttempts++;
+            } while(!isValidLogin(creds));
 
-        showLogin();
-        currentMenu = MENU_START;
+            if(isValidLogin(creds))  {
+                System.out.println("Erfolgreich Eingeloggt!");
+                currentMenu = SELECT_DATA_OR_ALL_MENU;
+            }
+
+        } else if (selectedOption == 2) { // neuen Benutzer erstellen
+            currentMenu = CREATE_NEW_USER_MENU;
+            Log.info("Erstelle neuer Benutzer");
+        }
+
 
         showActiveMenu();
-        int selectedOption = readOptionFromUser();
+        selectedOption = readOptionFromUser();
         if (selectedOption == 1) { /* Ony one city is requested */
 
-            currentMenu = CITY_MENU;
+            currentMenu = SHOW_CITY_MENU;
             showActiveMenu();
             selectedOption = readOptionFromUser();
             selectedCity = cities[selectedOption];
@@ -97,12 +117,14 @@ public final class UI {
         List<Integer> validMenuValues = new ArrayList<>();
 
         switch (currentMenu) {
-            case MENU_START:
+            case SELECT_DATA_OR_ALL_MENU:
             case TIMESPAN:
-                validMenuValues = Arrays.asList(1, 2, 0);
+            case WELCOME_MENU:
+                validMenuValues = Arrays.asList(1, 2, 0); // Almost always, there are 3 valid actions to choose for
+                // each  menu
                 break;
         }
-        if (currentMenu.equals(CITY_MENU)) {
+        if (currentMenu.equals(SHOW_CITY_MENU)) {
             List<Integer> validCityIndices = IntStream.rangeClosed(0, cities.length - 1)
                     .boxed().collect(Collectors.toList());
             validMenuValues = validCityIndices;
@@ -213,33 +235,45 @@ public final class UI {
     }
 
     /**
-     * Ask the user to Log in
-     * @return List with the username and password.
+     * Determine if login is successful.
+     * @return true if the login is a correct username / password combination, false if not.
      */
-    private List<String> showLogin() {
-        System.out.println(WELCOME_MENU);
-        List<String> list = new ArrayList<>();
-        Scanner sc = new Scanner(System.in);
-
-        try {
-            System.out.println();
-            System.out.print("Benutzername: ");
-            String name = sc.nextLine();
-            System.out.print("Passwort: ");
-            // TODO: insert logic to for password and login validity
-            // only allow Strings within a certain length (on the client)
-            String vorname = sc.nextLine();
-            list.add(name);
-            list.add(vorname);
-
-        } catch (Exception e) {
-            Log.error("Fehler beim Lesen der Login Daten", e);
-            System.err.println("\n Fehler beim Lesen der Login Daten");
-
-        }
-
-        return list;
+    private boolean isValidLogin(String[] checkThisLogin) {
+        // only for testing ( this will change as soon as we can validate logins on
+        // the server-side)
+        return checkThisLogin[0] != " ";
     }
+
+    /**
+     * Ask the user to type in username and password. Then for this data the user provides, do some simple client-side
+     * validation, to prevent sendingn malformed data to our server: The username and passsword should not exceed a
+     * certain length.
+     * @return String Array containing the username [index: 0] and password. [index: 1]
+     */
+   private String[] startLoginProcess(int attemptCount) {
+       if (attemptCount > 0) {
+           System.out.print("Ist nicht eine korrekte Benutzername / Password Kombination. Versuchen Sie es noch " +
+                                    "einmal.");
+       }
+       String[] creds = new String[2];
+       Scanner sc = new Scanner(System.in);
+       do {
+           try {
+               System.out.println();
+               System.out.print("Benutzername: ");
+               String Benutzername = sc.nextLine();
+               System.out.print("Passwort: ");
+               // TODO: simple client-slide validation of this login data
+               String Passwort = sc.nextLine();
+               creds[0] = Benutzername;
+               creds[1] = Passwort;
+           } catch (Exception e) {
+               Log.error("Fehler beim Lesen der Login Daten in startLoginProcess", e);
+               System.err.println("\n Fehler beim Lesen der Login Daten");
+           }
+       } while (creds[0] == null && creds[1] == null);
+       return creds;
+   }
 
     /**
      * For each city, write it's name and coresponding index.
