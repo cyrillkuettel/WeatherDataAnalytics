@@ -1,5 +1,6 @@
 package ch.hslu.swde.wda.ui;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -11,8 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Testcases fuer {@link ch.hslu.swde.wda.ui.UI}.
  */
+
+// create tests to check if date in valid timespan 01.01.2020
+    // create tests to check if user added
 class UITest {
 
+    @Disabled
     @Test
     void testLoadingCitiesFromDatabaseContainsAllKnownCities() {
 
@@ -29,7 +34,7 @@ class UITest {
             assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(minimalExpectedCities)));
     }
 
-
+    @Disabled
     @Test
     void testCitiesLengthIfCitiesConstant() {
         UI ui = new UI();
@@ -37,6 +42,32 @@ class UITest {
         assertTrue(ui.getCitiesFromDatabase().length >= expectedCityLength);
 
     }
+
+    @Test
+    void testsimpleLoginValidationPassed_ShouldFailForEmptyStrings() {
+        UI ui = new UI();
+        String username = "";
+        String password = "";
+        assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
+    }
+
+    @Test
+    void testMaximumUsernameLengthShouldNotExceedAValue() {
+        UI ui = new UI();
+        String username = "";
+        String password = "";
+        for (int i = 0; i < UI.MAX_USERNAME_LEN ; i++) {
+            username += "u";
+        }
+        assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
+    }
+
+     @Test
+     @Disabled
+     void testaskForUsernamePassword() {
+        // test the scanner in functionality
+
+     }
 
 
     @Test

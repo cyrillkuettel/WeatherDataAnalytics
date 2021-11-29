@@ -34,6 +34,11 @@ public final class UI {
             "/cities";
     private static final String SELECT_TIMESPAN_END = "Enddatum: ";
     private final String SHOW_CITY_MENU;
+    private static final String PROMPT_USER_TO_LOGIN = "Bitte Loggen Sie sich ein.";
+    private static final String ASK_PASSWORD = "Bitte Passwort eingeben: ";
+    private static final String ASK_USERNAME = "Bitte Benutzername eingeben: ";
+
+    private static final String CONFIRM_NEW_USER_CREATED = "Der neue Benutzer wurde erstellt";
     private static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
     private static final String SELECT_TIMESPAN_START = "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \nEnter drücken für das default Datum.";
     private static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
@@ -44,8 +49,10 @@ public final class UI {
             "Beenden " + "[0]";
 
     private String currentMenu;
-    private static final String CREATE_NEW_USER_MENU = "Neuer Mitarbeiter.";
-
+    private static final String WARN_INVALID_LOGIN = "Ist nicht eine korrekte Benutzername / Password Kombination. " +
+            "Versuchen Sie es noch einmal";
+    private static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
+            "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
 
     final static String DATE_FORMAT = "dd-MM-yyyy";
     private static final String[] DEFAULT_DATE = {"27-11-2020", "30-11-2020"};
@@ -53,7 +60,9 @@ public final class UI {
 
     private static final String MIN_DATE_VALUE = "01-01-2020"; // minimum and maximum legal value, inclusive
     private static final String MAX_DATE_VALUE = "31-12-2020";
-
+    static final int MAX_USERNAME_LEN = 40;
+    static final int MIN_LENGTH_USERNAME = 3;
+    static final int MIN_PASSWORD_LENGTH = 8;
 
     public UI() {
         if (Utils.pingURL(CITY_URL, 100000)) {
@@ -63,8 +72,10 @@ public final class UI {
 
         }
 
-         /* Generate City-List at runtime, the number of cities should not be static */
-        // here
+
+        // Load the cities from db when creating UI
+
+        /* Generate City-List at runtime, the number of cities should not be static */
         SHOW_CITY_MENU = generateCityWithIndex(cities);
 
     }
@@ -80,26 +91,34 @@ public final class UI {
         String[] timePeriod = new String[2]; // index [0] ->  startDate
                                              // index [1] ->  endDate
 
+
         currentMenu = WELCOME_MENU;
         showActiveMenu();
         selectedOption = readOptionFromUser();
-        if (selectedOption == 1) {  //  Einloggen
-            String[] creds;
-            int totalLoginAttempts = 0;
-            do {
-                creds = startLoginProcess(totalLoginAttempts);
-                totalLoginAttempts++;
-            } while(!isValidLogin(creds));
 
-            if(isValidLogin(creds))  {
-                System.out.println("Erfolgreich Eingeloggt!");
-                currentMenu = SELECT_DATA_OR_ALL_MENU;
-            }
+        if (selectedOption == 2) { // create new user
+            Log.info("Staring process to create a new User");
 
-        } else if (selectedOption == 2) { // neuen Benutzer erstellen
-            currentMenu = CREATE_NEW_USER_MENU;
-            Log.info("Erstelle neuer Benutzer");
+            String[] newCredentials = askForUsernamePassword(0);
+            System.out.println(CONFIRM_NEW_USER_CREATED);
+            // TODO:  write new User to Database
         }
+
+        System.out.println(PROMPT_USER_TO_LOGIN);
+
+        String[] creds;
+        int totalLoginAttempts = 0;
+        do {
+            creds = askForUsernamePassword(totalLoginAttempts);
+            totalLoginAttempts++;
+        } while(!isValidLogin(creds));
+
+        if(isValidLogin(creds))  {
+            System.out.println("Erfolgreich Eingeloggt!");
+            currentMenu = SELECT_DATA_OR_ALL_MENU;
+        }
+
+
 
 
         showActiveMenu();
@@ -120,8 +139,8 @@ public final class UI {
     }
 
     /**
-     * Read user input, which is always a number. This number indicates the next action to take.
-     * @return Number, which is the action the user takes.
+     * Read user input: Numerical in all cases. The actual meaning of the number can be read from the currentMenu.
+     * @return the action the user takes as a numerical value.
      */
     public int readOptionFromUser() {
 
@@ -137,7 +156,7 @@ public final class UI {
                 // each  menu
                 break;
         }
-        if (currentMenu.equals(SHOW_CITY_MENU)) {
+        if (currentMenu.equals(SHOW_CITY_MENU)) { // this just generates a range of numbers, as long as cities.length
             List<Integer> validCityIndices = IntStream.rangeClosed(0, cities.length - 1)
                     .boxed().collect(Collectors.toList());
             validMenuValues = validCityIndices;
@@ -165,7 +184,7 @@ public final class UI {
     /**
      * Asks the user to specify a Timespan. If the user does not want to restric search,
      * we simply select the largest possible value for the date interval.
-     * @return Array with index 0 representing start- and index 1 representing the end date.
+     * @return Array with index 0 representing start, and index 1 representing the end date.
      */
     public String[] getTimePeriod() {
         String[] timeframe = new String[2];
@@ -221,6 +240,7 @@ public final class UI {
     }
 
 
+
     public void showActiveMenu() {
         System.out.println();
         System.out.println(currentMenu);
@@ -258,35 +278,57 @@ public final class UI {
     }
 
     /**
-     * Ask the user to type in username and password. Then for this data the user provides, do some simple client-side
+     * Ask the user to type in username and password. This method can be used both in login and when creating a new
+     * user. It will Loop indefinitely, until the condition in {@link #simpleLoginValidationPassed(String, String)
+     * condition passes}
+     * Then for this data the user provides, do some simple client-side
      * validation, to prevent sendingn malformed data to our server: The username and passsword should not exceed a
      * certain length.
      * @return String Array containing the username [index: 0] and password. [index: 1]
      */
-   private String[] startLoginProcess(int attemptCount) {
+   private String[] askForUsernamePassword(int attemptCount) {
+
+
+
        if (attemptCount > 0) {
-           System.out.print("Ist nicht eine korrekte Benutzername / Password Kombination. Versuchen Sie es noch " +
-                                    "einmal.");
+           System.out.print(WARN_INVALID_LOGIN);
        }
        String[] creds = new String[2];
        Scanner sc = new Scanner(System.in);
        do {
            try {
                System.out.println();
-               System.out.print("Benutzername: ");
-               String Benutzername = sc.nextLine();
-               System.out.print("Passwort: ");
-               // TODO: simple client-slide validation of this login data
-               String Passwort = sc.nextLine();
-               creds[0] = Benutzername;
-               creds[1] = Passwort;
+               System.out.print(ASK_USERNAME);
+               String username = sc.nextLine();
+               System.out.print(ASK_PASSWORD);
+               String password = sc.nextLine();
+               Log.info("das passort" + password);
+               if ( simpleLoginValidationPassed(username, password)) {
+                   creds[0] = username;
+                   creds[1] = password;
+               } else {
+                   System.out.println(WARN_LOGIN_VALIDATION_NOT_PASSED);
+               }
            } catch (Exception e) {
-               Log.error("Fehler beim Lesen der Login Daten in startLoginProcess", e);
+               Log.error("Error while reading Username or Password in method askForUsernamePassword", e);
                System.err.println("\n Fehler beim Lesen der Login Daten");
            }
        } while (creds[0] == null && creds[1] == null);
        return creds;
    }
+
+    /**
+     * This Function already checks if the username and password pass certain basic validation.
+     * @return true if the credidentals are valid, false if there is problem.
+     */
+    public boolean simpleLoginValidationPassed(String username, String password) {
+        if ( username.length() < MIN_LENGTH_USERNAME || username.length() > MAX_USERNAME_LEN) {
+            return false;
+        }
+
+        if (password.length() < MIN_PASSWORD_LENGTH) return false;
+        return true;
+    }
 
     /**
      * For each city, write it's name and coresponding index.
