@@ -1,4 +1,4 @@
-package ch.hslu.swde.wda.business.CheckConnection;
+package ch.hslu.swde.wda.CheckConnection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

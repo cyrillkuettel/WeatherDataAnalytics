@@ -1,6 +1,5 @@
 package ch.hslu.swde.wda.business;
 
-import ch.hslu.swde.wda.business.CheckConnection.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,10 +18,6 @@ public final class WeatherdataDownloader {
 
 
     public String getCitiesAsXML() {
-        if (!Utils.pingURL(CITY_URL, 10000)) {
-            Log.error("Could not ping Server, are you connected to VPN?");
-            return "";
-        }
         HttpClient client = HttpClient.newHttpClient();
         String mimeType = "application/xml";
 

@@ -1,6 +1,9 @@
 package ch.hslu.swde.wda.ui;
 
 
+import ch.hslu.swde.wda.CheckConnection.Utils;
+import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.persister.DbHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +30,8 @@ public final class UI {
             "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
             "Winterthur", "Frauenfeld", "St. Gallen"};
 
+    private static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata" +
+            "/cities";
     private static final String SELECT_TIMESPAN_END = "Enddatum: ";
     private final String SHOW_CITY_MENU;
     private static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
@@ -51,7 +56,15 @@ public final class UI {
 
 
     public UI() {
+        if (Utils.pingURL(CITY_URL, 100000)) {
+            Log.info("Connection established");
+        } else {
+            Log.error("Could not ping swde.el.ee.intern:80. Are you connected to VPN?");
+
+        }
+
          /* Generate City-List at runtime, the number of cities should not be static */
+        // here
         SHOW_CITY_MENU = generateCityWithIndex(cities);
 
     }
@@ -239,9 +252,9 @@ public final class UI {
      * @return true if the login is a correct username / password combination, false if not.
      */
     private boolean isValidLogin(String[] checkThisLogin) {
-        // only for testing ( this will change as soon as we can validate logins on
+        // only for testing (this will change as soon as we can validate logins on
         // the server-side)
-        return checkThisLogin[0] != " ";
+        return checkThisLogin[0] != " " && checkThisLogin[1].length() > 0 &&  checkThisLogin[0].length() > 0 ;
     }
 
     /**
@@ -290,5 +303,17 @@ public final class UI {
     }
 
 
+    public String[] getCitiesFromDatabase() {
+
+        List<City> dbCities = DbHelper.selectAllCities();
+        String[] cities = new String[dbCities.size()];
+        Iterator<City> it = dbCities.iterator();
+        int count = 0;
+        while ( it.hasNext()) {
+            cities[count] = it.next().getName();
+        }
+
+        return cities;
+    }
 }
 

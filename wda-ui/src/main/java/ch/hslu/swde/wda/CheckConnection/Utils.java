@@ -1,4 +1,4 @@
-package ch.hslu.swde.wda.business.CheckConnection;
+package ch.hslu.swde.wda.CheckConnection;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
