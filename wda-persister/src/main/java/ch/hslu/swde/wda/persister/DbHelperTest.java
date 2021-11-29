@@ -12,11 +12,15 @@ public class DbHelperTest {
 		Date startDate = Date.valueOf(start);
 		Date endDate = Date.valueOf(end);
 
-		
+//		DbHelper.selectAllCities();
+
 		
 		DbHelper.selectWeatherDataSingleCity("Langenthal",startDate ,endDate );
 		
+//		DbHelper.selectMaxWeatherDataAllCities(startDate ,endDate );
 		
+		
+
 		
 	}
 

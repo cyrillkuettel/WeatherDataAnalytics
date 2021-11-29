@@ -21,21 +21,25 @@ public class DbHelper {
 	 */
 	public static List<City> selectAllCities() {
 
+		Log.info("Starting selectAllCities");
+
 		EntityManager em = JpaUtil.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
 
 		/* Get all City-Entities from DB */
-		List<City> cityFromDb = tQry.getResultList();
+		List<City> citiesFromDb = tQry.getResultList();
 
 		em.close();
 
-		for (City c : cityFromDb) {
+		Log.info("Number of Cities found: " + citiesFromDb.size());
+		Log.info("These are the Cities found, shown with their toString() method:");
+		for (City c : citiesFromDb) {
 			Log.info(c.toString());
 		}
-
-		return cityFromDb;
+		
+		return citiesFromDb;
 	}
 
 	/**
@@ -46,6 +50,8 @@ public class DbHelper {
 	 */
 	public static City selectSingleCity(String cityname) {
 
+		Log.info("Starting selectSingleCity with Parameter: " + cityname);
+		
 		EntityManager em = JpaUtil.createEntityManager();
 
 		em.getTransaction().begin();
@@ -57,14 +63,14 @@ public class DbHelper {
 
 		em.close();
 
-		Log.info(city.toString());
+		Log.info("City found is: " + city.toString());
 
 		return city;
 	}
 
 	/**
 	 * This Query returns a List off all Weatherdata for a given City and given
-	 * timerange (specified by start- and enddate) - Query A02
+	 * timerange (specified by start- and enddate) - Query A02, A03, A04
 	 * 
 	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param startDate - The startdate for the Timerange
@@ -74,6 +80,9 @@ public class DbHelper {
 
 	public static List<WeatherData> selectWeatherDataSingleCity(String cityname, Date startDate, Date endDate) {
 
+		Log.info("Starting selectWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]" + ", [Startdate: " + startDate + "]" + ", [Enddate: " + endDate + "]"  );
+
+		
 		EntityManager em = JpaUtil.createEntityManager();
 
 		em.getTransaction().begin();
@@ -89,11 +98,16 @@ public class DbHelper {
 
 		em.close();
 
+		Log.info("Number of Weatherdata found: " + weatherDataList.size());
+		Log.info("These are the WeatherData found, shown with their toString() method:");
 		for (WeatherData w : weatherDataList) {
 			Log.info(w.toString());
 		}
 
 		return weatherDataList;
 	}
+	
+	
+	
 
 }
