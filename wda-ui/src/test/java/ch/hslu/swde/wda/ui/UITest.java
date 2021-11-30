@@ -1,13 +1,22 @@
 package ch.hslu.swde.wda.ui;
 
+import ch.hslu.swde.wda.CheckConnection.Utils;
+import ch.hslu.swde.wda.Constants;
+import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.domain.WeatherData;
+import ch.hslu.swde.wda.persister.DbHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 
+import static ch.hslu.swde.wda.Constants.CITY_URL;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +28,13 @@ import static org.junit.jupiter.api.Assertions.*;
 // create tests to check if date in valid timespan 01.01.2020 ( integrate this in project afterwards)
 // create tests to check if user added
 class UITest {
+    private static final Logger Log = LogManager.getLogger(UITest.class);
+
+    @Test
+    @Disabled
+    void testVPNConnection() {
+        assertTrue(Utils.pingURL(CITY_URL, 10000));
+    }
 
     @Disabled
     @Test
@@ -33,7 +49,7 @@ class UITest {
                 "Winterthur", "Frauenfeld", "St. Gallen"};
 
         UI ui = new UI();
-        String[] actualCities = ui.getCitiesFromDatabase();
+        String[] actualCities = ui.getCitynamesfromDatabase();
         assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(minimalExpectedCities)));
     }
 
@@ -41,9 +57,26 @@ class UITest {
     @Test
     void testCitiesLengthIfCitiesConstant() {
         UI ui = new UI();
-        final int expectedCityLength = 40; // if new cities are added, this will fail!
-        assertTrue(ui.getCitiesFromDatabase().length >= expectedCityLength);
+        final int expectedCityLength = 40; // There should be at least 40 cities (counted manually)
+        assertTrue(ui.getCitynamesfromDatabase().length >= expectedCityLength);
 
+    }
+
+    @Test
+    void testLoadingWeatherDataForSingleCityFromDatabase() {
+        final String cityName = "Langenthal";
+        final java.sql.Date startDate = java.sql.Date.valueOf("2020-12-30");
+        final java.sql.Date endDate = Date.valueOf("2021-11-28");
+        final List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityName, startDate, endDate);
+        final WeatherData weatherdata = requestedWeatherData.get(0); // get the only item in list
+        assertThat(weatherdata.getCity().getName()).isEqualTo(cityName);
+    }
+
+    @Test
+    void testGetSingleCityFromDatabase() {
+        final String cityName = "Langenthal";
+        final City city = DbHelper.selectSingleCity(cityName);
+        assertThat(city.getName()).isEqualTo(cityName);
     }
 
     @Test
@@ -59,7 +92,7 @@ class UITest {
         UI ui = new UI();
         String username = "";
         String password = "asdfadsfdsfdsf";
-        for (int i = 0; i < UI.MAX_USERNAME_LEN * 2; i++) {
+        for (int i = 0; i < Constants.MAX_USERNAME_LEN * 2; i++) {
             username += "u";
         }
         assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
@@ -77,7 +110,7 @@ class UITest {
     void testGetTimePeriodForMaximumDateRange() {
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
-        String[] expectedTimeFrame = {UI.MIN_DATE_VALUE, UI.MAX_DATE_VALUE};
+        String[] expectedTimeFrame = {Constants.MIN_DATE_VALUE, Constants.MAX_DATE_VALUE};
         ByteArrayInputStream in = new ByteArrayInputStream("2".getBytes()); // Option 2 means we use all dates
         System.setIn(in);
         UI ui = new UI();
@@ -141,13 +174,10 @@ class UITest {
 
     @Test
     void testinferYearIfNotPresent() {
-
         String dateWithoutYear = "10-11-";
         // actually, year always 2020. It should infer year = 2020 if no year is specified
         dateWithoutYear = UI.inferYearIfNotPresent(dateWithoutYear);
         assertThat(dateWithoutYear).isEqualTo("10-11-2020");
-
-
     }
 
     @Test
@@ -180,7 +210,7 @@ class UITest {
 
     @Test
     void testisValidDateFromString() {
-        assertThat(UI.DATE_FORMAT).isEqualTo("dd-MM-yyyy");
+        assertThat(Constants.DATE_FORMAT).isEqualTo("dd-MM-yyyy");
         String testDate = "27-11-2020";
         assertTrue(UI.isValidDate(testDate));
     }

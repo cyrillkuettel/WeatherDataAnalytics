@@ -2,6 +2,7 @@ package ch.hslu.swde.wda.ui;
 
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
+import ch.hslu.swde.wda.Constants;
 import ch.hslu.swde.wda.domain.City;
 import ch.hslu.swde.wda.domain.WeatherData;
 import ch.hslu.swde.wda.persister.DbHelper;
@@ -23,59 +24,23 @@ import java.util.stream.IntStream;
  */
 public final class UI {
     private static final Logger Log = LogManager.getLogger(UI.class);
+
+    /** Generated city names at Runtime */
+    private final String CITY_NAMES_WITH_INDEX_MENU;
+
     /**
-     * Hardcoded cities. This is only for local testing.
+        The current active Menu.
      */
-    private static final String[] cities = {"Lausanne", "Geneva", "Nyon", "Biel", "Bern", "Thun", "Adelboden",
-            "Interlaken",
-            "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
-            "Aarau", "Baden", "Lucerne", "Buchrain", "Zug", "Rotkreuz", "Engelberg", "Schwyz", "Altdorf", "Erstfeld",
-            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
-            "Winterthur", "Frauenfeld", "St. Gallen"};
-
-    private static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata" +
-            "/cities";
-    private static final String SELECT_TIMESPAN_END = "Enddatum: ";
-    static final String DEFAULT_DATE_KEYWORD = "skip";
-    private final String SHOW_CITY_MENU;
-    private static final String PROMPT_USER_TO_LOGIN = "Bitte Loggen Sie sich ein.";
-    private static final String ASK_PASSWORD = "Bitte Passwort eingeben: ";
-    private static final String ASK_USERNAME = "Bitte Benutzername eingeben: ";
-
-    private static final String CONFIRM_NEW_USER_CREATED = "Erstellung erfolgreich.";
-    private static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
-    private static final String SELECT_TIMESPAN_START =
-            "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \n\"" + DEFAULT_DATE_KEYWORD + "\" für das " +
-                    "Standart " +
-                    "Datum";
-    private static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
-            "Beenden [0]";
-
-    private static final String SELECT_DATA_OR_ALL_MENU =
-            "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
-                    "alle " + "Ortschaften laden [2] " + "     " +
-                    "Beenden " + "[0]";
-
     private String currentMenu;
-    private static final String WARN_INVALID_LOGIN = "Ist nicht eine korrekte Benutzername / Password Kombination. " +
-            "Versuchen Sie es noch einmal";
-    private static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
-            "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
 
-    final static String DATE_FORMAT = "dd-MM-yyyy";
-    private static final String[] DEFAULT_DATE = {"29-11-2021", "30-11-2021"};
-
-    // minimum and maximum valid value, inclusive
-    static final String MIN_DATE_VALUE = "01-01-2020";
-    static final String MAX_DATE_VALUE = "31-12-2020";
-    static final int MAX_USERNAME_LEN = 40;
-    static final int MIN_LENGTH_USERNAME = 3;
-    static final int MIN_PASSWORD_LENGTH = 8;
+    /**
+        This is the main Scanner; several methods use this Scanner
+     */
     Scanner sc;
 
     public UI() {
         this.sc = new Scanner(System.in);
-        if (Utils.pingURL(CITY_URL, 10000)) {
+        if (Utils.pingURL(Constants.CITY_URL, 10000)) {
             Log.info("VPN connected!");
         } else {
             Log.error("Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?");
@@ -86,7 +51,7 @@ public final class UI {
         // Load the cities from db when creating UI
 
         /* Generate City-List at runtime, the number of cities should not be static */
-        SHOW_CITY_MENU = generateCityWithIndex(cities);
+        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(Constants.cities);
 
     }
 
@@ -100,7 +65,7 @@ public final class UI {
         String[] selectedTimePeriod = new String[2]; // timePeriod[0] = startDate, timePeriod[1] = endDate
 
 
-        currentMenu = WELCOME_MENU;
+        currentMenu = Constants.WELCOME_MENU;
         showActiveMenu();
         selectedOption = readOptionFromUser();
 
@@ -108,7 +73,7 @@ public final class UI {
             Log.info("Staring process to create a new User");
 
             String[] newCredentials = askForUsernamePassword(0);
-            System.out.println(CONFIRM_NEW_USER_CREATED);
+            System.out.println(Constants.CONFIRM_NEW_USER_CREATED);
             // TODO:  write new User to Database
         }
 
@@ -121,7 +86,7 @@ public final class UI {
 
         if (isValidLogin(creds)) {
             System.out.println("Erfolgreich Eingeloggt!");
-            currentMenu = SELECT_DATA_OR_ALL_MENU;
+            currentMenu = Constants.SELECT_DATA_OR_ALL_MENU;
         }
 
 
@@ -129,10 +94,10 @@ public final class UI {
         selectedOption = readOptionFromUser();
         if (selectedOption == 1) { /* Ony one city is requested */
 
-            currentMenu = SHOW_CITY_MENU;
+            currentMenu = CITY_NAMES_WITH_INDEX_MENU;
             showActiveMenu();
             selectedOption = readOptionFromUser();
-            selectedCity = cities[selectedOption];
+            selectedCity = Constants.cities[selectedOption];
             selectedTimePeriod = getTimePeriod();
 
         } else if (selectedOption == 2) { /* All cities are considered */
@@ -155,15 +120,15 @@ public final class UI {
         List<Integer> validMenuValues = new ArrayList<>();
 
         switch (currentMenu) {
-            case SELECT_DATA_OR_ALL_MENU:
-            case TIMESPAN:
-            case WELCOME_MENU:
+            case Constants.SELECT_DATA_OR_ALL_MENU:
+            case Constants.TIMESPAN:
+            case Constants.WELCOME_MENU:
                 validMenuValues = Arrays.asList(1, 2, 0); // Almost always, there are 3 valid actions to choose for
                 // each  menu
                 break;
         }
-        if (currentMenu.equals(SHOW_CITY_MENU)) { // this just generates a range of numbers, as long as cities.length
-            List<Integer> validCityIndices = IntStream.rangeClosed(0, cities.length - 1)
+        if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) { // this just generates a range of numbers, as long as cities.length
+            List<Integer> validCityIndices = IntStream.rangeClosed(0, Constants.cities.length - 1)
                     .boxed().collect(Collectors.toList());
             validMenuValues = validCityIndices;
         }
@@ -197,28 +162,28 @@ public final class UI {
     public String[] getTimePeriod() {
         String[] timeframe = new String[2];
 
-        currentMenu = TIMESPAN;
+        currentMenu = Constants.TIMESPAN;
         showActiveMenu();
         int selectedOption = readOptionFromUser();
         if (selectedOption == 1) {
             Log.info("You have decided to set a custom timePeriod");
-            currentMenu = SELECT_TIMESPAN_START;
+            currentMenu = Constants.SELECT_TIMESPAN_START;
             showActiveMenu();
             String startDate = tryToParseDate();
             String endDate;
-            if (!startDate.equals(DEFAULT_DATE[0])) { // no default date
+            if (!startDate.equals(Constants.DEFAULT_DATE[0])) { // no default date
                 timeframe[0] = startDate;
-                currentMenu = SELECT_TIMESPAN_END;
+                currentMenu = Constants.SELECT_TIMESPAN_END;
                 showActiveMenu();
                 endDate = tryToParseDate();
             } else {
-                endDate = DEFAULT_DATE[1];
+                endDate = Constants.DEFAULT_DATE[1];
             }
             timeframe[1] = endDate;
 
         } else if (selectedOption == 2) { // No constraints. All cities / Of All time
-            timeframe[0] = MIN_DATE_VALUE;
-            timeframe[1] = MAX_DATE_VALUE;
+            timeframe[0] = Constants.MIN_DATE_VALUE;
+            timeframe[1] = Constants.MAX_DATE_VALUE;
         }
         return timeframe;
     }
@@ -235,11 +200,11 @@ public final class UI {
             if (!input.isEmpty()) {
                 try {
                     input = sc.next();
-                    if (input.equals(DEFAULT_DATE_KEYWORD)) {
-                        System.out.printf("Benutze das Standard Datum %s bis %s%n", DEFAULT_DATE[0],
-                                          DEFAULT_DATE[1]);
+                    if (input.equals(Constants.DEFAULT_DATE_KEYWORD)) {
+                        System.out.printf("Benutze das Standard Datum %s bis %s%n", Constants.DEFAULT_DATE[0],
+                                          Constants.DEFAULT_DATE[1]);
                         // if (isValidDate(DEFAULT_DATE[0])) {
-                        date = DEFAULT_DATE[0];
+                        date = Constants.DEFAULT_DATE[0];
                         // }
 
                     } else {
@@ -310,7 +275,7 @@ public final class UI {
         }
 
         try {
-            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+            DateFormat df = new SimpleDateFormat(Constants.DATE_FORMAT);
             df.setLenient(false);
             df.parse(date);
 
@@ -366,21 +331,21 @@ public final class UI {
     public String[] askForUsernamePassword(int attemptCount) {
 
         if (attemptCount > 0) {
-            System.out.print(WARN_INVALID_LOGIN);
+            System.out.print(Constants.WARN_INVALID_LOGIN);
         }
         String[] credentials = new String[2];
         // removed scanner
         do {
             try {
-                System.out.print(ASK_USERNAME);
+                System.out.print(Constants.ASK_USERNAME);
                 String username = sc.next();
-                System.out.print(ASK_PASSWORD);
+                System.out.print(Constants.ASK_PASSWORD);
                 String password = sc.next();
                 if (simpleLoginValidationPassed(username, password)) {
                     credentials[0] = username;
                     credentials[1] = password;
                 } else {
-                    System.out.println(WARN_LOGIN_VALIDATION_NOT_PASSED);
+                    System.out.println(Constants.WARN_LOGIN_VALIDATION_NOT_PASSED);
                 }
             } catch (Exception e) {
                 Log.error("Error while reading Username or Password in method askForUsernamePassword", e);
@@ -398,15 +363,15 @@ public final class UI {
      * @return true if the credidentals are valid, false if there is problem.
      */
     public boolean simpleLoginValidationPassed(String username, String password) {
-        if (username.length() < MIN_LENGTH_USERNAME || username.length() > MAX_USERNAME_LEN) {
+        if (username.length() < Constants.MIN_LENGTH_USERNAME || username.length() > Constants.MAX_USERNAME_LEN) {
 
             Log.info(String.format("Username Length should be at least %d and not longer than %d",
-                                   MIN_LENGTH_USERNAME,
-                                   MAX_USERNAME_LEN));
+                                   Constants.MIN_LENGTH_USERNAME,
+                                   Constants.MAX_USERNAME_LEN));
             return false;
         }
-        if (password.length() < MIN_PASSWORD_LENGTH) {
-            Log.info(String.format("The minimum Password length is %d ", MIN_PASSWORD_LENGTH));
+        if (password.length() < Constants.MIN_PASSWORD_LENGTH) {
+            Log.info(String.format("The minimum Password length is %d ", Constants.MIN_PASSWORD_LENGTH));
             return false;
         }
         return true;
@@ -428,7 +393,7 @@ public final class UI {
     }
 
 
-    public String[] getCitiesFromDatabase() {
+    public String[] getCitynamesfromDatabase() {
 
         List<City> dbCities = DbHelper.selectAllCities();
         String[] cities = new String[dbCities.size()];
