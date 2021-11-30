@@ -1,6 +1,7 @@
 package ch.hslu.swde.wda.domain;
 
 import java.util.Map;
+import java.io.*;
 
 public class ObjectMaker {
 	
@@ -11,9 +12,19 @@ public class ObjectMaker {
 	}
 	
 	public static WeatherData create(Map data) {
-		//Hier eine Objekt der Klasse WeatherData erstellen welches wir in der Datenbank speichern.
+		//System.out.println(data);
+		
 		WeatherData wdata = new WeatherData();
-		System.out.println(data.get("CITY_ZIP").getClass());
+		System.out.println(data.get("CURRENT_TEMPERATURE_CELSIUS"));
+	
+		
+	
+
+
+
+	//	wdata.setHumidity(Float.parseFloat((String) data.get("Humidity")));
+		
+		
 		
 		
 	

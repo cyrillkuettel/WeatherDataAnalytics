@@ -57,6 +57,9 @@ public class City implements Serializable{
 	public int getZIPCode() {
 		return zipCode;
 	}
+	public void setZIP(int zipcode) {
+		this.zipCode = zipcode;
+	}
 	
 	
 	@Override

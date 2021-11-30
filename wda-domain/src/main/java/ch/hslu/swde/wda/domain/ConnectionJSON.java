@@ -24,6 +24,7 @@ public class ConnectionJSON {
 		    return text;
 		  }
 
+		  //Gets all the cities
 		  public static void jsonGetRequest(String urlQueryString) {
 		    String json = null;
 		    try {
@@ -37,20 +38,22 @@ public class ConnectionJSON {
 		      connection.connect();
 		      InputStream inStream = connection.getInputStream();
 		      json = streamToString(inStream); // input stream to string
-		      System.out.println(json);
+		      //System.out.println(json);
 		    } catch (IOException ex) {
 		      ex.printStackTrace();
 		    }
 		    
 		    System.out.println("Cities loaded");
 		    jsonarray(json);
+		    
 		  }
 		  
+		  //Gets the weatherData for the City since on year and calls method jsonarrayAll on result
 		  public static String jsonGetRequestAll(String urlQueryString) {
 			    
 			    String json = null;
 			    try {
-			      URL url = new URL("http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/"+urlQueryString+"/since?year=2021&month=11&day=23");
+			      URL url = new URL("http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/"+urlQueryString+"/since?year=2021&month=01&day=01");
 			      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			      connection.setDoOutput(true);
 			      connection.setInstanceFollowRedirects(false);
@@ -63,12 +66,12 @@ public class ConnectionJSON {
 			    } catch (IOException ex) {
 			      ex.printStackTrace();
 			    }
-			    System.out.println(json);
+			    //System.out.println(json);
 			    jsonarrayAll(json);
 			    return json;
 			  }
 		  
-		  
+		  //Makes the String to a JSONArray and calls jsonGetRequestAll for every city
 		  public static void jsonarray(String var) {
 			  int i;
 			  //Create a JSON Array 
@@ -88,7 +91,7 @@ public class ConnectionJSON {
 				  
 			  }
 			  
-			  
+		//Extracts data entry and also lastupdatetime from every data entry and call jsonarrayAllWeather on both
 			  public static void jsonarrayAll(String var) {
 				  int i;
 				  //Create a JSON Array 
@@ -122,9 +125,12 @@ public class ConnectionJSON {
 					  Map.put("LAST_UPDATE_DATE", hold[0]);
 					  Map.put("LAST_UPDATE_TIME", hold[1]);
 					  ObjectMaker.create(Map);
-					  //call class objectmaker here
+					  
 					  
 					  }
+				  
+				  //Hier noch anpassen. Ich kann die Daten direkt aus dem JSON Objekt holen gleich im richtigen Typ.
+				  //Siehe ConnectionJSONCities
   
 		  }
 
