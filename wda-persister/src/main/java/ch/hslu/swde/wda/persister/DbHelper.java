@@ -87,13 +87,42 @@ public class DbHelper {
 
 		em.getTransaction().begin();
 		TypedQuery<WeatherData> tQry = em.createQuery(
-				"SELECT w FROM WeatherData w, City c where c.name = :name and w.timestamp between :startdate and :enddate",
+				"SELECT w FROM WeatherData w, City c where c.name = :name and w.datatimestamp between :startdate and :enddate",
 				WeatherData.class);
 		tQry.setParameter("name", cityname);
 		tQry.setParameter("startdate", startDate);
 		tQry.setParameter("enddate", endDate);
 
-		/* Get the single City-Entity from DB (matched by WHERE-condition */
+		/* Get the single City-Entity from DB (matched by WHERE-condition) */
+		List<WeatherData> weatherDataList = tQry.getResultList();
+
+		em.close();
+
+		Log.info("Number of Weatherdata found: " + weatherDataList.size());
+		Log.info("These are the WeatherData found, shown with their toString() method:");
+		for (WeatherData w : weatherDataList) {
+			Log.info(w.toString());
+		}
+
+		return weatherDataList;
+	}
+
+	public static List<WeatherData> selectAverageWeatherDataSingleCity(String cityname, Date startDate, Date endDate) {
+
+		Log.info("Starting selectWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]" + ", [Startdate: " + startDate + "]" + ", [Enddate: " + endDate + "]"  );
+
+		
+		EntityManager em = JpaUtil.createEntityManager();
+
+		em.getTransaction().begin();
+		TypedQuery<WeatherData> tQry = em.createQuery(
+				"SELECT w.weatherdataid, w.city, w.datatimestamp, w.temp, w.pressure, w.humidity, w.windspeed, w.winddirection, w.summary, w.description FROM WeatherData w, City c where c.name = :name and w.datatimestamp between :startdate and :enddate",
+				WeatherData.class);
+		tQry.setParameter("name", cityname);
+		tQry.setParameter("startdate", startDate);
+		tQry.setParameter("enddate", endDate);
+
+		/* Get the single City-Entity from DB (matched by WHERE-condition) */
 		List<WeatherData> weatherDataList = tQry.getResultList();
 
 		em.close();
@@ -108,6 +137,4 @@ public class DbHelper {
 	}
 	
 	
-	
-
 }
