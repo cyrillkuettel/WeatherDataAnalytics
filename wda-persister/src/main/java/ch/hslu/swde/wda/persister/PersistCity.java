@@ -1,28 +1,37 @@
 package ch.hslu.swde.wda.persister;
 
 import java.util.List;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ch.hslu.swde.wda.domain.City;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 
 public class PersistCity {
 
+	private static final Logger Log = LogManager.getLogger(DbHelper.class);
+
+	
 	public static void insertCity(List<City> cities) {
-		
 
 		EntityManager em = JpaUtil.createEntityManager();
 
-		em.getTransaction( ).begin( );
-		
+		em.getTransaction().begin();
+
 		for (City c : cities) {
-		em.persist(c);
+
+			if (em.find(City.class, c.getZIPCode()) == null) {
+				Log.info("City not yet in Database, persisting into DB now");
+				em.persist(c);
+			}
+			else {
+				Log.info("City already in DB, no need to persist");
+			}
+			
 		}
-		
-		em.getTransaction().commit();  
+
+		em.getTransaction().commit();
 		em.close();
-		
+
 	}
-	
-	
+
 }

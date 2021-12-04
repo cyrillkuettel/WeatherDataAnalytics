@@ -66,6 +66,7 @@ public class DbHelper {
 		Log.info("City found is: " + city.toString());
 
 		return city;
+		
 	}
 
 	/**
