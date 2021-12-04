@@ -31,13 +31,14 @@ class UITest {
     private static final Logger Log = LogManager.getLogger(UITest.class);
 
     @Test
-    @Disabled
     void testVPNConnection() {
         assertTrue(Utils.pingURL(CITY_URL, 10000));
     }
 
-    @Disabled
+
     @Test
+    @Disabled
+    // this test will work as soon as we have all cities in database
     void testLoadingCitiesFromDatabaseContainsAllKnownCities() {
 
         /* This could be a Subset of all the cities. */
