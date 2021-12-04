@@ -29,27 +29,17 @@ public class WeatherData implements Serializable {
 	private double temp;
 	private double pressure;
 	private double humidity;
-	private double windspeed;
-	private double winddirection;
-	private String summary;
-	private String description;
 
 	public WeatherData() {
 	}
 
-	
-	public WeatherData(City city, Timestamp datatimestamp, double temp, double pressure, double humidity,
-			double windspeed, double winddirection, String summary, String description) {
+	public WeatherData(City city, Timestamp datatimestamp, double temp, double pressure, double humidity) {
 
 		this.city = city;
 		this.datatimestamp = datatimestamp;
 		this.temp = temp;
 		this.pressure = pressure;
 		this.humidity = humidity;
-		this.windspeed = windspeed;
-		this.winddirection = winddirection;
-		this.summary = summary;
-		this.description = description;
 	}
 
 	public int getWeatherdataID() {
@@ -96,44 +86,11 @@ public class WeatherData implements Serializable {
 		this.humidity = humidity;
 	}
 
-	public double getWindspeed() {
-		return windspeed;
-	}
-
-	public void setWindspeed(double windspeed) {
-		this.windspeed = windspeed;
-	}
-
-	public double getWinddirection() {
-		return winddirection;
-	}
-
-	public void setWinddirection(double winddirection) {
-		this.winddirection = winddirection;
-	}
-
-	public String getSummary() {
-		return summary;
-	}
-
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	@Override
 	public String toString() {
-		return "Weatherdata: [City: ZIP=" + city.getZIPCode() + "City: Name=" + city.getName() + ", WeatherData: Summary="
-				+ summary + ", WeatherData: Description=" + description + ", WeatherData: Timestamp="
-				+ datatimestamp + ", WeatherData: Temperatur=" + temp + ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity
-				+ ", WeatherData: Windspeed=" + windspeed + ", WeatherData: Winddirection=" + winddirection + "]";
+		return "Weatherdata: [City: ZIP=" + city.getZIPCode() + "City: Name=" + city.getName()
+				+ ", WeatherData: Timestamp=" + datatimestamp + ", WeatherData: Temperatur=" + temp
+				+ ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity + "]";
 	}
 
 }
