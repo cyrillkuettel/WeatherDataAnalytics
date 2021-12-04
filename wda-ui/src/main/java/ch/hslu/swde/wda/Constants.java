@@ -31,7 +31,8 @@ public final class Constants {
     public static final String ASK_USERNAME = "Bitte Benutzername eingeben: ";
     public static final String CONFIRM_NEW_USER_CREATED = "Erstellung erfolgreich.";
     public static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
-    public static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum [2]          " +
+    public static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum (2020 - 2021) [2]       " +
+            "   " +
                                     "Beenden [0]";
     public static final String SELECT_DATA_OR_ALL_MENU =
                                             "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +

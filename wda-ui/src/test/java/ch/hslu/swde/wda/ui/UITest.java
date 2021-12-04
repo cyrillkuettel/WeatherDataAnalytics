@@ -63,7 +63,7 @@ class UITest {
     }
 
     @Test
-    void testLoadingWeatherDataForSingleCityFromDatabase() {
+    void testLangenthalLoadingWeatherDataForSingleCityFromDatabase() {
         final String cityName = "Langenthal";
         final java.sql.Date startDate = java.sql.Date.valueOf("2020-12-30");
         final java.sql.Date endDate = Date.valueOf("2021-11-28");
@@ -195,18 +195,23 @@ class UITest {
 
     @Test
     void testaskForUsernamePassword() {
-        String[] newUserCredentials = {"username", "ultimate_secret_password"};
+        String[] expectedUserCredidentals = {"username", "ultimate_secret_password"};
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in = new ByteArrayInputStream("username ultimate_secret_password".getBytes());
         System.setIn(in);
 
         UI ui = new UI();
         String[] credentials = ui.askForUsernamePassword(0);
-        assertThat(credentials).isEqualTo(newUserCredentials);
+        assertThat(credentials).isEqualTo(expectedUserCredidentals);
         // reset System.in to its original
         System.setIn(sysInBackup);
     }
 
+    @Test
+    @Disabled
+    void testDataFromLangnauShouldWorkToFormat() {
+
+    }
 
     @Test
     void testisValidDateFromString() {
