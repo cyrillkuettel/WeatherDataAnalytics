@@ -10,8 +10,21 @@ public class PersistCity {
 
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
-	
-	public static void insertCity(List<City> cities) {
+	public static void insertSingleCity(City city) {
+
+		EntityManager em = JpaUtil.createEntityManager();
+
+		em.getTransaction().begin();
+
+		em.persist(city);
+		Log.info("City persisted in DB, going back to PersistWeatherData");
+
+		em.getTransaction().commit();
+		em.close();
+
+	}
+
+	public static void insertCities(List<City> cities) {
 
 		EntityManager em = JpaUtil.createEntityManager();
 
@@ -22,11 +35,10 @@ public class PersistCity {
 			if (em.find(City.class, c.getZIPCode()) == null) {
 				Log.info("City not yet in Database, persisting into DB now");
 				em.persist(c);
-			}
-			else {
+			} else {
 				Log.info("City already in DB, no need to persist");
 			}
-			
+
 		}
 
 		em.getTransaction().commit();
