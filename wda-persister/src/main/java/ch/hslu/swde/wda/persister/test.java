@@ -53,7 +53,5 @@ public class test {
 		PersistWeatherData.insertWeatherData(weatherDataList);
 
 	}
-	
-
 
 }
