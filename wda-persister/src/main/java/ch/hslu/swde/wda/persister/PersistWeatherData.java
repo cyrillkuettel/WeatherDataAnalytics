@@ -14,6 +14,17 @@ public class PersistWeatherData {
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
 	
+	
+	/**
+	 * This Method persists a List of WeatherData entities.
+	 * For each WeatherData object there is a check to see whether the City object related to it has already been persisted into the DB.
+	 * If the City isn't persisted yet, then PersistCity.insertSingleCity() is called to persist the City object.
+	 * If the City was already persisted or has been persisted as mentioned before, the City object is being retrieved from the DB to ensure the correct relation mapping.
+	 * As a last step, the WeatherData object is being persisted into the DB.
+	 * This method can be safely accessed from any class as the needed DB checks are implemented.
+	 * 
+	 * @param city The list of city objects which should be persisted
+	 */
 	public static void insertWeatherData(List<WeatherData> weatherData) {
 
 		EntityManager em = JpaUtil.createEntityManager();
