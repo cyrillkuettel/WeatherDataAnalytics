@@ -19,7 +19,7 @@ public class DbHelperTest {
 
 //		DbHelper.selectWeatherDataSingleCity("Langenthal",startDate ,endDate );
 		
-		DbHelper.selectAverageWeatherDataSingleCity("Langenthal",startDate ,endDate );
+//		DbHelper.selectAverageWeatherDataSingleCity("Langenthal",startDate ,endDate );
 
 	}
 

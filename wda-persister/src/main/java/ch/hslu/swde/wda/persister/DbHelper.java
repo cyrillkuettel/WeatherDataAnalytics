@@ -43,7 +43,7 @@ public class DbHelper {
 	}
 
 	/**
-	 * This Query returns a single City based on the Name of a City specified as
+	 * This Query returns a single City based on the Name of a City 
 	 * 
 	 * @param cityname - Cityname which should be inserted into where-condition
 	 * @return a single City-Entity matching with the where-condition
