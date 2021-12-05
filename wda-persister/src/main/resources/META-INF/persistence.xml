@@ -9,7 +9,7 @@
 
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
-		<class>ch.hslu.swde.wda.domain.City</class>
+		<class>ch.hslu.swde.wda.domain.City</class> 
 		<class>ch.hslu.swde.wda.domain.User</class>
 		<class>ch.hslu.swde.wda.domain.WeatherData</class>
 

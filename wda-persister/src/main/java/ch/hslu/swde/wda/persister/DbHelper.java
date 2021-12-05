@@ -11,6 +11,7 @@ import jakarta.persistence.TypedQuery;
 
 public class DbHelper {
 
+	
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
 	/**
