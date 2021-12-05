@@ -88,9 +88,13 @@ public class WeatherData implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Weatherdata: [City: ZIP=" + city.getZIPCode() + "City: Name=" + city.getName()
-				+ ", WeatherData: Timestamp=" + datatimestamp + ", WeatherData: Temperatur=" + temp
-				+ ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity + "]";
+		if (city == null) {
+			return "Weatherdata: [ WeatherData: Timestamp=" + datatimestamp + ", WeatherData: Temperatur=" + temp
+			+ ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity + "]";
+		}else{return "Weatherdata: [City: ZIP=" + city.getZIPCode() + "City: Name=" + city.getName()
+		+ ", WeatherData: Timestamp=" + datatimestamp + ", WeatherData: Temperatur=" + temp
+		+ ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity + "]";}
+		
 	}
 
 }
