@@ -1,6 +1,8 @@
 package ch.hslu.swde.wda.persister;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,10 +18,12 @@ public class DbHelperTest {
 		Date endDate = Date.valueOf(end);
 
 //		DbHelper.selectAllCities();
-
-//		DbHelper.selectWeatherDataSingleCity("Langenthal",startDate ,endDate );
+	//	DbHelper.selectWeatherDataSingleCity("Langenthal",startDate ,endDate );
 		
-		DbHelper.selectAverageWeatherDataSingleCity("Langenthal",startDate ,endDate );
+	//	DbHelper.selectAverageWeatherDataSingleCity("Langenthal",startDate ,endDate );
+	//	DbHelper.selectMinWeatherDataSingleCity("Langenthal",startDate ,endDate );
+	//	DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
+	DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
 
 	}
 
