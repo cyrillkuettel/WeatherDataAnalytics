@@ -9,30 +9,24 @@ import java.io.IOException;
 
 public class demoWeatherdataDownloader{
     private static final Logger Log = LogManager.getLogger(demoWeatherdataDownloader.class);
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
 
     public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
 
         WeatherdataDownloader weatherdatadownloader = new  WeatherdataDownloader();
 
-        String cities = weatherdatadownloader.requestRawXMLData("cities/");
-        // System.out.println(cities);
-        /*
-        try {
-            wd.parseXML(cities);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
 
-         */
-
-        String WeatherDataSingleCity = weatherdatadownloader.requestRawXMLData(WeatherdataDownloader.TESTZ_ZUG_ALL_SINCE_2020);
+        String WeatherDataSingleCity = weatherdatadownloader.requestRawXMLData(WeatherdataDownloader.ZUG_ALL_SINCE_JANUARY_2020);
 
         try {
-            weatherdatadownloader.parseWeatherData(WeatherDataSingleCity);
+            weatherdatadownloader.downloadAndPersistWeatherDataSingleCity(WeatherDataSingleCity);
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            long elapsedSeconds = elapsedTime / 1000;
+
+            System.out.println(String.format("\033[32m Download and Persisted Data in total of %s seconds",
+                                             elapsedSeconds));
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (IOException e) {

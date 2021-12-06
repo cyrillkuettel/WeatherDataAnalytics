@@ -49,6 +49,7 @@ class UITest {
                 "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
                 "Winterthur", "Frauenfeld", "St. Gallen"};
 
+        System.out.print(String.valueOf(minimalExpectedCities.length));
         UI ui = new UI();
         String[] actualCities = ui.getCitynamesfromDatabase();
         assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(minimalExpectedCities)));
