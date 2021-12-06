@@ -33,6 +33,14 @@ public final class WeatherdataDownloader {
 
     static final String BASE_URI = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
     static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/cities";
+
+    final String[] minimalExpectedCities = {"Lausanne", "Geneva", "Nyon", "Biel", "Bern", "Thun", "Adelboden",
+            "Interlaken",
+            "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
+            "Aarau", "Baden", "Lucerne", "Buchrain", "Zug", "Rotkreuz", "Engelberg", "Schwyz", "Altdorf", "Erstfeld",
+            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
+            "Winterthur", "Frauenfeld", "St. Gallen"};
+
     static final String ZUG_ALL_SINCE_JANUARY_2020 = "Zug/since?year=2020&month=1&day=1";
 
 
