@@ -29,7 +29,7 @@ public class demoWeatherdataDownloader{
     public static final WeatherdataDownloader weatherdatadownloader = new  WeatherdataDownloader();
 
 
-    public static void downloadAndInsertCity(String city) {
+    public static void downloadAndPersistWeatherDataSingleCit(String city) {
         long startTime = System.currentTimeMillis();
 
         String WeatherDataSingleCity = weatherdatadownloader.requestRawXMLData(city + BASE_ALL_SINCE_JANUARY_2020);
@@ -41,11 +41,7 @@ public class demoWeatherdataDownloader{
 
             System.out.println(String.format("\033[32m Download and Persisted %s in total of %s seconds",
                                              city, elapsedSeconds));
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +54,7 @@ public class demoWeatherdataDownloader{
 
 
         for (String city: cities) {
-            downloadAndInsertCity(city);
+            downloadAndPersistWeatherDataSingleCit(city);
         }
 
         for (String log : logs) {

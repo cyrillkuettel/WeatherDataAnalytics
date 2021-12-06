@@ -40,7 +40,7 @@ public final class WeatherdataDownloader {
      * @param cityURL specify what we need.
      * @return XML. It's not yet processed.
      */
-    public final String requestRawXMLData(String cityURL) {
+    public String requestRawXMLData(String cityURL) {
         HttpClient client = HttpClient.newHttpClient();
         String mimeType = "application/xml";
 
@@ -81,7 +81,7 @@ public final class WeatherdataDownloader {
      * @throws IOException
      * @throws SAXException
      */
-    public final void downloadAndPersistWeatherDataSingleCity(String xmlString) throws ParserConfigurationException, IOException,
+    public void downloadAndPersistWeatherDataSingleCity(String xmlString) throws ParserConfigurationException, IOException,
             SAXException {
 
         List<WeatherData> completeWeatherDataSingleCity = new ArrayList<>();
@@ -218,6 +218,42 @@ public final class WeatherdataDownloader {
 
             }
         }
+    }
+
+    public List<City> downloadAllCitiesFromWeb() throws ParserConfigurationException, IOException,
+            SAXException {
+
+        String xmlString = requestRawXMLData("cities");
+        List<City> cityList = new ArrayList<>();
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        InputSource inStream = new InputSource();
+        inStream.setCharacterStream(new StringReader(xmlString));
+        DocumentBuilder db = factory.newDocumentBuilder();
+        Document doc = db.parse(inStream);
+        NodeList nl = doc.getDocumentElement().getChildNodes();
+        int length = nl.getLength();
+        if (length == 0) {
+            Log.error("Found no NodeList items in xmlString!");
+        }
+        for (int i = 0; i < nl.getLength(); i++) {
+            if (nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element el = (Element) nl.item(i);
+                if (el.getNodeName().contains("city")) {
+                    String name = el.getElementsByTagName("name").item(0).getTextContent();
+                    String zip = el.getElementsByTagName("zip").item(0).getTextContent();
+                    // Log.info(String.format("Parsed city from web service: name = %s zipcode = %s ", name, zip));
+
+                    // We got a City, now create city Object
+                    City city = new City(Integer.parseInt(zip), name);
+                    cityList.add(city);
+                } else if (el.getNodeName().contains("weatherdata")) {
+                    Log.info("weatherdata found");
+                }
+
+            }
+        }
+        return cityList;
     }
 
 }

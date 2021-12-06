@@ -37,12 +37,12 @@ class UITest {
     }
 
     @Test
+    @Disabled // It works, just takes 20-30 seconds
     void testCitiesURLAreReachable() {
-        // It works, just takes 20-30 seconds
+
          final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
          final String BASE_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
 
-        // maybe rewrite this to start a new thread for each connection, so it is non-blocking.
 
 
         int countSuccessfulPings = 0;
@@ -65,7 +65,7 @@ class UITest {
         /* This could be a Subset of all the cities. */
 
 
-        System.out.print(String.valueOf(cities.length));
+        System.out.print(cities.length);
         UI ui = new UI();
         String[] actualCities = ui.getCitynamesfromDatabase();
         assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(cities)));
@@ -226,11 +226,6 @@ class UITest {
         System.setIn(sysInBackup);
     }
 
-    @Test
-    @Disabled
-    void testDataFromLangnauShouldWorkToFormat() {
-
-    }
 
     @Test
     void testisValidDateFromString() {

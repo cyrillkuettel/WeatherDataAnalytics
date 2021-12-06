@@ -4,13 +4,10 @@ package ch.hslu.swde.wda.ui;
 import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
 import ch.hslu.swde.wda.domain.City;
-import ch.hslu.swde.wda.domain.WeatherData;
 import ch.hslu.swde.wda.persister.DbHelper;
-import ch.hslu.swde.wda.persister.PersistCity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -396,45 +393,16 @@ public final class UI {
     public String[] getCitynamesfromDatabase() {
 
         List<City> dbCities = DbHelper.selectAllCities();
-        String[] cities = new String[dbCities.size()];
+        String[] citiesOnlyNames = new String[dbCities.size()];
         Iterator<City> it = dbCities.iterator();
         int count = 0;
         while (it.hasNext()) {
-            cities[count] = it.next().getName();
+            citiesOnlyNames[count] = it.next().getName();
         }
 
-        return cities;
+        return citiesOnlyNames;
     }
 
-    /**
-     * Only for testing
-     * copied from ch/hslu/swde/wda/persister/test.java
-     */
-    public void insertTestCities() {
-        //int zipCode,String name, float longitude, float latitude
-        City city1 = new City(4900, "Langenthal");
-        City city2 = new City(4901, "Bern");
-        City city3 = new City(8000, "Zurich");
-
-        List<City> cityList = new ArrayList();
-        cityList.add(city1);
-        cityList.add(city2);
-        cityList.add(city3);
-        PersistCity.insertCities(cityList);
-    }
-
-    public void selectWeatherByDateAndCity(String cityname, String start, String end) {
-
-        start = "2020-12-30";
-        end = "2021-11-28";
-
-        java.sql.Date startDate = java.sql.Date.valueOf(start);
-        java.sql.Date endDate = Date.valueOf(end);
-
-
-        List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity("Langenthal", startDate,
-                                                                                      endDate);
-    }
 
 
 }
