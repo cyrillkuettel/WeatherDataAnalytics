@@ -31,4 +31,5 @@ public class JpaUtilProdDb {
 	public static EntityManager createEntityManager() {
 		return entityManagerFactory.createEntityManager();
 	}
+	
 }

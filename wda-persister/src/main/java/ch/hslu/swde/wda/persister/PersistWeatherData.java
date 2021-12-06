@@ -50,6 +50,7 @@ public class PersistWeatherData {
 	}
 	
 	
+	
 	/**
 	 * This Method persists a List of WeatherData entities.
 	 * For each WeatherData object there is a check to see whether the City object related to it has already been persisted into the DB.

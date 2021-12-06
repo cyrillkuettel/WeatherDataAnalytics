@@ -42,7 +42,6 @@ public class PersistCity {
 	public static void insertCities(List<City> cities) {
 
 		EntityManager em = JpaUtilProdDb.createEntityManager();
-
 		em.getTransaction().begin();
 
 		for (City c : cities) {
