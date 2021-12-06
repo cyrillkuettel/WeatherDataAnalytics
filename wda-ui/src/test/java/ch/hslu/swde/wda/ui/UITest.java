@@ -1,7 +1,7 @@
 package ch.hslu.swde.wda.ui;
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
-import ch.hslu.swde.wda.Constants;
+import ch.hslu.swde.wda.GlobalConstants;
 import ch.hslu.swde.wda.domain.City;
 import ch.hslu.swde.wda.domain.WeatherData;
 import ch.hslu.swde.wda.persister.DbHelper;
@@ -16,7 +16,7 @@ import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 
-import static ch.hslu.swde.wda.Constants.CITY_URL;
+import static ch.hslu.swde.wda.GlobalConstants.cities;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,9 +32,29 @@ class UITest {
 
     @Test
     void testVPNConnection() {
+        final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/cities";
         assertTrue(Utils.pingURL(CITY_URL, 10000));
     }
 
+    @Test
+    void testCitiesURLAreReachable() {
+         final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
+         final String BASE_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
+
+        // maybe rewrite this to start a new thread for each connection, so it is non-blocking.
+        // It works, just takes 20-30 seconds.
+
+        int countSuccessfulPings = 0;
+        for (String city: cities) {
+            String testUrlConnection = BASE_URL + city + BASE_ALL_SINCE_JANUARY_2020;
+            if (Utils.pingURL(testUrlConnection, 5000)) {
+                countSuccessfulPings++;
+            } else {
+                Log.warn(String.format("Could not ping %s Are you connected to VPN?", testUrlConnection));
+            }
+        }
+        assertThat(countSuccessfulPings).isEqualTo(cities.length);
+    }
 
     @Test
     @Disabled
@@ -42,17 +62,12 @@ class UITest {
     void testLoadingCitiesFromDatabaseContainsAllKnownCities() {
 
         /* This could be a Subset of all the cities. */
-        final String[] minimalExpectedCities = {"Lausanne", "Geneva", "Nyon", "Biel", "Bern", "Thun", "Adelboden",
-                "Interlaken",
-                "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
-                "Aarau", "Baden", "Lucerne", "Buchrain", "Zug", "Rotkreuz", "Engelberg", "Schwyz", "Altdorf", "Erstfeld",
-                "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
-                "Winterthur", "Frauenfeld", "St. Gallen"};
 
-        System.out.print(String.valueOf(minimalExpectedCities.length));
+
+        System.out.print(String.valueOf(cities.length));
         UI ui = new UI();
         String[] actualCities = ui.getCitynamesfromDatabase();
-        assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(minimalExpectedCities)));
+        assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(cities)));
     }
 
     @Disabled
@@ -65,8 +80,9 @@ class UITest {
     }
 
     @Test
-    void testLangenthalLoadingWeatherDataForSingleCityFromDatabase() {
-        final String cityName = "Langenthal";
+    @Disabled
+    void getCityFromDB() {
+        final String cityName = "Zug";
         final java.sql.Date startDate = java.sql.Date.valueOf("2020-12-30");
         final java.sql.Date endDate = Date.valueOf("2021-11-28");
         final List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityName, startDate, endDate);
@@ -76,7 +92,7 @@ class UITest {
 
     @Test
     void testGetSingleCityFromDatabase() {
-        final String cityName = "Langenthal";
+        final String cityName = "Zug";
         final City city = DbHelper.selectSingleCity(cityName);
         assertThat(city.getName()).isEqualTo(cityName);
     }
@@ -94,7 +110,7 @@ class UITest {
         UI ui = new UI();
         String username = "";
         String password = "asdfadsfdsfdsf";
-        for (int i = 0; i < Constants.MAX_USERNAME_LEN * 2; i++) {
+        for (int i = 0; i < GlobalConstants.MAX_USERNAME_LEN * 2; i++) {
             username += "u";
         }
         assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
@@ -112,7 +128,7 @@ class UITest {
     void testGetTimePeriodForMaximumDateRange() {
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
-        String[] expectedTimeFrame = {Constants.MIN_DATE_VALUE, Constants.MAX_DATE_VALUE};
+        String[] expectedTimeFrame = {GlobalConstants.MIN_DATE_VALUE, GlobalConstants.MAX_DATE_VALUE};
         ByteArrayInputStream in = new ByteArrayInputStream("2".getBytes()); // Option 2 means we use all dates
         System.setIn(in);
         UI ui = new UI();
@@ -217,7 +233,7 @@ class UITest {
 
     @Test
     void testisValidDateFromString() {
-        assertThat(Constants.DATE_FORMAT).isEqualTo("dd-MM-yyyy");
+        assertThat(GlobalConstants.DATE_FORMAT).isEqualTo("dd-MM-yyyy");
         String testDate = "27-11-2020";
         assertTrue(UI.isValidDate(testDate));
     }

@@ -32,31 +32,21 @@ public final class WeatherdataDownloader {
     private static final Logger Log = LogManager.getLogger(WeatherdataDownloader.class);
 
     static final String BASE_URI = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
-    static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/cities";
-
-    final String[] minimalExpectedCities = {"Lausanne", "Geneva", "Nyon", "Biel", "Bern", "Thun", "Adelboden",
-            "Interlaken",
-            "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
-            "Aarau", "Baden", "Lucerne", "Buchrain", "Zug", "Rotkreuz", "Engelberg", "Schwyz", "Altdorf", "Erstfeld",
-            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
-            "Winterthur", "Frauenfeld", "St. Gallen"};
-
-    static final String ZUG_ALL_SINCE_JANUARY_2020 = "Zug/since?year=2020&month=1&day=1";
 
 
     /**
      * Sends HttpRequest to get XML String from the web service provider.
      *
-     * @param table specify what we need. Examples are: "cities", "Zug"
+     * @param cityURL specify what we need.
      * @return XML. It's not yet processed.
      */
-    public final String requestRawXMLData(String table) {
+    public final String requestRawXMLData(String cityURL) {
         HttpClient client = HttpClient.newHttpClient();
         String mimeType = "application/xml";
 
         URI uriObj = null;
         try {
-            uriObj = new URI(BASE_URI + table);
+            uriObj = new URI(BASE_URI + cityURL);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -105,7 +95,7 @@ public final class WeatherdataDownloader {
         NodeList nl = doc.getDocumentElement().getChildNodes();
         int length = nl.getLength();
         if (length == 0) {
-            Log.error("Found no NodeList items in xmlString!");
+            Log.warn("Found no NodeList items in xmlString!");
         }
         for (int i = 0; i < nl.getLength(); i++) {
             if (nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -148,36 +138,29 @@ public final class WeatherdataDownloader {
                             WeatherData weatherData1 = new WeatherData(city, Timestamp.valueOf(timeOfLastUPdate),
                                                                        temperatur, pressure, humidity);
 
-
-                            /* Either save all weatherData Objects to a List, and then persist the List
-                            (completeWeatherDataSingleCity), or insert a WeatherData as soon as we create the object
-
-                            The second approach might have less overhead: */
                             completeWeatherDataSingleCity.add(weatherData1);
 
-//                             PersistWeatherData.insertSingleWeatherData(weatherData1);
+                            // Log.info(weatherData1);
 
-
-                            Log.info(weatherData1);
                         } catch (Exception e) {
-                            Log.info("string Parsing failed");
+                            Log.warn("string Parsing failed");
                             e.printStackTrace();
                         }
 
-
                         // System.out.println(weatherData1);
                     } catch (Exception e) {
-                        // Log.info("Error: Skipping one WeatherData object");
+                        Log.warn("Skipping one WeatherData object, due to unknown Exception");
                     }
 
-
                 }
+
             }
 
         }
 
          PersistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
-
+        System.out.println(String.format("\033[32m inserted List<WeatherData> of size %d using PersistWeatherData",
+                                         completeWeatherDataSingleCity.size()));
 
 
             /*

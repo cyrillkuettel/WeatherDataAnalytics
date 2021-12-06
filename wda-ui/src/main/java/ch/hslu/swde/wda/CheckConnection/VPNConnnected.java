@@ -1,5 +1,6 @@
 package ch.hslu.swde.wda.CheckConnection;
 
+import ch.hslu.swde.wda.business.demoWeatherdataDownloader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,15 +10,24 @@ import org.apache.logging.log4j.Logger;
  */
 public final class VPNConnnected {
     private static final Logger Log = LogManager.getLogger(VPNConnnected.class);
-    static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/cities";
+    static final String BASE_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
 
 
     public static void main(String[] args) {
-        if (Utils.pingURL(CITY_URL, 100000)) {
-            Log.info("Connection established");
-        } else {
-            Log.warn("Could not ping swde.el.ee.intern:800. Are you connected to VPN?");
+
+        for (String city: demoWeatherdataDownloader.cities) {
+            String testUrlConnection = BASE_URL + city + demoWeatherdataDownloader.BASE_ALL_SINCE_JANUARY_2020;
+            if (Utils.pingURL(testUrlConnection, 100000)) {
+                Log.info("Connection established");
+            } else {
+                Log.warn(String.format("Could not ping %s Are you connected to VPN?", testUrlConnection));
+            }
         }
+
+
+
+
+
     }
 
 }

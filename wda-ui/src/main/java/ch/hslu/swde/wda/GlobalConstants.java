@@ -1,6 +1,6 @@
 package ch.hslu.swde.wda;
 
-public final class Constants {
+public final class GlobalConstants {
 
     // minimum and maximum valid value, inclusive
     public static final String MIN_DATE_VALUE = "01-01-2020";
@@ -17,8 +17,8 @@ public final class Constants {
             "Interlaken",
             "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
             "Aarau", "Baden", "Lucerne", "Buchrain", "Zug", "Rotkreuz", "Engelberg", "Schwyz", "Altdorf", "Erstfeld",
-            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
-            "Winterthur", "Frauenfeld", "St. Gallen"};
+            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St.Moritz", "Zurich",
+            "Winterthur", "Frauenfeld", "St.Gallen"};
 
 
     public static final String SELECT_TIMESPAN_END = "Enddatum: ";
