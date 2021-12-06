@@ -24,7 +24,7 @@ public class WeatherData implements Serializable {
 	@JoinColumn(name = "city")
 	private City city;
 
-	Timestamp datatimestamp;
+	private Timestamp datatimestamp;
 
 	private double temp;
 	private double pressure;
