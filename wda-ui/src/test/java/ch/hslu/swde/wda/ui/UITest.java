@@ -38,11 +38,12 @@ class UITest {
 
     @Test
     void testCitiesURLAreReachable() {
+        // It works, just takes 20-30 seconds
          final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
          final String BASE_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
 
         // maybe rewrite this to start a new thread for each connection, so it is non-blocking.
-        // It works, just takes 20-30 seconds.
+
 
         int countSuccessfulPings = 0;
         for (String city: cities) {

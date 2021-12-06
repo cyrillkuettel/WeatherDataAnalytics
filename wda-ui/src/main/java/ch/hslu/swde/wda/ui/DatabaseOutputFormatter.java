@@ -26,7 +26,6 @@ public final class DatabaseOutputFormatter {
 
     public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end) {
 
-
         java.sql.Date startDate = java.sql.Date.valueOf(start);
         java.sql.Date endDate = Date.valueOf(end);
         List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, startDate,                                                                            endDate);
