@@ -13,6 +13,8 @@ public class JpaUtil {
 		
 	}
 
+	private static final String PRODPERSISTENCEUNIT = "DB_PRODUCTION";
+	private static final String TESTPERSISTENCEUNIT = "DB_TEST";
 	private static Logger logger = LogManager.getLogger(JpaUtil.class);
 
 	private static EntityManagerFactory entityManagerFactory = null;
@@ -20,7 +22,7 @@ public class JpaUtil {
 	static {
 		try {
 			/* EntityManagerFactory erzeugen */
-			entityManagerFactory = Persistence.createEntityManagerFactory("DB_PRODUCTION");
+			entityManagerFactory = Persistence.createEntityManagerFactory(TESTPERSISTENCEUNIT);
 		} catch (Exception e) {
 			logger.error("ERROR: ", e);
 			throw new RuntimeException(e);

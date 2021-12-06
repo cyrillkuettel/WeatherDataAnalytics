@@ -19,10 +19,10 @@ import jakarta.persistence.TypedQuery;
 
 public class PersistWeatherDataTest {
 
-	private EntityManager em;
+	private static EntityManager em;
 
 	@BeforeAll
-	void setup() {
+	static void setup() {
 		try {
 			/* EntityManagerFactory erzeugen */
 			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("DB_TEST");

@@ -20,7 +20,7 @@ public class PersistCityTest {
 	private EntityManager em;
 
 	@BeforeAll
-	void setup() {
+	static void setup() {
 		try {
 			/* EntityManagerFactory erzeugen */
 			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("DB_TEST");
