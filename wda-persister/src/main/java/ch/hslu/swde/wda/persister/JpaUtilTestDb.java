@@ -31,5 +31,4 @@ public class JpaUtilTestDb {
 	public static EntityManager createEntityManager() {
 		return entityManagerFactory.createEntityManager();
 	}
-	
 }

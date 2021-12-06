@@ -111,7 +111,6 @@ public class DbHelper {
 		return weatherDataList;
 	}
 	
-	
 	/**
 	 * This Query returns a Weatherdata Object with the average temperature,pressure,humidity for a given City and given
 	 * timerange (specified by start- and enddate) - Query A03

@@ -54,7 +54,6 @@ public class PersistCityTest {
 		em.close();
 
 //		assertEquals(3, citiesFromDb.size());
-
 	}
 
 	@Test
@@ -75,7 +74,6 @@ public class PersistCityTest {
 		em.close();
 
 //		assertEquals(1, citiesFromDb.size());
-
 	}
 
 }

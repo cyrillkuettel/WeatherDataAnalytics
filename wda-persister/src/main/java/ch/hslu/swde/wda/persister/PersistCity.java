@@ -31,7 +31,6 @@ public class PersistCity {
 
 	}
 	
-	
 	/**
 	 * This Method persists a List of City entities.
 	 * The method checks in the DB whether the City is already persisted to prevent errors due to the City Primary Key (Zip Code) being defined as unique.

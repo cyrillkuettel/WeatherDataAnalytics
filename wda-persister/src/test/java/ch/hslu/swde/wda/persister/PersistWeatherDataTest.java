@@ -63,7 +63,6 @@ public class PersistWeatherDataTest {
 
 		em.close();
 //		assertEquals(1, weatherDataFromDb.size());
-
 	}
 
 }

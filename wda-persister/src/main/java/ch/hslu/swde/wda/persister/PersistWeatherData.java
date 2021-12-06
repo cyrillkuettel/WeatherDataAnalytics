@@ -86,5 +86,4 @@ public class PersistWeatherData {
 		em.close();
 
 	}
-
 }
