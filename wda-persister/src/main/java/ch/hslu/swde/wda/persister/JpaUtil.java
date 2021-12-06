@@ -20,7 +20,7 @@ public class JpaUtil {
 	static {
 		try {
 			/* EntityManagerFactory erzeugen */
-			entityManagerFactory = Persistence.createEntityManagerFactory("SwdeWda");
+			entityManagerFactory = Persistence.createEntityManagerFactory("DB_PRODUCTION");
 		} catch (Exception e) {
 			logger.error("ERROR: ", e);
 			throw new RuntimeException(e);
