@@ -1,11 +1,8 @@
 package ch.hslu.swde.wda.persister;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,23 +16,13 @@ public class PersistCityTest {
 
 	private EntityManager em;
 
-	@BeforeAll
-	static void setup() {
-		try {
-			/* EntityManagerFactory erzeugen */
-			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("DB_TEST");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	@BeforeEach
 	void dbClean() {
 
-		em = JpaUtil.createEntityManager();
+		em = JpaUtilTestDb.createEntityManager();
 
 		em.getTransaction().begin();
-
+		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
 		em.createQuery("DELETE FROM City c").executeUpdate();
 		em.getTransaction().commit();
 		em.close();
@@ -56,7 +43,7 @@ public class PersistCityTest {
 
 		PersistCity.insertCities(cities);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilTestDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
@@ -77,7 +64,7 @@ public class PersistCityTest {
 
 		PersistCity.insertSingleCity(bern);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);

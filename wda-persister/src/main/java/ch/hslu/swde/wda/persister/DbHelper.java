@@ -24,7 +24,7 @@ public class DbHelper {
 
 		Log.info("Starting selectAllCities");
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
@@ -53,7 +53,7 @@ public class DbHelper {
 
 		Log.info("Starting selectSingleCity with Parameter: " + cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c where c.name = :name", City.class);
@@ -87,7 +87,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<WeatherData> tQry = em.createQuery(
@@ -128,7 +128,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -169,7 +169,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -209,7 +209,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -247,7 +247,7 @@ public class DbHelper {
 
 		// City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -283,7 +283,7 @@ public class DbHelper {
 
 		// City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(

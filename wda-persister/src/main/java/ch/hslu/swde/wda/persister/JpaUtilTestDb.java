@@ -7,15 +7,14 @@ import jakarta.persistence.Persistence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class JpaUtil {
+public class JpaUtilTestDb {
 	
-	private JpaUtil() {
+	private JpaUtilTestDb() {
 		
 	}
 
-	private static final String PRODPERSISTENCEUNIT = "DB_PRODUCTION";
 	private static final String TESTPERSISTENCEUNIT = "DB_TEST";
-	private static Logger logger = LogManager.getLogger(JpaUtil.class);
+	private static Logger logger = LogManager.getLogger(JpaUtilTestDb.class);
 
 	private static EntityManagerFactory entityManagerFactory = null;
 

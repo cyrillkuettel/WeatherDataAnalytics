@@ -34,12 +34,11 @@ public class PersistWeatherDataTest {
 	@BeforeEach
 	void dbClean() {
 
-		em = JpaUtil.createEntityManager();
+		em = JpaUtilTestDb.createEntityManager();
 
 		em.getTransaction().begin();
-
-		em.createQuery("DELETE FROM City c").executeUpdate();
 		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
+		em.createQuery("DELETE FROM City c").executeUpdate();
 		em.getTransaction().commit();
 		em.close();
 
@@ -56,7 +55,7 @@ public class PersistWeatherDataTest {
 
 		PersistWeatherData.insertWeatherData(weatherDataList);
 
-		em = JpaUtil.createEntityManager();
+		em = JpaUtilTestDb.createEntityManager();
 		em.getTransaction().begin();
 		TypedQuery<WeatherData> tQry = em.createQuery("SELECT w FROM WeatherData w", WeatherData.class);
 

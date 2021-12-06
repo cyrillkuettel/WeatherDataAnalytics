@@ -19,7 +19,7 @@ public class PersistCity {
 	 */
 	public static void insertSingleCity(City city) {
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 
@@ -41,7 +41,7 @@ public class PersistCity {
 	 */
 	public static void insertCities(List<City> cities) {
 
-		EntityManager em = JpaUtil.createEntityManager();
+		EntityManager em = JpaUtilProdDb.createEntityManager();
 
 		em.getTransaction().begin();
 
