@@ -16,64 +16,64 @@ public class PersistCityTest {
 
 	private EntityManager em;
 
-	@BeforeEach
-	void dbClean() {
-
-		em = JpaUtilTestDb.createEntityManager();
-
-		em.getTransaction().begin();
-		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
-		em.createQuery("DELETE FROM City c").executeUpdate();
-		em.getTransaction().commit();
-		em.close();
-
-	}
-
-	@Test
-	void testinsertCities() {
-
-		City bern = new City(3000, "Bern");
-		City zurich = new City(8000, "Zurich");
-		City basel = new City(4000, "Basel");
-
-		List<City> cities = new ArrayList<City>();
-		cities.add(bern);
-		cities.add(basel);
-		cities.add(zurich);
-
-		PersistCity.insertCities(cities);
-
-		EntityManager em = JpaUtilTestDb.createEntityManager();
-
-		em.getTransaction().begin();
-		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
-
-		/* Get all City-Entities from DB */
-		List<City> citiesFromDb = tQry.getResultList();
-
-		em.close();
-
+//	@BeforeEach
+//	void dbClean() {
+//
+//		em = JpaUtilTestDb.createEntityManager();
+//
+//		em.getTransaction().begin();
+//		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
+//		em.createQuery("DELETE FROM City c").executeUpdate();
+//		em.getTransaction().commit();
+//		em.close();
+//
+//	}
+//
+//	@Test
+//	void testinsertCities() {
+//
+//		City bern = new City(3000, "Bern");
+//		City zurich = new City(8000, "Zurich");
+//		City basel = new City(4000, "Basel");
+//
+//		List<City> cities = new ArrayList<City>();
+//		cities.add(bern);
+//		cities.add(basel);
+//		cities.add(zurich);
+//
+//		PersistCity.insertCities(cities);
+//
+//		EntityManager em = JpaUtilTestDb.createEntityManager();
+//
+//		em.getTransaction().begin();
+//		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
+//
+//		/* Get all City-Entities from DB */
+//		List<City> citiesFromDb = tQry.getResultList();
+//
+//		em.close();
+//
 //		assertEquals(3, citiesFromDb.size());
-	}
-
-	@Test
-	void testinsertSingleCity() {
-
-		City bern = new City(3000, "Bern");
-
-		PersistCity.insertSingleCity(bern);
-
-		EntityManager em = JpaUtilProdDb.createEntityManager();
-
-		em.getTransaction().begin();
-		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
-
-		/* Get all City-Entities from DB */
-		List<City> citiesFromDb = tQry.getResultList();
-
-		em.close();
-
+//	}
+//
+//	@Test
+//	void testinsertSingleCity() {
+//
+//		City bern = new City(3000, "Bern");
+//
+//		PersistCity.insertSingleCity(bern);
+//
+//		EntityManager em = JpaUtilProdDb.createEntityManager();
+//
+//		em.getTransaction().begin();
+//		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
+//
+//		/* Get all City-Entities from DB */
+//		List<City> citiesFromDb = tQry.getResultList();
+//
+//		em.close();
+//
 //		assertEquals(1, citiesFromDb.size());
-	}
+//	}
 
 }

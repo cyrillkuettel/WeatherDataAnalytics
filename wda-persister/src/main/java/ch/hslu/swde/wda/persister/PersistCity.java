@@ -9,7 +9,9 @@ import jakarta.persistence.EntityManager;
 public class PersistCity {
 
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
-
+	
+	//Set this value to either PRODUCTION or TEST to switch between PROD and TEST DB
+	private static final String JPAUTIL = "PRODUCTION";
 	
 	/**
 	 * DO NOT USE THIS METHOD WITH ANY OTHER CLASS AS IT IS NOT CHECKING WHETHER THE CITY ALREADY EXISTS IN THE DB (THIS CHECK IS PERFORMED IN ADVANCE IN PERSISTWEATHERDATA)
@@ -19,7 +21,17 @@ public class PersistCity {
 	 */
 	public static void insertSingleCity(City city) {
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
+		
 
 		em.getTransaction().begin();
 
@@ -40,7 +52,17 @@ public class PersistCity {
 	 */
 	public static void insertCities(List<City> cities) {
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
+		
 		em.getTransaction().begin();
 
 		for (City c : cities) {

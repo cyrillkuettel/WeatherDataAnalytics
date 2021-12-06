@@ -13,6 +13,8 @@ import jakarta.persistence.TypedQuery;
 public class DbHelper {
 
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
+	// Set this value to either PRODUCTION or TEST to switch between PROD and TEST DB
+	private static final String JPAUTIL = "PRODUCTION";
 
 	/**
 	 * This Query returns all Cities, for which weather data is available - Query
@@ -24,7 +26,16 @@ public class DbHelper {
 
 		Log.info("Starting selectAllCities");
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
@@ -44,7 +55,7 @@ public class DbHelper {
 	}
 
 	/**
-	 * This Query returns a single City based on the Name specified 
+	 * This Query returns a single City based on the Name specified
 	 * 
 	 * @param cityname - Cityname which should be inserted into where-condition
 	 * @return a single City-Entity matching with the where-condition
@@ -53,7 +64,16 @@ public class DbHelper {
 
 		Log.info("Starting selectSingleCity with Parameter: " + cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c where c.name = :name", City.class);
@@ -87,7 +107,16 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<WeatherData> tQry = em.createQuery(
@@ -110,10 +139,11 @@ public class DbHelper {
 
 		return weatherDataList;
 	}
-	
+
 	/**
-	 * This Query returns a Weatherdata Object with the average temperature,pressure,humidity for a given City and given
-	 * timerange (specified by start- and enddate) - Query A03
+	 * This Query returns a Weatherdata Object with the average
+	 * temperature,pressure,humidity for a given City and given timerange (specified
+	 * by start- and enddate) - Query A03
 	 * 
 	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param startDate - The startdate for the Timerange
@@ -123,12 +153,21 @@ public class DbHelper {
 
 	public static WeatherData selectAverageWeatherDataSingleCity(String cityname, Date startDate, Date endDate) {
 
-		Log.info("Starting selectAverageWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]" + ", [Startdate: "
-				+ startDate + "]" + ", [Enddate: " + endDate + "]");
+		Log.info("Starting selectAverageWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]"
+				+ ", [Startdate: " + startDate + "]" + ", [Enddate: " + endDate + "]");
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -153,8 +192,9 @@ public class DbHelper {
 	}
 
 	/**
-	 * This Query returns a Weatherdata Object with the max temperature,pressure,humidity for a given City and given
-	 * timerange (specified by start- and enddate) - Query A04
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a given City and given timerange (specified
+	 * by start- and enddate) - Query A04
 	 * 
 	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param startDate - The startdate for the Timerange
@@ -164,12 +204,21 @@ public class DbHelper {
 
 	public static WeatherData selectMaxWeatherDataSingleCity(String cityname, Date startDate, Date endDate) {
 
-		Log.info("Starting selectMaxWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]" + ", [Startdate: "
-				+ startDate + "]" + ", [Enddate: " + endDate + "]");
+		Log.info("Starting selectMaxWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]"
+				+ ", [Startdate: " + startDate + "]" + ", [Enddate: " + endDate + "]");
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -194,8 +243,9 @@ public class DbHelper {
 	}
 
 	/**
-	 * This Query returns a Weatherdata Object with the min temperature,pressure,humidity for a given City and given
-	 * timerange (specified by start- and enddate) - Query A04
+	 * This Query returns a Weatherdata Object with the min
+	 * temperature,pressure,humidity for a given City and given timerange (specified
+	 * by start- and enddate) - Query A04
 	 * 
 	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param startDate - The startdate for the Timerange
@@ -204,12 +254,21 @@ public class DbHelper {
 	 */
 	public static WeatherData selectMinWeatherDataSingleCity(String cityname, Date startDate, Date endDate) {
 
-		Log.info("Starting selectMinWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]" + ", [Startdate: "
-				+ startDate + "]" + ", [Enddate: " + endDate + "]");
+		Log.info("Starting selectMinWeatherDataSingleCity with Parameters [Cityname: " + cityname + "]"
+				+ ", [Startdate: " + startDate + "]" + ", [Enddate: " + endDate + "]");
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -234,8 +293,9 @@ public class DbHelper {
 	}
 
 	/**
-	 * This Query returns a Weatherdata Object with the max temperature,pressure,humidity for a all Cities and given
-	 * timestamp (specified by timestamp) - Query A05
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
 	 * 
 	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
@@ -247,7 +307,16 @@ public class DbHelper {
 
 		// City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
@@ -270,8 +339,9 @@ public class DbHelper {
 	}
 
 	/**
-	 * This Query returns a Weatherdata Object with the min temperature,pressure,humidity for a all Cities and given
-	 * timestamp (specified by timestamp) - Query A05
+	 * This Query returns a Weatherdata Object with the min
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
 	 * 
 	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
@@ -283,7 +353,16 @@ public class DbHelper {
 
 		// City city = selectSingleCity(cityname);
 
-		EntityManager em = JpaUtilProdDb.createEntityManager();
+		EntityManager em;
+		if (JPAUTIL == "PRODUCTION") {
+			em = JpaUtilProdDb.createEntityManager();
+			Log.info("Queries running on PROD DB");
+		} else if (JPAUTIL == "TEST") {
+			em = JpaUtilTestDb.createEntityManager();
+			Log.info("Queries running on TEST DB");
+		} else {
+			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
+		}
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(

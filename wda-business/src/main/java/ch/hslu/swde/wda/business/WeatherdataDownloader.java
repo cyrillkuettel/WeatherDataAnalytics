@@ -2,6 +2,8 @@ package ch.hslu.swde.wda.business;
 
 import ch.hslu.swde.wda.domain.City;
 import ch.hslu.swde.wda.domain.WeatherData;
+import ch.hslu.swde.wda.persister.PersistWeatherData;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -145,7 +147,7 @@ public final class WeatherdataDownloader {
                             The second approach might have less overhead: */
                             completeWeatherDataSingleCity.add(weatherData1);
 
-                            // PersistWeatherData.insertSingleWeatherData(weatherData1);
+//                             PersistWeatherData.insertSingleWeatherData(weatherData1);
 
 
                             Log.info(weatherData1);
@@ -166,7 +168,7 @@ public final class WeatherdataDownloader {
 
         }
 
-        // PersistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
+         PersistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
 
 
 
