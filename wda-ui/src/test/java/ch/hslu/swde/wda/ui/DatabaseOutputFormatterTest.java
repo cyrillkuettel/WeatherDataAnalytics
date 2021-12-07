@@ -98,7 +98,9 @@ class DatabaseOutputFormatterTest {
     @Test
     void testGetSingleCityFromDatabase() {
         final String cityName = "Zug";
-        final City city = DbHelper.selectSingleCity(cityName);
+        DbHelper dbHelper = new DbHelper();
+
+        final City city = dbHelper.selectSingleCity(cityName);
         AssertionsForClassTypes.assertThat(city.getName()).isEqualTo(cityName);
     }
 
@@ -139,7 +141,8 @@ class DatabaseOutputFormatterTest {
         WeatherData  data;
 
         try {
-           data = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
+            DbHelper dbHelper = new DbHelper();
+           data = dbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
            assertThat(data).isNotNull();
         } catch (jakarta.persistence.NoResultException e) {
             Log.warn("that city does not (yet) exist in database");

@@ -11,7 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import static ch.hslu.swde.wda.GlobalConstants.cities;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,25 +31,6 @@ class UITest {
         assertTrue(Utils.pingURL(CITY_URL, 10000));
     }
 
-    @Test
-    @Disabled // It works, just takes 20-30 seconds
-    void testCitiesURLAreReachable() {
-
-         final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
-         final String BASE_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
-
-        int countSuccessfulPings = 0;
-
-        for (String city: cities) {
-            String testUrlConnection = BASE_URL + city + BASE_ALL_SINCE_JANUARY_2020;
-            if (Utils.pingURL(testUrlConnection, 5000)) {
-                countSuccessfulPings++;
-            } else {
-                Log.warn(String.format("Could not ping %s Are you connected to VPN?", testUrlConnection));
-            }
-        }
-        assertThat(countSuccessfulPings).isEqualTo(cities.length);
-    }
 
 
     @Test
