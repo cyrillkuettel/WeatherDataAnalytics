@@ -27,14 +27,15 @@ public class DbHelperTest {
 		City zurich = new City(8000, "Zurich");
 		City basel = new City(4000, "Basel");
 
-		WeatherData weatherData1 = new WeatherData(bern, Timestamp.valueOf("2021-01-01 12:00:00"), 0.0, 0, 0);
-		WeatherData weatherData2 = new WeatherData(bern, Timestamp.valueOf("2021-01-10 00:00:00"), 50.0, 100, 60);
+		
+		WeatherData weatherData1 = new WeatherData(bern, Timestamp.valueOf("2021-01-01 12:00:00"), 0, 100, 200);
+		WeatherData weatherData2 = new WeatherData(bern, Timestamp.valueOf("2021-01-10 00:00:00"), 50, 150, 250);
 
-		WeatherData weatherData3 = new WeatherData(zurich, Timestamp.valueOf("2021-01-01 12:00:00"), 0, 0, 0);
-		WeatherData weatherData4 = new WeatherData(zurich, Timestamp.valueOf("2021-01-10 00:00:00"), 50.0, 100, 60);
+		WeatherData weatherData3 = new WeatherData(zurich, Timestamp.valueOf("2021-01-01 12:00:00"), 10, 110, 210);
+		WeatherData weatherData4 = new WeatherData(zurich, Timestamp.valueOf("2021-01-10 00:00:00"), 70, 170, 270);
 
-		WeatherData weatherData5 = new WeatherData(basel, Timestamp.valueOf("2021-01-01 12:00:00"), 0, 0, 0);
-		WeatherData weatherData6 = new WeatherData(basel, Timestamp.valueOf("2021-01-10 00:00:00"), 50.0, 100, 60);
+		WeatherData weatherData5 = new WeatherData(basel, Timestamp.valueOf("2021-01-01 12:00:00"), 20, 120, 220);
+		WeatherData weatherData6 = new WeatherData(basel, Timestamp.valueOf("2021-01-10 00:00:00"), 100, 200, 300);
 
 		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
 		weatherDataList.add(weatherData1);
@@ -97,6 +98,7 @@ public class DbHelperTest {
 
 	}
 
+	//Test for Query A02
 	@Test
 	void testSelectWeatherDataSingleCity() {
 
@@ -117,64 +119,120 @@ public class DbHelperTest {
 		assertEquals(1, weatherData.size());
 	}
 
+	
+	//Test for Query A03
 	@Test
 	void testselectAverageWeatherDataSingleCity() {
 
 		DbHelper.JPAUTIL = "TEST";
+		String start = "2020-01-01";
+		String end = "2021-01-10";
+
+		Date startDate = Date.valueOf(start);
+		Date endDate = Date.valueOf(end);
 
 		// Run the select
-		City city = DbHelper.selectSingleCity("Basel");
+		WeatherData weatherData = DbHelper.selectAverageWeatherDataSingleCity("Zurich", startDate, endDate);
 
 		// Reset Persisterclass to Prod DB
 		DbHelper.JPAUTIL = "PRODUCTION";
 
-		assertEquals("Basel", city.getName());
+		assertEquals("Zurich", weatherData.getCity().getName());
+		assertEquals(40, weatherData.getTemp());
+		assertEquals(140, weatherData.getPressure());
+		assertEquals(240, weatherData.getHumidity());
 
 	}
 
+	//Test for Query A04 - MAX Value
 	@Test
 	void testSelectMaxWeatherDataSingleCity() {
 
 		DbHelper.JPAUTIL = "TEST";
+		String start = "2020-01-01";
+		String end = "2021-01-10";
+
+		Date startDate = Date.valueOf(start);
+		Date endDate = Date.valueOf(end);
 
 		// Run the select
-		City city = DbHelper.selectSingleCity("Basel");
+		WeatherData weatherData = DbHelper.selectMaxWeatherDataSingleCity("Bern", startDate, endDate);
 
 		// Reset Persisterclass to Prod DB
 		DbHelper.JPAUTIL = "PRODUCTION";
 
-		assertEquals("Basel", city.getName());
+		assertEquals("Bern", weatherData.getCity().getName());
+		assertEquals(50, weatherData.getTemp());
+		assertEquals(150, weatherData.getPressure());
+		assertEquals(250, weatherData.getHumidity());
 
 	}
+
+	//Test for Query A04 - MIN Value
 
 	@Test
 	void testSelectMinWeatherDataSingleCity() {
 
 		DbHelper.JPAUTIL = "TEST";
+		String start = "2020-01-01";
+		String end = "2021-01-10";
+
+		Date startDate = Date.valueOf(start);
+		Date endDate = Date.valueOf(end);
 
 		// Run the select
-		City city = DbHelper.selectSingleCity("Basel");
+		WeatherData weatherData = DbHelper.selectMinWeatherDataSingleCity("Basel", startDate, endDate);
 
 		// Reset Persisterclass to Prod DB
 		DbHelper.JPAUTIL = "PRODUCTION";
 
-		assertEquals("Basel", city.getName());
+		assertEquals("Basel", weatherData.getCity().getName());
+		assertEquals(20, weatherData.getTemp());
+		assertEquals(120, weatherData.getPressure());
+		assertEquals(220, weatherData.getHumidity());
 
 	}
 
-	@Test
-	void testselectSingleCity() {
+	//Test for Query A05 - MAX Value
+		@Test
+		void testSelectMaxWeatherDataAllCity() {
 
-		DbHelper.JPAUTIL = "TEST";
+			DbHelper.JPAUTIL = "TEST";
+			String start = "2020-01-01";
+			String end = "2021-01-10";
 
-		// Run the select
-		City city = DbHelper.selectSingleCity("Basel");
+			Date startDate = Date.valueOf(start);
+			Date endDate = Date.valueOf(end);
 
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
+			// Run the select
+			WeatherData weatherData = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
 
-		assertEquals("Basel", city.getName());
+			// Reset Persisterclass to Prod DB
+			DbHelper.JPAUTIL = "PRODUCTION";
 
-	}
+			assertEquals(20, weatherData.getTemp());
+			assertEquals(120, weatherData.getPressure());
+			assertEquals(220, weatherData.getHumidity());
+
+		}
+
+		//Test for Query A05 - MIN Value
+
+		@Test
+		void testSelectMinWeatherDataAllCity() {
+
+			DbHelper.JPAUTIL = "TEST";
+			
+			// Run the select
+			WeatherData weatherData = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
+
+			// Reset Persisterclass to Prod DB
+			DbHelper.JPAUTIL = "PRODUCTION";
+
+			assertEquals(0, weatherData.getTemp());
+			assertEquals(100, weatherData.getPressure());
+			assertEquals(200, weatherData.getHumidity());
+
+		}
 
 }
