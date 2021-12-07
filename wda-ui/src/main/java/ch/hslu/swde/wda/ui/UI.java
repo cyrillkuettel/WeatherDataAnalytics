@@ -3,8 +3,6 @@ package ch.hslu.swde.wda.ui;
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
-import ch.hslu.swde.wda.domain.City;
-import ch.hslu.swde.wda.persister.DbHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +32,7 @@ public final class UI {
      This is the main Scanner; several methods use this Scanner
      */
     Scanner sc;
+    DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
 
     public UI() {
         this.sc = new Scanner(System.in);
@@ -41,14 +40,15 @@ public final class UI {
             Log.info("VPN connected!");
         } else {
             Log.error("Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?");
-
         }
 
-
         // Load the cities from db when creating UI
-
         /* Generate City-List at runtime, the number of cities should not be static */
-        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(GlobalConstants.cities);
+
+        String[] cities = dof.getCityNamesAsArray();
+       Log.info(Arrays.toString(cities));
+
+        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(cities);
 
     }
 
@@ -60,7 +60,7 @@ public final class UI {
         int selectedOption;
         String selectedCity;
         String[] selectedTimePeriod = new String[2]; // timePeriod[0] = startDate, timePeriod[1] = endDate
-
+        String[] newCredentials;
 
         currentMenu = GlobalConstants.WELCOME_MENU;
         showActiveMenu();
@@ -69,9 +69,10 @@ public final class UI {
         if (selectedOption == 2) { // create new user
             Log.info("Staring process to create a new User");
 
-            String[] newCredentials = askForUsernamePassword(0);
+            newCredentials = askForUsernamePassword(0);
             System.out.println(GlobalConstants.CONFIRM_NEW_USER_CREATED);
-            // TODO:  write new User to Database
+
+
         }
 
         String[] creds;
@@ -390,18 +391,7 @@ public final class UI {
     }
 
 
-    public String[] getCitynamesfromDatabase() {
 
-        List<City> dbCities = DbHelper.selectAllCities();
-        String[] citiesOnlyNames = new String[dbCities.size()];
-        Iterator<City> it = dbCities.iterator();
-        int count = 0;
-        while (it.hasNext()) {
-            citiesOnlyNames[count] = it.next().getName();
-        }
-
-        return citiesOnlyNames;
-    }
 
 
 

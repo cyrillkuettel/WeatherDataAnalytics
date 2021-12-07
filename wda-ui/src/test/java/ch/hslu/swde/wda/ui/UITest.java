@@ -2,9 +2,6 @@ package ch.hslu.swde.wda.ui;
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
-import ch.hslu.swde.wda.domain.City;
-import ch.hslu.swde.wda.domain.WeatherData;
-import ch.hslu.swde.wda.persister.DbHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
@@ -12,8 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.sql.Date;
-import java.util.Arrays;
 import java.util.List;
 
 import static ch.hslu.swde.wda.GlobalConstants.cities;
@@ -43,9 +38,8 @@ class UITest {
          final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
          final String BASE_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
 
-
-
         int countSuccessfulPings = 0;
+
         for (String city: cities) {
             String testUrlConnection = BASE_URL + city + BASE_ALL_SINCE_JANUARY_2020;
             if (Utils.pingURL(testUrlConnection, 5000)) {
@@ -57,46 +51,10 @@ class UITest {
         assertThat(countSuccessfulPings).isEqualTo(cities.length);
     }
 
-    @Test
-    @Disabled
-    // this test will work as soon as we have all cities in database
-    void testLoadingCitiesFromDatabaseContainsAllKnownCities() {
-
-        /* This could be a Subset of all the cities. */
 
 
-        System.out.print(cities.length);
-        UI ui = new UI();
-        String[] actualCities = ui.getCitynamesfromDatabase();
-        assertTrue(Arrays.asList(actualCities).containsAll(Arrays.asList(cities)));
-    }
 
-    @Disabled
-    @Test
-    void testCitiesLengthIfCitiesConstant() {
-        UI ui = new UI();
-        final int expectedCityLength = 40; // There should be at least 40 cities (counted manually)
-        assertTrue(ui.getCitynamesfromDatabase().length >= expectedCityLength);
 
-    }
-
-    @Test
-    @Disabled
-    void getCityFromDB() {
-        final String cityName = "Zug";
-        final java.sql.Date startDate = java.sql.Date.valueOf("2020-12-30");
-        final java.sql.Date endDate = Date.valueOf("2021-11-28");
-        final List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityName, startDate, endDate);
-        final WeatherData weatherdata = requestedWeatherData.get(0); // get the only item in list
-        assertThat(weatherdata.getCity().getName()).isEqualTo(cityName);
-    }
-
-    @Test
-    void testGetSingleCityFromDatabase() {
-        final String cityName = "Zug";
-        final City city = DbHelper.selectSingleCity(cityName);
-        assertThat(city.getName()).isEqualTo(cityName);
-    }
 
     @Test
     void testLoginShouldRefuseEmptyStrings() {

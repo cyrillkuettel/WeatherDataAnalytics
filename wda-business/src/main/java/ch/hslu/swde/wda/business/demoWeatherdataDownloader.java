@@ -7,6 +7,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class demoWeatherdataDownloader{
@@ -20,14 +21,15 @@ public class demoWeatherdataDownloader{
             "Winterthur", "Frauenfeld", "St.Gallen"};
 
 
-    static final String ZUG_ALL_SINCE_JANUARY_2020 = "Zug/since?year=2020&month=1&day=1";
     public static final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
-
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-
     public static final WeatherdataDownloader weatherdatadownloader = new  WeatherdataDownloader();
 
+    static List<String> logs = new ArrayList<>();
+    public static void main(String[] args) {
+        // Download all Data. This runs only one time
+        Arrays.stream(cities).parallel().forEach(demoWeatherdataDownloader::downloadAndPersistWeatherDataSingleCit);
+        logs.stream().forEachOrdered(System.out::println);
+    }
 
     public static void downloadAndPersistWeatherDataSingleCit(String city) {
         long startTime = System.currentTimeMillis();
@@ -49,19 +51,4 @@ public class demoWeatherdataDownloader{
 
     }
 
-    static List<String> logs = new ArrayList<>();
-    public static void main(String[] args) {
-
-
-        for (String city: cities) {
-            downloadAndPersistWeatherDataSingleCit(city);
-        }
-
-        for (String log : logs) {
-            System.out.println(log);
-        }
-
-
-
-    }
 }
