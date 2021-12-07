@@ -17,8 +17,8 @@ public class demoWeatherdataDownloader{
             "Interlaken",
             "Grindelwald", "Lauterbrunnen", "Meiringen", "Brig", "Saas-Fee", "Zermatt", "Basel", "Solothurn", "Olten",
             "Aarau", "Baden", "Lucerne", "Buchrain", "Zug", "Rotkreuz", "Engelberg", "Schwyz", "Altdorf", "Erstfeld",
-            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St.Moritz", "Zurich",
-            "Winterthur", "Frauenfeld", "St.Gallen"};
+            "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
+            "Winterthur", "Frauenfeld", "St. Gallen"};
 
 
     public static final String BASE_ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
