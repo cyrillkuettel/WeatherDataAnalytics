@@ -27,6 +27,11 @@ import java.util.stream.Collectors;
  */
 public final class DatabaseOutputFormatter {
     private static final Logger Log = LogManager.getLogger(DatabaseOutputFormatter.class);
+    private DbHelper DbHelper;
+    
+    public DatabaseOutputFormatter() {
+    	DbHelper = new DbHelper();
+    }
 
 
     public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end) {

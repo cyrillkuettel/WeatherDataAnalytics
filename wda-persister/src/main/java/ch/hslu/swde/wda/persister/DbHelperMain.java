@@ -17,13 +17,14 @@ public class DbHelperMain {
 		Date startDate = Date.valueOf(start);
 		Date endDate = Date.valueOf(end);
 
-//		DbHelper.selectAllCities();
+		DbHelper DbHelper = new DbHelper();
+		DbHelper.selectAllCities();
 	//	DbHelper.selectWeatherDataSingleCity("Langenthal",startDate ,endDate );
 		
 	//	DbHelper.selectAverageWeatherDataSingleCity("Langenthal",startDate ,endDate );
 	//	DbHelper.selectMinWeatherDataSingleCity("Langenthal",startDate ,endDate );
 	//	DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
-	DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
+//	DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
 
 	}
 

@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,17 +18,25 @@ import jakarta.persistence.EntityManager;
 public class DbHelperTest {
 
 	private static EntityManager em;
+	private final static String DBCONNECTION ="TEST";
+	private static DbHelper DbHelper;
+	private static PersistWeatherData pd;
 
 	@BeforeAll
 	static void dbSetup() {
 
 		dbClean();
 
+		DbHelper = new DbHelper();
+		pd = new PersistWeatherData();
+
+		
+		
+		// Create Test Data
 		City bern = new City(3000, "Bern");
 		City zurich = new City(8000, "Zurich");
 		City basel = new City(4000, "Basel");
 
-		
 		WeatherData weatherData1 = new WeatherData(bern, Timestamp.valueOf("2021-01-01 12:00:00"), 0, 100, 200);
 		WeatherData weatherData2 = new WeatherData(bern, Timestamp.valueOf("2021-01-10 00:00:00"), 50, 150, 250);
 
@@ -46,21 +55,24 @@ public class DbHelperTest {
 		weatherDataList.add(weatherData6);
 
 		// Set both Persisterclasses to TEST DB
-		PersistWeatherData.JPAUTIL = "TEST";
-		PersistCity.JPAUTIL = "TEST";
+		pd.selectTestDB();
+		pd.getPersistCity().selectTestDB();
 
 		// Run the insert
-		PersistWeatherData.insertWeatherData(weatherDataList);
+		pd.insertWeatherData(weatherDataList);
 
 		// Reset both Persisterclasses to Prod DB
-		PersistWeatherData.JPAUTIL = "PRODUCTION";
-		PersistCity.JPAUTIL = "PRODUCTION";
+		pd.selectProdDB();
+		pd.getPersistCity().selectProdDB();
+		
+		//Set DbHelper to Test DB, will be set to Prod DB with @AfterAll
+		DbHelper.selectTestDB();
 
 	}
 
 	static void dbClean() {
 
-		em = JpaUtilTestDb.createEntityManager();
+		em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
@@ -72,13 +84,10 @@ public class DbHelperTest {
 
 	@Test
 	void testSelectAllCities() {
-		DbHelper.JPAUTIL = "TEST";
+
 
 		// Run the select
 		List<City> cities = DbHelper.selectAllCities();
-
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
 
 		assertEquals(3, cities.size());
 	}
@@ -86,23 +95,17 @@ public class DbHelperTest {
 	@Test
 	void testSelectSingleCity() {
 
-		DbHelper.JPAUTIL = "TEST";
 
 		// Run the select
 		City city = DbHelper.selectSingleCity("Basel");
-
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
 
 		assertEquals("Basel", city.getName());
 
 	}
 
-	//Test for Query A02
+	// Test for Query A02
 	@Test
 	void testSelectWeatherDataSingleCity() {
-
-		DbHelper.JPAUTIL = "TEST";
 
 		String start = "2020-01-01";
 		String end = "2021-01-02";
@@ -113,18 +116,13 @@ public class DbHelperTest {
 		// Run the select
 		List<WeatherData> weatherData = DbHelper.selectWeatherDataSingleCity("Basel", startDate, endDate);
 
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
-
 		assertEquals(1, weatherData.size());
 	}
 
-	
-	//Test for Query A03
+	// Test for Query A03
 	@Test
 	void testselectAverageWeatherDataSingleCity() {
 
-		DbHelper.JPAUTIL = "TEST";
 		String start = "2020-01-01";
 		String end = "2021-01-10";
 
@@ -134,9 +132,6 @@ public class DbHelperTest {
 		// Run the select
 		WeatherData weatherData = DbHelper.selectAverageWeatherDataSingleCity("Zurich", startDate, endDate);
 
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
-
 		assertEquals("Zurich", weatherData.getCity().getName());
 		assertEquals(40, weatherData.getTemp());
 		assertEquals(140, weatherData.getPressure());
@@ -144,11 +139,10 @@ public class DbHelperTest {
 
 	}
 
-	//Test for Query A04 - MAX Value
+	// Test for Query A04 - MAX Value
 	@Test
 	void testSelectMaxWeatherDataSingleCity() {
 
-		DbHelper.JPAUTIL = "TEST";
 		String start = "2020-01-01";
 		String end = "2021-01-10";
 
@@ -158,8 +152,6 @@ public class DbHelperTest {
 		// Run the select
 		WeatherData weatherData = DbHelper.selectMaxWeatherDataSingleCity("Bern", startDate, endDate);
 
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
 
 		assertEquals("Bern", weatherData.getCity().getName());
 		assertEquals(50, weatherData.getTemp());
@@ -168,12 +160,11 @@ public class DbHelperTest {
 
 	}
 
-	//Test for Query A04 - MIN Value
+	// Test for Query A04 - MIN Value
 
 	@Test
 	void testSelectMinWeatherDataSingleCity() {
 
-		DbHelper.JPAUTIL = "TEST";
 		String start = "2020-01-01";
 		String end = "2021-01-10";
 
@@ -183,8 +174,6 @@ public class DbHelperTest {
 		// Run the select
 		WeatherData weatherData = DbHelper.selectMinWeatherDataSingleCity("Basel", startDate, endDate);
 
-		// Reset Persisterclass to Prod DB
-		DbHelper.JPAUTIL = "PRODUCTION";
 
 		assertEquals("Basel", weatherData.getCity().getName());
 		assertEquals(20, weatherData.getTemp());
@@ -193,41 +182,40 @@ public class DbHelperTest {
 
 	}
 
-	//Test for Query A05 - MAX Value
-		@Test
-		void testSelectMaxWeatherDataAllCity() {
+	// Test for Query A05 - MAX Value
+	@Test
+	void testSelectMaxWeatherDataAllCity() {
 
-			DbHelper.JPAUTIL = "TEST";
 
-			// Run the select
-			WeatherData weatherData = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
+		// Run the select
+		WeatherData weatherData = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
 
-			// Reset Persisterclass to Prod DB
-			DbHelper.JPAUTIL = "PRODUCTION";
 
-			assertEquals(20, weatherData.getTemp());
-			assertEquals(120, weatherData.getPressure());
-			assertEquals(220, weatherData.getHumidity());
+		assertEquals(20, weatherData.getTemp());
+		assertEquals(120, weatherData.getPressure());
+		assertEquals(220, weatherData.getHumidity());
 
-		}
+	}
 
-		//Test for Query A05 - MIN Value
+	// Test for Query A05 - MIN Value
 
-		@Test
-		void testSelectMinWeatherDataAllCity() {
+	@Test
+	void testSelectMinWeatherDataAllCity() {
 
-			DbHelper.JPAUTIL = "TEST";
-			
-			// Run the select
-			WeatherData weatherData = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
+		// Run the select
+		WeatherData weatherData = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
 
-			// Reset Persisterclass to Prod DB
-			DbHelper.JPAUTIL = "PRODUCTION";
+		assertEquals(0, weatherData.getTemp());
+		assertEquals(100, weatherData.getPressure());
+		assertEquals(200, weatherData.getHumidity());
 
-			assertEquals(0, weatherData.getTemp());
-			assertEquals(100, weatherData.getPressure());
-			assertEquals(200, weatherData.getHumidity());
+	}
+	
+	
+	@AfterAll
+	static void resetDB() {
+		DbHelper.selectProdDB();
 
-		}
+	}
 
 }

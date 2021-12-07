@@ -3,6 +3,8 @@ package ch.hslu.swde.wda.persister;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +16,21 @@ import jakarta.persistence.TypedQuery;
 
 public class PersistCityTest {
 
-	private EntityManager em;
+	private static EntityManager em;
+	private final static String DBCONNECTION = "TEST";
+	private static PersistCity pc;
+
+	@BeforeAll
+	static void setup() {
+		pc = new PersistCity();
+		// Set the Persister to Test DB
+		pc.selectTestDB();
+	}
 
 	@BeforeEach
 	void dbClean() {
 
-		em = JpaUtilTestDb.createEntityManager();
+		em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
@@ -41,16 +52,10 @@ public class PersistCityTest {
 		cities.add(basel);
 		cities.add(zurich);
 
-		//Set the Persister to Test DB
-		PersistCity.JPAUTIL= "TEST";
-		
-		//Run the insert
-		PersistCity.insertCities(cities);
-		
-		//Set the Persister to Prod DB
-		PersistCity.JPAUTIL= "PRODUCTION";
-		
-		EntityManager em = JpaUtilTestDb.createEntityManager();
+		// Run the insert
+		pc.insertCities(cities);
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
@@ -68,11 +73,11 @@ public class PersistCityTest {
 
 		City bern = new City(3000, "Bern");
 
-		PersistCity.JPAUTIL= "TEST";
-		PersistCity.insertSingleCity(bern);
-		PersistCity.JPAUTIL= "PRODUCTION";
-		
-		EntityManager em = JpaUtilTestDb.createEntityManager();
+
+		// Run the insert
+		pc.insertSingleCity(bern);
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
@@ -85,4 +90,9 @@ public class PersistCityTest {
 		assertEquals(1, citiesFromDb.size());
 	}
 
+	@AfterAll
+	static void resetDB() {
+		// Set the Persister to Prod DB
+		pc.selectProdDB();
+	}
 }

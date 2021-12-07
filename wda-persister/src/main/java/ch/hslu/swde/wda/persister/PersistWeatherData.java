@@ -13,8 +13,16 @@ public class PersistWeatherData {
 
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
-	//Set this value to either PRODUCTION or TEST to switch between PROD and TEST DB
-	public static  String JPAUTIL = "PRODUCTION";
+	// Change this value by using the respective selectDB method
+	public String DBCONNECTION = "PROD";
+	private PersistCity persistCity;
+	
+	
+	public PersistWeatherData() {
+		persistCity = new PersistCity();
+		
+	}
+	
 	
 	/**
 	 * This Method persists a single  WeatherData entity.
@@ -26,26 +34,16 @@ public class PersistWeatherData {
 	 * 
 	 * @param city The list of city objects which should be persisted
 	 */
-	public static void insertSingleWeatherData(WeatherData wd) {
+	public void insertSingleWeatherData(WeatherData wd) {
 
-		EntityManager em = null;
-		if (JPAUTIL == "PRODUCTION") {
-			em = JpaUtilProdDb.createEntityManager();
-			Log.info("Queries running on PROD DB");
-		} else if (JPAUTIL == "TEST") {
-			em = JpaUtilTestDb.createEntityManager();
-			Log.info("Queries running on TEST DB");
-		} else {
-			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
-		}
-		
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 
 
 			if (em.find(City.class, wd.getCity().getZIPCode()) == null) {
 				Log.info("Tried to insert WeatherData without City being persisted in DB, handing over to PersistCity");
-				PersistCity.insertSingleCity(wd.getCity());
+				persistCity.insertSingleCity(wd.getCity());
 			}
 			else {	
 				Log.info("Retrieving City from DB to ensure correct relation mapping");
@@ -72,17 +70,9 @@ public class PersistWeatherData {
 	 * 
 	 * @param city The list of city objects which should be persisted
 	 */
-	public static void insertWeatherData(List<WeatherData> weatherData) {
+	public void insertWeatherData(List<WeatherData> weatherData) {
 
-		EntityManager em = null;
-		if( JPAUTIL == "PRODUCTION"){
-			 em = JpaUtilProdDb.createEntityManager();
-		}else if(JPAUTIL == "TEST") {
-			 em = JpaUtilTestDb.createEntityManager();
-		}else {
-			Log.warn("Check definition of Constant JPAUTIL, value is neither PRODUCTION nor TEST");
-		}
-		
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 
@@ -90,7 +80,7 @@ public class PersistWeatherData {
 
 			if (em.find(City.class, wd.getCity().getZIPCode()) == null) {
 				Log.info("Tried to insert WeatherData without City being persisted in DB, handing over to PersistCity");
-				PersistCity.insertSingleCity(wd.getCity());
+				persistCity.insertSingleCity(wd.getCity());
 			}
 			else {	
 				Log.info("Retrieving City from DB to ensure correct relation mapping");
@@ -105,4 +95,22 @@ public class PersistWeatherData {
 		em.close();
 
 	}
+	
+	public void selectTestDB() {
+
+		DBCONNECTION = "TEST";
+	}
+
+	public void selectProdDB() {
+
+		DBCONNECTION = "PROD";
+	}
+
+
+	public PersistCity getPersistCity() {
+		return persistCity;
+	}
+	
+	
+	
 }

@@ -84,6 +84,7 @@ public final class WeatherdataDownloader {
     public void downloadAndPersistWeatherDataSingleCity(String xmlString) throws ParserConfigurationException, IOException,
             SAXException {
 
+    	PersistWeatherData persistWeatherData = new PersistWeatherData();
         List<WeatherData> completeWeatherDataSingleCity = new ArrayList<>();
 
 
@@ -158,7 +159,7 @@ public final class WeatherdataDownloader {
 
         }
 
-         PersistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
+         persistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
         System.out.println(String.format("\033[32m inserted List<WeatherData> of size %d using PersistWeatherData",
                                          completeWeatherDataSingleCity.size()));
 
