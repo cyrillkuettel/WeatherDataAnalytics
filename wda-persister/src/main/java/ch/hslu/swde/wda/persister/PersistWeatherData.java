@@ -14,7 +14,7 @@ public class PersistWeatherData {
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
 	//Set this value to either PRODUCTION or TEST to switch between PROD and TEST DB
-	private static final String JPAUTIL = "PRODUCTION";
+	public static  String JPAUTIL = "PRODUCTION";
 	
 	/**
 	 * This Method persists a single  WeatherData entity.
@@ -28,7 +28,7 @@ public class PersistWeatherData {
 	 */
 	public static void insertSingleWeatherData(WeatherData wd) {
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -74,7 +74,7 @@ public class PersistWeatherData {
 	 */
 	public static void insertWeatherData(List<WeatherData> weatherData) {
 
-		EntityManager em;
+		EntityManager em = null;
 		if( JPAUTIL == "PRODUCTION"){
 			 em = JpaUtilProdDb.createEntityManager();
 		}else if(JPAUTIL == "TEST") {

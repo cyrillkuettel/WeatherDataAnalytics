@@ -11,7 +11,7 @@ public class PersistCity {
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 	
 	//Set this value to either PRODUCTION or TEST to switch between PROD and TEST DB
-	private static final String JPAUTIL = "PRODUCTION";
+	public static String JPAUTIL = "PRODUCTION";
 	
 	/**
 	 * DO NOT USE THIS METHOD WITH ANY OTHER CLASS AS IT IS NOT CHECKING WHETHER THE CITY ALREADY EXISTS IN THE DB (THIS CHECK IS PERFORMED IN ADVANCE IN PERSISTWEATHERDATA)
@@ -20,8 +20,9 @@ public class PersistCity {
 	 * @param city The city object which should be persisted
 	 */
 	public static void insertSingleCity(City city) {
-
-		EntityManager em;
+		
+		EntityManager em = null;
+		
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -52,7 +53,7 @@ public class PersistCity {
 	 */
 	public static void insertCities(List<City> cities) {
 
-		EntityManager em;
+		EntityManager em =null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");

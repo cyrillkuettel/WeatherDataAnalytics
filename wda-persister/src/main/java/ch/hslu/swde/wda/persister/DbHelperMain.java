@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DbHelperTest {
+public class DbHelperMain {
 
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 	public static void main(String[] args) {

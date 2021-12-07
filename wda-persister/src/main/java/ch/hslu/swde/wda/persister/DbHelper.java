@@ -14,7 +14,7 @@ public class DbHelper {
 
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 	// Set this value to either PRODUCTION or TEST to switch between PROD and TEST DB
-	private static final String JPAUTIL = "PRODUCTION";
+	public static String JPAUTIL = "PRODUCTION";
 
 	/**
 	 * This Query returns all Cities, for which weather data is available - Query
@@ -26,7 +26,7 @@ public class DbHelper {
 
 		Log.info("Starting selectAllCities");
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -64,7 +64,7 @@ public class DbHelper {
 
 		Log.info("Starting selectSingleCity with Parameter: " + cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -107,7 +107,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -158,7 +158,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -209,7 +209,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -259,7 +259,7 @@ public class DbHelper {
 
 		City city = selectSingleCity(cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -307,7 +307,7 @@ public class DbHelper {
 
 		// City city = selectSingleCity(cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");
@@ -353,7 +353,7 @@ public class DbHelper {
 
 		// City city = selectSingleCity(cityname);
 
-		EntityManager em;
+		EntityManager em = null;
 		if (JPAUTIL == "PRODUCTION") {
 			em = JpaUtilProdDb.createEntityManager();
 			Log.info("Queries running on PROD DB");

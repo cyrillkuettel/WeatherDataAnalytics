@@ -18,48 +18,47 @@ public class PersistWeatherDataTest {
 
 	private static EntityManager em;
 
-//	@BeforeAll
-//	static void setup() {
-//		try {
-//			/* EntityManagerFactory erzeugen */
-//			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("DB_TEST");
-//		} catch (Exception e) {
-//			throw new RuntimeException(e);
-//		}
-//	}
+	@BeforeEach
+	void dbClean() {
 
-//	@BeforeEach
-//	void dbClean() {
-//
-//		em = JpaUtilTestDb.createEntityManager();
-//
-//		em.getTransaction().begin();
-//		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
-//		em.createQuery("DELETE FROM City c").executeUpdate();
-//		em.getTransaction().commit();
-//		em.close();
-//
-//	}
-//
-//	@Test
-//	void testSelectWeatherByDataAndCity() {
-//
-//		City bern = new City(3000, "Bern");
-//		WeatherData weatherData1 = new WeatherData(bern, Timestamp.valueOf("9999-12-31 00:00:00"), 2.0, 4, 3.5);
-//
-//		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
-//		weatherDataList.add(weatherData1);
-//
-//		PersistWeatherData.insertWeatherData(weatherDataList);
-//
-//		em = JpaUtilTestDb.createEntityManager();
-//		em.getTransaction().begin();
-//		TypedQuery<WeatherData> tQry = em.createQuery("SELECT w FROM WeatherData w", WeatherData.class);
-//
-//		List<WeatherData> weatherDataFromDb = tQry.getResultList();
-//
-//		em.close();
-//		assertEquals(1, weatherDataFromDb.size());
-//	}
+		em = JpaUtilTestDb.createEntityManager();
+
+		em.getTransaction().begin();
+		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
+		em.createQuery("DELETE FROM City c").executeUpdate();
+		em.getTransaction().commit();
+		em.close();
+
+	}
+
+	@Test
+	void testSelectWeatherByDataAndCity() {
+
+		City bern = new City(3000, "Bern");
+		WeatherData weatherData1 = new WeatherData(bern, Timestamp.valueOf("9999-12-31 00:00:00"), 2.0, 4, 3.5);
+
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		weatherDataList.add(weatherData1);
+
+		//Set both Persisterclasses to TEST DB
+		PersistWeatherData.JPAUTIL= "TEST";
+		PersistCity.JPAUTIL= "TEST";
+		
+		//Run the insert
+		PersistWeatherData.insertWeatherData(weatherDataList);
+		
+		//Reset both Persisterclasses to Prod DB
+		PersistWeatherData.JPAUTIL= "PRODUCTION";
+		PersistCity.JPAUTIL= "PRODUCTION";
+
+		em = JpaUtilTestDb.createEntityManager();
+		em.getTransaction().begin();
+		TypedQuery<WeatherData> tQry = em.createQuery("SELECT w FROM WeatherData w", WeatherData.class);
+
+		List<WeatherData> weatherDataFromDb = tQry.getResultList();
+
+		em.close();
+		assertEquals(1, weatherDataFromDb.size());
+	}
 
 }
