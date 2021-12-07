@@ -32,7 +32,7 @@ public class PersistWeatherDataTest {
 	}
 
 	@Test
-	void testSelectWeatherByDataAndCity() {
+	void testInsertWeatherData() {
 
 		City bern = new City(3000, "Bern");
 		WeatherData weatherData1 = new WeatherData(bern, Timestamp.valueOf("9999-12-31 00:00:00"), 2.0, 4, 3.5);

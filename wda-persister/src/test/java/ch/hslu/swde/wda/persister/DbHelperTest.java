@@ -198,11 +198,6 @@ public class DbHelperTest {
 		void testSelectMaxWeatherDataAllCity() {
 
 			DbHelper.JPAUTIL = "TEST";
-			String start = "2020-01-01";
-			String end = "2021-01-10";
-
-			Date startDate = Date.valueOf(start);
-			Date endDate = Date.valueOf(end);
 
 			// Run the select
 			WeatherData weatherData = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));

@@ -30,7 +30,7 @@ public class PersistCityTest {
 	}
 
 	@Test
-	void testinsertCities() {
+	void testInsertCities() {
 
 		City bern = new City(3000, "Bern");
 		City zurich = new City(8000, "Zurich");
@@ -64,7 +64,7 @@ public class PersistCityTest {
 	}
 
 	@Test
-	void testinsertSingleCity() {
+	void testInsertSingleCity() {
 
 		City bern = new City(3000, "Bern");
 

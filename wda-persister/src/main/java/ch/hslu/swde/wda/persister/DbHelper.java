@@ -38,7 +38,7 @@ public class DbHelper {
 		}
 
 		em.getTransaction().begin();
-		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c", City.class);
+		TypedQuery<City> tQry = em.createQuery("SELECT c FROM City c Order by c.name asc", City.class);
 
 		/* Get all City-Entities from DB */
 		List<City> citiesFromDb = tQry.getResultList();
@@ -120,9 +120,9 @@ public class DbHelper {
 
 		em.getTransaction().begin();
 		TypedQuery<WeatherData> tQry = em.createQuery(
-				"SELECT w FROM WeatherData w where w.city = :name and w.datatimestamp between :startdate and :enddate",
+				"SELECT w FROM WeatherData w where w.city = :city and w.datatimestamp between :startdate and :enddate",
 				WeatherData.class);
-		tQry.setParameter("name", city);
+		tQry.setParameter("city", city);
 		tQry.setParameter("startdate", startDate);
 		tQry.setParameter("enddate", endDate);
 
@@ -171,10 +171,10 @@ public class DbHelper {
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
-				"SELECT AVG(w.temp), AVG(w.pressure), AVG(w.humidity) FROM WeatherData w where w.city = :name and w.datatimestamp between :startdate and :enddate",
+				"SELECT AVG(w.temp), AVG(w.pressure), AVG(w.humidity) FROM WeatherData w where w.city = :city and w.datatimestamp between :startdate and :enddate",
 				Object[].class);
 
-		tQry.setParameter("name", city);
+		tQry.setParameter("city", city);
 		tQry.setParameter("startdate", startDate);
 		tQry.setParameter("enddate", endDate);
 
@@ -222,10 +222,10 @@ public class DbHelper {
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
-				"SELECT Max(w.temp), Max(w.pressure), Max(w.humidity) FROM WeatherData w where w.city = :name and w.datatimestamp between :startdate and :enddate",
+				"SELECT Max(w.temp), Max(w.pressure), Max(w.humidity) FROM WeatherData w where w.city = :city and w.datatimestamp between :startdate and :enddate",
 				Object[].class);
 
-		tQry.setParameter("name", city);
+		tQry.setParameter("city", city);
 		tQry.setParameter("startdate", startDate);
 		tQry.setParameter("enddate", endDate);
 
@@ -272,10 +272,10 @@ public class DbHelper {
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
-				"SELECT Min(w.temp), Min(w.pressure), Min(w.humidity) FROM WeatherData w where w.city = :name and w.datatimestamp between :startdate and :enddate",
+				"SELECT Min(w.temp), Min(w.pressure), Min(w.humidity) FROM WeatherData w where w.city = :city and w.datatimestamp between :startdate and :enddate",
 				Object[].class);
 
-		tQry.setParameter("name", city);
+		tQry.setParameter("city", city);
 		tQry.setParameter("startdate", startDate);
 		tQry.setParameter("enddate", endDate);
 
