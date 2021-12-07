@@ -2,9 +2,13 @@ package ch.hslu.swde.wda;
 
 public final class GlobalConstants {
 
-    // minimum and maximum valid value, inclusive
-    public static final String MIN_DATE_VALUE = "01-01-2020";
-    public static final String MAX_DATE_VALUE = "31-12-2020";
+
+    public static final String MIN_DATE_VALUE = "01-02-2020"; // inclusive
+    public static final String MAX_DATE_VALUE = "30-10-2021";
+
+    public static final String MIN_DATE_VALUE_db = "2020-02-01"; //
+    public static final String MAX_DATE_VALUE_DB = "2021-10-30";
+
     public static final int MAX_USERNAME_LEN = 40;
     public static final int MIN_LENGTH_USERNAME = 3;
     public static final int MIN_PASSWORD_LENGTH = 8;

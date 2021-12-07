@@ -3,12 +3,15 @@ package ch.hslu.swde.wda.ui;
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
+import ch.hslu.swde.wda.domain.WeatherData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,12 +30,13 @@ public final class UI {
      The current active Menu.
      */
     private String currentMenu;
+    private  String[] availableCities;
 
     /**
      This is the main Scanner; several methods use this Scanner
      */
     Scanner sc;
-    DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
+    DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
 
     public UI() {
         this.sc = new Scanner(System.in);
@@ -45,10 +49,8 @@ public final class UI {
         // Load the cities from db when creating UI
         /* Generate City-List at runtime, the number of cities should not be static */
 
-        String[] cities = dof.getCityNamesAsArray();
-       Log.info(Arrays.toString(cities));
-
-        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(cities);
+        availableCities = databaseOutputFormatter.getCityNamesAsArray();
+        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
 
     }
 
@@ -67,12 +69,10 @@ public final class UI {
         selectedOption = readOptionFromUser();
 
         if (selectedOption == 2) { // create new user
-            Log.info("Staring process to create a new User");
+           // Log.info("Staring process to create a new User");
 
             newCredentials = askForUsernamePassword(0);
             System.out.println(GlobalConstants.CONFIRM_NEW_USER_CREATED);
-
-
         }
 
         String[] creds;
@@ -90,16 +90,47 @@ public final class UI {
 
         showActiveMenu();
         selectedOption = readOptionFromUser();
-        if (selectedOption == 1) { /* Ony one city is requested */
+        if (selectedOption == 1) {                      /* Ony one city is requested */
 
             currentMenu = CITY_NAMES_WITH_INDEX_MENU;
             showActiveMenu();
             selectedOption = readOptionFromUser();
-            selectedCity = GlobalConstants.cities[selectedOption];
+            selectedCity = availableCities[selectedOption];
             selectedTimePeriod = getTimePeriod();
 
-        } else if (selectedOption == 2) { /* All cities are considered */
+            List<WeatherData> weatherdata;
+
+            weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
+                                                                             GlobalConstants.MIN_DATE_VALUE_db,
+                                                                         GlobalConstants.MAX_DATE_VALUE_DB );
+
+            weatherdata.forEach(el -> System.out.println("\033[32m" + weatherdata.toString()));
+
+
+
+        } else if (selectedOption == 2) {               /* All cities are considered, and we return everything */
             selectedTimePeriod = getTimePeriod();
+            selectedCity = availableCities[selectedOption];
+            List<String> max_min;
+            List<String> cities;
+
+
+            System.out.println("\033[32m");
+
+
+            for (int i = 0; i < selectedTimePeriod.length; i++) {
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                Log.info("formatting date");
+                selectedTimePeriod[i] = LocalDate.parse(selectedTimePeriod[i], formatter).format(formatter2);
+            }
+
+
+
+
+            max_min = databaseOutputFormatter.selectMaxWeatherDataAllCity(selectedTimePeriod[0] + " 00:00:57");
+            System.out.println(max_min);
 
         }
 
@@ -267,11 +298,12 @@ public final class UI {
         }
         date = inferYearIfNotPresent(date);
 
-        if (!date.contains("2020")) {
+/*
+        if (!date.contains("2020") || !date.contains("2021")) {
             Log.warn(String.format(" %s is is outside of the valid year range. Year should always be 2020", date));
             return false;
         }
-
+*/
         try {
             DateFormat df = new SimpleDateFormat(GlobalConstants.DATE_FORMAT);
             df.setLenient(false);

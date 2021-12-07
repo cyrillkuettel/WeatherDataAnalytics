@@ -31,8 +31,14 @@ public final class DatabaseOutputFormatter {
 
     public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end) {
 
-        java.sql.Date startDate = java.sql.Date.valueOf(start);
-        java.sql.Date endDate = Date.valueOf(end);
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = Date.valueOf(start);
+            endDate = Date.valueOf(end);
+        } catch (Exception e) {
+            Log.info("change the dates ");
+        }
         List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, startDate, endDate);
         Log.info(requestedWeatherData);
         return requestedWeatherData;
@@ -116,6 +122,7 @@ public final class DatabaseOutputFormatter {
     public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) {
 
 
+        Log.info(String.format("inputTimeStamp: %s", inputTimeStamp));
 
         WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
         WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));

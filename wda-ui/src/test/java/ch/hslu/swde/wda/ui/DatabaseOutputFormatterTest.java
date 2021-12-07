@@ -43,7 +43,6 @@ class DatabaseOutputFormatterTest {
         }
 
         String nameOfCityFromDB = list.get(0).getCity().getName();
-
         assertThat(nameOfCityFromDB).isEqualTo(cityname);
         assertThat(list.size()).isNotZero();
     }
@@ -59,7 +58,8 @@ class DatabaseOutputFormatterTest {
         String[] averageData; // Temperatur, Luftdruck und Feuchtigkeit
 
         averageData = dof.selectAverageWeatherDataSingleCity(cityname, start, end);
-        System.out.println(Arrays.toString(averageData));
+
+        Log.info("\033[32m" + Arrays.toString(averageData));
 
         Arrays.stream(averageData).forEach(el -> assertThat(el).isNotBlank());
         Arrays.stream(averageData).forEach(el -> assertThat(el).isNotNull());
@@ -75,14 +75,14 @@ class DatabaseOutputFormatterTest {
         List<String> max_min;
 
         max_min = dof.selectMaxMinCity(cityname, start, end);
-        System.out.println(max_min);
+        Log.info("\033[32m" + max_min);
 
         assertThat(max_min.size()).isEqualTo(2);
         max_min.stream().forEach( el -> assertThat(el).isNotBlank());
 
     }
 
-    @Test /** Query A05 */
+    @Test /** Query A05 (Just like A04, but all cities) */
     void testSelectMaxMinOverAllcities() {
         DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
         List<String> max_min;
@@ -92,8 +92,6 @@ class DatabaseOutputFormatterTest {
 
         assertThat(max_min.size()).isEqualTo(2);
         max_min.stream().forEach( el -> assertThat(el).isNotBlank());
-
-
 
     }
 
