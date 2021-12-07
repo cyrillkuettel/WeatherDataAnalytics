@@ -26,8 +26,6 @@ public class PersistWeatherDataTest {
 
 		// Set both Persisterclasses to TEST DB
 		pd.selectTestDB();
-		pd.getPersistCity().selectTestDB();
-
 	}
 
 	@BeforeEach
