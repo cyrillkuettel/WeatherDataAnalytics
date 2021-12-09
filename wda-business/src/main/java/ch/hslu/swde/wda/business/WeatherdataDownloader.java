@@ -35,10 +35,12 @@ public final class WeatherdataDownloader {
 
 
 
+
+
     public void startDownloadForCity(String city) {
         long startTime = System.currentTimeMillis();
 
-        String WeatherDataSingleCity = requestRawXMLData(city + ALL_SINCE_JANUARY_2020);
+        String WeatherDataSingleCity = requestRawXMLData( BASE_URI + city + ALL_SINCE_JANUARY_2020);
 
         try {
             downloadAndPersistWeather_OfSingleCity(WeatherDataSingleCity);
@@ -54,7 +56,6 @@ public final class WeatherdataDownloader {
         }
     }
 
-
     /**
      * Universal function to send Requests.
      * Sends HttpRequest to get XML String from the web service provider.
@@ -65,12 +66,11 @@ public final class WeatherdataDownloader {
     public static String requestRawXMLData(String URI) {
         HttpClient client = HttpClient.newHttpClient();
         String mimeType = "application/xml";
-
         URI uriObj = null;
         try {
             uriObj = new URI(BASE_URI + URI);
         } catch (URISyntaxException e) {
-            Log.warn("Failed building the URI. Check the syntax.");
+            Log.warn(String.format("Failed building the URI. Check the syntax. URL is %s", BASE_URI + URI));
             e.printStackTrace();
         }
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -89,7 +89,6 @@ public final class WeatherdataDownloader {
             return XMLBodyDump;
             // do something with the retrieved message as String ...
         }
-            // something went wrong ..
         Log.error("Http status code not 200! It's " + res.statusCode());
 
         return "";
@@ -100,7 +99,7 @@ public final class WeatherdataDownloader {
      *  This method generates the NodeList of the provided Input. It assumes the input is valid xml.
      *   NodeList are objects which represent an ordered list of nodes. In a NodeList, the nodes are returned in the
      *   order in which they are specified in the XML document.
-     * @return
+     * @return a NodeList of XML Tags
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
@@ -121,13 +120,16 @@ public final class WeatherdataDownloader {
      * Download the WeatherData from the Webservice.
      * This method has to be called after requestRawXMLData. It assumes that the input string contains the xml dump
      * of all requested data for a single city.
-     *
      * @param xmlString The return value of method requestRawXMLData.
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
+     * @return The List<WeatherData> for that particular city. The return value can be used ( for testing), but does
+     * not have to be
+     * used.
      */
-    public void downloadAndPersistWeather_OfSingleCity(String xmlString) throws ParserConfigurationException, IOException,
+    public List<WeatherData> downloadAndPersistWeather_OfSingleCity(String xmlString) throws ParserConfigurationException,
+            IOException,
             SAXException {
 
         final List<WeatherData> completeWeatherDataSingleCity = new ArrayList<>();
@@ -151,8 +153,7 @@ public final class WeatherdataDownloader {
         System.out.println(String.format("\033[32m inserted List<WeatherData> of size %d using PersistWeatherData",
                                          completeWeatherDataSingleCity.size()));
 
-        Log.info(completeWeatherDataSingleCity);
-
+        return completeWeatherDataSingleCity;
     }
 
     /**

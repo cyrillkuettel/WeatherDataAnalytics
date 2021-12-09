@@ -1,6 +1,9 @@
 package ch.hslu.swde.wda.business;
 
 import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.domain.WeatherData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
@@ -8,12 +11,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
+import static ch.hslu.swde.wda.business.WeatherdataDownloader.ALL_SINCE_JANUARY_2020;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class WeatherdataDownloaderTest {
+    private static final Logger Log = LogManager.getLogger(WeatherdataDownloaderTest.class);
 
     @Test
     void testDownloadAllCities() {
+
 
         WeatherdataDownloader weatherdataDownloader = new WeatherdataDownloader();
         List<City> list = null;
@@ -40,10 +46,23 @@ class WeatherdataDownloaderTest {
 
     @Test
     void testDownloadSingleCity() {
+        long startTime = System.currentTimeMillis();
+
         WeatherdataDownloader weatherdataDownloader = new WeatherdataDownloader();
         String city = "Davos";
+        List<WeatherData> list;
 
-        weatherdataDownloader.startDownloadForCity(city);
+        String WeatherDataSingleCity = weatherdataDownloader.requestRawXMLData(city + ALL_SINCE_JANUARY_2020);
+        try {
+           list = weatherdataDownloader.downloadAndPersistWeather_OfSingleCity(WeatherDataSingleCity);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        long elapsedSeconds = elapsedTime / 1000;
+
+        Log.info(String.format("\033[32m Download and Persisted %s in total of %s seconds",
+                               city, elapsedSeconds));
 
     }
 

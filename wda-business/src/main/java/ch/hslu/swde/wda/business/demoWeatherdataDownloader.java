@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class demoWeatherdataDownloader {
@@ -21,10 +20,21 @@ public class demoWeatherdataDownloader {
     static List<String> logs = new ArrayList<>();
 
     public static void main(String[] args) {
-        // Download all Data. This runs only one time
 
-        Arrays.stream(cities).parallel().forEach(city ->
-                                                         weatherdatadownloader.startDownloadForCity(city));
+
+        weatherdatadownloader.startDownloadForCity("Frauenfeld");
+
+        // Download all Data. This runs only one time
+/*
+        for (String city : cities ) {
+            weatherdatadownloader.startDownloadForCity(city);
+            logs.add(String.format("Downloaded city %s", city));
+        }
+
+ */
+
+
+
         logs.forEach(System.out::println);
     }
 
