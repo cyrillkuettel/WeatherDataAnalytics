@@ -3,7 +3,6 @@ package ch.hslu.swde.wda.business;
 import ch.hslu.swde.wda.domain.City;
 import ch.hslu.swde.wda.domain.WeatherData;
 import ch.hslu.swde.wda.persister.PersistWeatherData;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -32,6 +31,28 @@ public final class WeatherdataDownloader {
     private static final Logger Log = LogManager.getLogger(WeatherdataDownloader.class);
 
     static final String BASE_URI = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
+    public static final String ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
+
+
+
+    public void startDownloadForCity(String city) {
+        long startTime = System.currentTimeMillis();
+
+        String WeatherDataSingleCity = requestRawXMLData(city + ALL_SINCE_JANUARY_2020);
+
+        try {
+            downloadAndPersistWeather_OfSingleCity(WeatherDataSingleCity);
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            long elapsedSeconds = elapsedTime / 1000;
+
+            Log.info(String.format("\033[32m Download and Persisted %s in total of %s seconds",
+                                             city, elapsedSeconds));
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     /**
@@ -75,6 +96,28 @@ public final class WeatherdataDownloader {
     }
 
     /**
+     * @param rawXML Valid XML Data.
+     *  This method generates the NodeList of the provided Input. It assumes the input is valid xml.
+     *   NodeList are objects which represent an ordered list of nodes. In a NodeList, the nodes are returned in the
+     *   order in which they are specified in the XML document.
+     * @return
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
+    public NodeList generateXMLNodeList(String rawXML) throws ParserConfigurationException, IOException, SAXException {
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        InputSource inStream = new InputSource();
+        inStream.setCharacterStream(new StringReader(rawXML));
+        DocumentBuilder db = factory.newDocumentBuilder();
+        Document doc = db.parse(inStream);
+        NodeList nodeList = doc.getDocumentElement().getChildNodes();
+
+        return nodeList;
+    }
+
+    /**
      * Download the WeatherData from the Webservice.
      * This method has to be called after requestRawXMLData. It assumes that the input string contains the xml dump
      * of all requested data for a single city.
@@ -84,96 +127,121 @@ public final class WeatherdataDownloader {
      * @throws IOException
      * @throws SAXException
      */
-    public void downloadAndPersistWeatherDataSingleCity(String xmlString) throws ParserConfigurationException, IOException,
+    public void downloadAndPersistWeather_OfSingleCity(String xmlString) throws ParserConfigurationException, IOException,
             SAXException {
 
-    	PersistWeatherData persistWeatherData = new PersistWeatherData();
-        List<WeatherData> completeWeatherDataSingleCity = new ArrayList<>();
+        final List<WeatherData> completeWeatherDataSingleCity = new ArrayList<>();
 
+        final NodeList nodes = generateXMLNodeList(xmlString);
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        InputSource inStream = new InputSource();
-        inStream.setCharacterStream(new StringReader(xmlString));
-        DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.parse(inStream);
-        NodeList nl = doc.getDocumentElement().getChildNodes();
-
-        int length = nl.getLength();
-        if (length == 0) {
-            Log.warn("Found no NodeList items in xmlString!");
-        }
-        for (int i = 0; i < nl.getLength(); i++) {
-            if (nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element) nl.item(i);
-                if (el.getNodeName().contains("weatherdata")) {
-                    String weatherdataDump = el.getElementsByTagName("data").item(0).getTextContent();
-                    String timeOfLastUPdate = el.getElementsByTagName("timeOfLastUpdate").item(0).getTextContent();
-                    String cityname = el.getElementsByTagName("name").item(0).getTextContent();
-                    String zip = el.getElementsByTagName("zip").item(0).getTextContent();
-                    City city = new City(Integer.parseInt(zip), cityname);
-                    String temperatur_deliminer_left = "#CURRENT_TEMPERATURE_CELSIUS:";
-                    String pressure_deliminer_left = "#PRESSURE:";
-                    String humidity_deliminer_left = "#HUMIDITY:";
-                    String temperatur_deliminer_right = "#PRESSURE";
-                    String pressure_deliminer_right = "#HUMIDITY";
-                    String humidity_deliminer_right = "#WIND_SPEED";
-                    double temperatur = -1.0;
-                    double pressure = -1.0;
-                    double humidity = 1.0;
-
-                    try {
-                        String temperaturstr =
-                                weatherdataDump.substring(weatherdataDump.indexOf(temperatur_deliminer_left),
-                                                          weatherdataDump.indexOf(temperatur_deliminer_right));
-                        String finalTemper_STRIPPED = temperaturstr.substring(temperaturstr.indexOf(":") + 1);
-                        String pressurestr =
-                                weatherdataDump.substring(weatherdataDump.indexOf(pressure_deliminer_left),
-                                                          weatherdataDump.indexOf(pressure_deliminer_right));
-                        String pressurestr_STRIPPED = pressurestr.substring(pressurestr.indexOf(":") + 1);
-                        String humiditystr =
-                                weatherdataDump.substring(weatherdataDump.lastIndexOf(humidity_deliminer_left),
-                                                          weatherdataDump.indexOf(humidity_deliminer_right));
-                        String humiditystr_STRIPPED = humiditystr.substring(humiditystr.indexOf(":") + 1);
-
-
-                        try {
-                            temperatur = Double.parseDouble(finalTemper_STRIPPED);
-                            pressure = Double.parseDouble(pressurestr_STRIPPED);
-                            humidity = Double.parseDouble(humiditystr_STRIPPED);
-                            WeatherData weatherData1 = new WeatherData(city, Timestamp.valueOf(timeOfLastUPdate),
-                                                                       temperatur, pressure, humidity);
-
-                            completeWeatherDataSingleCity.add(weatherData1);
-
-                            // Log.info(weatherData1);
-
-                        } catch (Exception e) {
-                            Log.debug("string Parsing failed");
-                            e.printStackTrace();
-                        }
-
-                        // System.out.println(weatherData1);
-                    } catch (Exception e) {
-                        Log.debug("Skipping one WeatherData object, due to unknown Exception");
-                        e.printStackTrace();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) nodes.item(i);
+                if (element.getNodeName().contains("weatherdata")) {
+                    WeatherData weatherData = parseXMLData_ToWeatherDataObjects(element);
+                    if (weatherData != null) {
+                        completeWeatherDataSingleCity.add(weatherData);
                     }
-
                 }
-
             }
-
         }
-
-         persistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
-
+        final PersistWeatherData persistWeatherData = new PersistWeatherData();
+        persistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
 
         System.out.println(String.format("\033[32m inserted List<WeatherData> of size %d using PersistWeatherData",
                                          completeWeatherDataSingleCity.size()));
 
+        Log.info(completeWeatherDataSingleCity);
 
-            /*
+    }
+
+    /**
+     * Extract all the Data of Weather, along with City into a WeatherDataObject.
+     * This is the method that does all the "heavy-lifting"
+     * @param el
+     * @return
+     */
+    public WeatherData parseXMLData_ToWeatherDataObjects(Element el) {
+
+            WeatherData weatherData = null;
+
+            String weatherdataDump = el.getElementsByTagName("data").item(0).getTextContent();
+            String timeOfLastUPdate = el.getElementsByTagName("timeOfLastUpdate").item(0).getTextContent();
+            String cityname = el.getElementsByTagName("name").item(0).getTextContent();
+            String zip = el.getElementsByTagName("zip").item(0).getTextContent();
+            City city = new City(Integer.parseInt(zip), cityname);
+            String temperatur_deliminer_left = "#CURRENT_TEMPERATURE_CELSIUS:";
+            String pressure_deliminer_left = "#PRESSURE:";
+            String humidity_deliminer_left = "#HUMIDITY:";
+            String temperatur_deliminer_right = "#PRESSURE";
+            String pressure_deliminer_right = "#HUMIDITY";
+            String humidity_deliminer_right = "#WIND_SPEED";
+            double temperatur = -1.0;
+            double pressure = -1.0;
+            double humidity = 1.0;
+
+            try {
+                String temperaturstr =
+                        weatherdataDump.substring(weatherdataDump.indexOf(temperatur_deliminer_left),
+                                                  weatherdataDump.indexOf(temperatur_deliminer_right));
+                String finalTemper_STRIPPED = temperaturstr.substring(temperaturstr.indexOf(":") + 1);
+                String pressurestr =
+                        weatherdataDump.substring(weatherdataDump.indexOf(pressure_deliminer_left),
+                                                  weatherdataDump.indexOf(pressure_deliminer_right));
+                String pressurestr_STRIPPED = pressurestr.substring(pressurestr.indexOf(":") + 1);
+                String humiditystr =
+                        weatherdataDump.substring(weatherdataDump.lastIndexOf(humidity_deliminer_left),
+                                                  weatherdataDump.indexOf(humidity_deliminer_right));
+                String humiditystr_STRIPPED = humiditystr.substring(humiditystr.indexOf(":") + 1);
+
+
+                try {
+                    temperatur = Double.parseDouble(finalTemper_STRIPPED);
+                    pressure = Double.parseDouble(pressurestr_STRIPPED);
+                    humidity = Double.parseDouble(humiditystr_STRIPPED);
+
+                    weatherData = new WeatherData(city, Timestamp.valueOf(timeOfLastUPdate),
+                                                               temperatur, pressure, humidity);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                Log.debug("Skipping one WeatherData object, due to unknown Exception");
+                e.printStackTrace();
+            }
+            return weatherData;
+    }
+
+
+    public List<City> downloadAllCities() throws ParserConfigurationException, IOException,
+            SAXException {
+
+        List<City> cityList = new ArrayList<>();
+
+        String cityNamesUnprocessed = requestRawXMLData("cities");
+        NodeList nodeList = generateXMLNodeList(cityNamesUnprocessed);
+
+        int length = nodeList.getLength();
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            if (nodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element el = (Element) nodeList.item(i);
+                if (el.getNodeName().contains("city")) {
+                    String name = el.getElementsByTagName("name").item(0).getTextContent();
+                    String zip = el.getElementsByTagName("zip").item(0).getTextContent();
+                    // We got a City, now create city Object
+                    City city = new City(Integer.parseInt(zip), name);
+                    cityList.add(city);
+                }
+            }
+        }
+        return cityList;
+    }
+
+     /*
             Example weatherdata
-
+            ===================
             <?xml version="1.0" encoding="UTF-8"?>
             <weatherdata>
                <city>
@@ -183,48 +251,7 @@ public final class WeatherdataDownloader {
                <data>LAST_UPDATE_TIME:2021-09-21 08:17:34#COUNTRY:CH#CITY_ZIP:6300#CITY_NAME:Zug#LONGITUDE:8.5174#LATIUDE:47.1724#STATION_ID:2657908#WEATHER_SUMMARY:Clouds#WEATHER_DESCRIPTION:broken clouds#CURRENT_TEMPERATURE_CELSIUS:11.0#PRESSURE:1025#HUMIDITY:94#WIND_SPEED:0#WIND_DIRECTION:0</data>
                <timeOfLastUpdate>2021-09-21 08:17:34</timeOfLastUpdate>
             </weatherdata>
-
      */
-    }
-
-
-
-    public List<City> downloadAllCities() throws ParserConfigurationException, IOException,
-            SAXException {
-
-        List<City> cityList = new ArrayList<>();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        InputSource inStream = new InputSource();
-        String cityNamesUnprocessed = requestRawXMLData("cities");
-        inStream.setCharacterStream(new StringReader(cityNamesUnprocessed));
-        DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.parse(inStream);
-        NodeList nl = doc.getDocumentElement().getChildNodes();
-
-        int length = nl.getLength();
-        if (length == 0) {
-            Log.error("Found no NodeList items in xmlString!");
-        }
-        for (int i = 0; i < nl.getLength(); i++) {
-            if (nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element) nl.item(i);
-                if (el.getNodeName().contains("city")) {
-                    String name = el.getElementsByTagName("name").item(0).getTextContent();
-                    String zip = el.getElementsByTagName("zip").item(0).getTextContent();
-                    // Log.info(String.format("Parsed city from web service: name = %s zipcode = %s ", name, zip));
-
-                    // We got a City, now create city Object
-                    City city = new City(Integer.parseInt(zip), name);
-                    cityList.add(city);
-                } else if (el.getNodeName().contains("weatherdata")) {
-                    Log.info("weatherdata found");
-                }
-
-            }
-        }
-        return cityList;
-    }
-
 
 
 }

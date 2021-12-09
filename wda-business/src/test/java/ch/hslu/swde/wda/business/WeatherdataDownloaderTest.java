@@ -38,5 +38,14 @@ class WeatherdataDownloaderTest {
         list.stream().map(el -> el.getName()).forEach(System.out::println);
     }
 
+    @Test
+    void testDownloadSingleCity() {
+        WeatherdataDownloader weatherdataDownloader = new WeatherdataDownloader();
+        String city = "Davos";
+
+        weatherdataDownloader.startDownloadForCity(city);
+
+    }
+
 
 }
