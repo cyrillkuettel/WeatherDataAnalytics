@@ -35,19 +35,21 @@ public final class WeatherdataDownloader {
 
 
     /**
+     * Universal function to send Requests.
      * Sends HttpRequest to get XML String from the web service provider.
      *
-     * @param cityURL specify what we need.
-     * @return XML. It's not yet processed.
+     * @param URI Parameter to specicy the ressource to request.
+     * @return the raw, unprocessed Data (xml) from the Weatherdata Provider
      */
-    public String requestRawXMLData(String cityURL) {
+    public static String requestRawXMLData(String URI) {
         HttpClient client = HttpClient.newHttpClient();
         String mimeType = "application/xml";
 
         URI uriObj = null;
         try {
-            uriObj = new URI(BASE_URI + cityURL);
+            uriObj = new URI(BASE_URI + URI);
         } catch (URISyntaxException e) {
+            Log.warn("Failed building the URI. Check the syntax.");
             e.printStackTrace();
         }
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -65,16 +67,17 @@ public final class WeatherdataDownloader {
             String XMLBodyDump = res.body(); // the whole thing. For Weatherdata this can be quite big.
             return XMLBodyDump;
             // do something with the retrieved message as String ...
-        } else {
-            // something went wrong ..
-            Log.error("Http status code not 200! It's " + res.statusCode());
         }
+            // something went wrong ..
+        Log.error("Http status code not 200! It's " + res.statusCode());
+
         return "";
     }
 
     /**
      * Download the WeatherData from the Webservice.
-     * This method has to be called after requestRawXMLData!
+     * This method has to be called after requestRawXMLData. It assumes that the input string contains the xml dump
+     * of all requested data for a single city.
      *
      * @param xmlString The return value of method requestRawXMLData.
      * @throws ParserConfigurationException
@@ -94,6 +97,7 @@ public final class WeatherdataDownloader {
         DocumentBuilder db = factory.newDocumentBuilder();
         Document doc = db.parse(inStream);
         NodeList nl = doc.getDocumentElement().getChildNodes();
+
         int length = nl.getLength();
         if (length == 0) {
             Log.warn("Found no NodeList items in xmlString!");
@@ -144,13 +148,14 @@ public final class WeatherdataDownloader {
                             // Log.info(weatherData1);
 
                         } catch (Exception e) {
-                            Log.warn("string Parsing failed");
+                            Log.debug("string Parsing failed");
                             e.printStackTrace();
                         }
 
                         // System.out.println(weatherData1);
                     } catch (Exception e) {
-                        Log.warn("Skipping one WeatherData object, due to unknown Exception");
+                        Log.debug("Skipping one WeatherData object, due to unknown Exception");
+                        e.printStackTrace();
                     }
 
                 }
@@ -160,6 +165,8 @@ public final class WeatherdataDownloader {
         }
 
          persistWeatherData.insertWeatherData(completeWeatherDataSingleCity);
+
+
         System.out.println(String.format("\033[32m inserted List<WeatherData> of size %d using PersistWeatherData",
                                          completeWeatherDataSingleCity.size()));
 
@@ -181,58 +188,19 @@ public final class WeatherdataDownloader {
     }
 
 
-    /**
-     * Parse the elements in xml by the xml tag name. For Example "city" or "zip"
-     *
-     * @param xmlString String which is the result of a HttpResponse. The method which handles the HttpResponse
-     *                  should be called before this method.
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
-     */
-    public final void parseXMLByTagName(String xmlString) throws ParserConfigurationException, IOException,
+
+    public List<City> downloadAllCities() throws ParserConfigurationException, IOException,
             SAXException {
 
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        InputSource inStream = new InputSource();
-        inStream.setCharacterStream(new StringReader(xmlString));
-        DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.parse(inStream);
-        NodeList nl = doc.getDocumentElement().getChildNodes();
-        int length = nl.getLength();
-        if (length == 0) {
-            Log.error("Found no NodeList items in xmlString!");
-        }
-        for (int i = 0; i < nl.getLength(); i++) {
-            if (nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element) nl.item(i);
-                if (el.getNodeName().contains("city")) {
-                    String name = el.getElementsByTagName("name").item(0).getTextContent();
-                    String zip = el.getElementsByTagName("zip").item(0).getTextContent();
-                    Log.info(String.format("Parsed city from web service: name = %s zipcode = %s ", name, zip));
-
-                    // We got a City, now persist it:
-                    //  City city = new City()
-                } else if (el.getNodeName().contains("weatherdata")) {
-                    Log.info("weatherdata found");
-                }
-
-            }
-        }
-    }
-
-    public List<City> downloadAllCitiesFromWeb() throws ParserConfigurationException, IOException,
-            SAXException {
-
-        String xmlString = requestRawXMLData("cities");
         List<City> cityList = new ArrayList<>();
-
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         InputSource inStream = new InputSource();
-        inStream.setCharacterStream(new StringReader(xmlString));
+        String cityNamesUnprocessed = requestRawXMLData("cities");
+        inStream.setCharacterStream(new StringReader(cityNamesUnprocessed));
         DocumentBuilder db = factory.newDocumentBuilder();
         Document doc = db.parse(inStream);
         NodeList nl = doc.getDocumentElement().getChildNodes();
+
         int length = nl.getLength();
         if (length == 0) {
             Log.error("Found no NodeList items in xmlString!");
@@ -256,5 +224,7 @@ public final class WeatherdataDownloader {
         }
         return cityList;
     }
+
+
 
 }

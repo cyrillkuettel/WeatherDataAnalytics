@@ -109,7 +109,7 @@ class DatabaseOutputFormatterTest {
     void testSelectAllCitiesAsList() {
         DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
         List<String> cities = dof.getCityNamesAsList();
-        assertThat(cities.size()).isGreaterThanOrEqualTo(38);
+        assertThat(cities.size()).isGreaterThanOrEqualTo(40);
     }
 
 

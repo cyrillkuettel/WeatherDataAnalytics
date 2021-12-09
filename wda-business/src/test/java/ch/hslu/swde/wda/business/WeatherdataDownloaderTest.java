@@ -21,11 +21,12 @@ class WeatherdataDownloaderTest {
 
 
         try {
-            list = weatherdataDownloader.downloadAllCitiesFromWeb();
+            list = weatherdataDownloader.downloadAllCities();
             long elapsedTime = System.currentTimeMillis() - startTime;
             long elapsedSeconds = elapsedTime / 1000;
 
-            System.out.println(String.format("\033[32m Download all cities, got a total number of %d of cities", list.size()));
+            System.out.println(String.format("\033[32m Download all cities, got a total number of \033[33m %d \033[32m " +
+                                                     "cities", list.size()));
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -33,6 +34,8 @@ class WeatherdataDownloaderTest {
         }
         assertThat(list).isNotNull();
         assertThat(list.get(0)).isNotSameAs(list.get(1));
+        System.out.println("[37m");
+        list.stream().map(el -> el.getName()).forEach(System.out::println);
     }
 
 
