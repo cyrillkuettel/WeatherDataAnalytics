@@ -16,13 +16,13 @@ public class demoWeatherdataDownloader {
             "Andermatt", "Realp", "Bellinzona", "Locarno", "Airolo", "Chur", "Arosa", "Davos", "St. Moritz", "Zurich",
             "Winterthur", "Frauenfeld", "St. Gallen"};
 
-    public static final WeatherdataDownloader weatherdatadownloader = new WeatherdataDownloader();
+
     static List<String> logs = new ArrayList<>();
 
     public static void main(String[] args) {
+        final WeatherdataDownloader weatherdatadownloader = new WeatherdataDownloader();
 
-
-        weatherdatadownloader.startDownloadForCity("Frauenfeld");
+        weatherdatadownloader.startDownloadForCity("Zug");
 
         // Download all Data. This runs only one time
 /*

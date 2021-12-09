@@ -31,7 +31,8 @@ public final class WeatherdataDownloader {
     private static final Logger Log = LogManager.getLogger(WeatherdataDownloader.class);
 
     static final String BASE_URI = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
-    public static final String ALL_SINCE_JANUARY_2020 = "/since?year=2020&month=1&day=1";
+
+    public static final String ALL_SINCE_JANUARY_2020 = "/since?year=2021&month=1&day=1";
 
 
 
@@ -40,7 +41,10 @@ public final class WeatherdataDownloader {
     public void startDownloadForCity(String city) {
         long startTime = System.currentTimeMillis();
 
-        String WeatherDataSingleCity = requestRawXMLData( BASE_URI + city + ALL_SINCE_JANUARY_2020);
+        final String URL = BASE_URI + city + ALL_SINCE_JANUARY_2020;
+        final String WeatherDataSingleCity = requestRawXMLData( URL);
+
+        Log.info(String.format("Running request for %s ", URL));
 
         try {
             downloadAndPersistWeather_OfSingleCity(WeatherDataSingleCity);
@@ -57,20 +61,21 @@ public final class WeatherdataDownloader {
     }
 
     /**
-     * Universal function to send Requests.
-     * Sends HttpRequest to get XML String from the web service provider.
      *
+     * Universal function to send Requests. Assumes that the input is already a vaild URL.
+     * Sends HttpRequest to get XML String from the web service provider.
      * @param URI Parameter to specicy the ressource to request.
      * @return the raw, unprocessed Data (xml) from the Weatherdata Provider
      */
-    public static String requestRawXMLData(String URI) {
+    public String requestRawXMLData(String URI) {
+
         HttpClient client = HttpClient.newHttpClient();
         String mimeType = "application/xml";
         URI uriObj = null;
         try {
-            uriObj = new URI(BASE_URI + URI);
+            uriObj = new URI(URI);
         } catch (URISyntaxException e) {
-            Log.warn(String.format("Failed building the URI. Check the syntax. URL is %s", BASE_URI + URI));
+            Log.warn(String.format("Failed building the URI. Check the syntax. URL is %s",  URI));
             e.printStackTrace();
         }
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -93,6 +98,8 @@ public final class WeatherdataDownloader {
 
         return "";
     }
+
+
 
     /**
      * @param rawXML Valid XML Data.
@@ -218,12 +225,12 @@ public final class WeatherdataDownloader {
     public List<City> downloadAllCities() throws ParserConfigurationException, IOException,
             SAXException {
 
-        List<City> cityList = new ArrayList<>();
+        final String URL = BASE_URI + "cities";
+        String cityNamesUnprocessed = requestRawXMLData(URL);
 
-        String cityNamesUnprocessed = requestRawXMLData("cities");
+        List<City> cityList = new ArrayList<>();
         NodeList nodeList = generateXMLNodeList(cityNamesUnprocessed);
 
-        int length = nodeList.getLength();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             if (nodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
