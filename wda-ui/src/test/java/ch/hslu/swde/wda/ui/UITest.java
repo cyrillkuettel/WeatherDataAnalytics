@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,40 +96,24 @@ class UITest {
 
     }
 
-    @Test
-    void testTryToParseDate_usingDateWithoutYear() {
-        String dateWithNoYearSpecified = "10.11."; // actually, it's always 2020
-        assertTrue(UI.isValidDate(dateWithNoYearSpecified));
-
-    }
 
     @Test
     @Disabled
     void testTryToParseDate_usingDateWithWrongYear() { // test what happens when the year is not 2020
-        String dateWithNoYearSpecified = "27.11.1999";
-        assertFalse(UI.isValidDate(dateWithNoYearSpecified));
+        UI ui = new UI();
+        String dateWithYearOutOfRange = "27.11.1999";
+        assertFalse(ui.isValidDate(dateWithYearOutOfRange));
 
     }
 
-    @Test
-    void testinferYearIfNotPresent() {
-        String dateWithoutYear = "10-11-";
-        // actually, year always 2020. It should infer year = 2020 if no year is specified
-        dateWithoutYear = UI.inferYearIfNotPresent(dateWithoutYear);
-        assertThat(dateWithoutYear).isEqualTo("10-11-2020");
-    }
 
-    @Test
-    @Disabled
-    void testTryToParseDate_usingWeirdDateInput() {
-        String Not_A_Date = "1-1-1";
-        assertFalse(UI.isValidDate(Not_A_Date));
-    }
+
 
     @Test
     void testTryToParseDate_usingWeirdDateInput2() {
         String completlyIncorrectDate = "10.11"; // expect everything!
-        assertFalse(UI.isValidDate(completlyIncorrectDate));
+        UI ui = new UI();
+        assertFalse(ui.isValidDate(completlyIncorrectDate));
     }
 
 
@@ -146,26 +131,63 @@ class UITest {
         System.setIn(sysInBackup);
     }
 
-    @Test
-    void testDateFormatTranslater() {
-        UI ui = new UI();
-        String testDate = "27-11-2020";
 
-    }
 
 
     @Test
     void testisValidDateFromString() {
+        UI ui = new UI();
+
         assertThat(GlobalConstants.DATE_FORMAT).isEqualTo("dd-MM-yyyy");
         String testDate = "27-11-2020";
-        assertTrue(UI.isValidDate(testDate));
+        assertTrue(ui.isValidDate(testDate));
     }
 
     @Test
     void testisValidDateFromStringDifferentFormat() {
         // The validDate method should be able to handle both formats
+        UI ui = new UI();
+
         String testDate = "27.11.2020";
-        assertTrue(UI.isValidDate(testDate));
+
+        assertTrue(ui.isValidDate(testDate));
+    }
+
+
+    @Test
+    void testDateFormatter() {
+        UI ui = new UI();
+        String testDate = "27-11-2020";  //
+        String testDate2 = "31-01-2020";
+
+        String formattedDate = ui.transformDateToDifferentFormat(testDate);
+        assertThat(formattedDate).isEqualTo("2020-11-27");
+
+        String formattedDate2 = ui.transformDateToDifferentFormat(testDate2);
+        assertThat(formattedDate2).isEqualTo("2020-01-31");
+    }
+
+    @Test
+    void testtransformDateToDifferentFormat() {
+
+        UI ui = new UI();
+        String[] selectedTimePeriod = {"27-11-2021", "30-11-2021"};
+        String[] expectedDateFormat_AfterTranslation = {"2021-11-27", "2021-11-30"};
+
+       selectedTimePeriod =
+               Arrays.stream(selectedTimePeriod).map(ui::transformDateToDifferentFormat).toArray(String[]::new);
+
+        assertThat(selectedTimePeriod).isEqualTo(expectedDateFormat_AfterTranslation);
+    }
+
+    @Test
+    void testReplacePointsWithDashes() {
+             UI ui = new UI();
+
+         String dateWithPoints = "27.11.2021";
+         String replaced = ui.replacePointsWithDashes(dateWithPoints);
+
+         assertThat(replaced).isEqualTo("27-11-2021");
     }
 
 

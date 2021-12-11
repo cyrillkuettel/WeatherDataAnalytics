@@ -30,26 +30,22 @@ public final class UI {
      The current active Menu.
      */
     private String currentMenu;
-    private  String[] availableCities;
+    private String[] availableCities;
 
-    /**
-     This is the main Scanner; several methods use this Scanner
-     */
-    Scanner sc;
+
+    Scanner scanner;
     DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
 
     public UI() {
-        this.sc = new Scanner(System.in);
-        if (Utils.pingURL(GlobalConstants.CITY_URL, 10000)) {
-            Log.info("VPN connected!");
-        } else {
-            Log.error("Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?");
+        scanner = new Scanner(System.in);
+
+        if (!Utils.pingURL(GlobalConstants.WEATHERDATA_PROVIDER, 10000)) {
+            Log.fatal("Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?");
         }
 
-        // Load the cities from db when creating UI
-        /* Generate City-List at runtime, the number of cities should not be static */
+        /* The cities could change in the future, so they have to be loaded dynamically  */
+        availableCities = databaseOutputFormatter.convertCitiesFromArrayToList();
 
-        availableCities = databaseOutputFormatter.getCityNamesAsArray();
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
 
     }
@@ -61,7 +57,7 @@ public final class UI {
     public void startFromBeginning() {
         int selectedOption;
         String selectedCity;
-        String[] selectedTimePeriod = new String[2]; // timePeriod[0] = startDate, timePeriod[1] = endDate
+        String[] selectedTimePeriod; // timePeriod[0] = startDate, timePeriod[1] = endDate
         String[] newCredentials;
 
         currentMenu = GlobalConstants.WELCOME_MENU;
@@ -96,45 +92,55 @@ public final class UI {
             showActiveMenu();
             selectedOption = readOptionFromUser();
             selectedCity = availableCities[selectedOption];
+            System.out.println(String.format("Ausgewählte Stadt : %s", selectedCity ));
             selectedTimePeriod = getTimePeriod();
+            Log.info(String.format("the Date before being translated to different format is from %s to %s ",
+                                   selectedTimePeriod[0], selectedTimePeriod[1] ));
 
-            List<WeatherData> weatherdata;
+            selectedTimePeriod = /* different Date format: yyyy-MM-dd */
+                    Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
 
-            //
-            weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
-                                                                             GlobalConstants.MIN_DATE_VALUE_db,
-                                                                         GlobalConstants.MAX_DATE_VALUE_DB );
 
-            weatherdata.forEach(el -> System.out.println("\033[32m" + weatherdata.toString()));
+
+            List<WeatherData> weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
+                                                                                               selectedTimePeriod[0],
+                                                                                               selectedTimePeriod[1] );
+
+            weatherdata.forEach(el -> System.out.println("\033[32m" + weatherdata.toString() + '\n'));
 
 
 
         } else if (selectedOption == 2) {               /* All cities are considered, and we return everything */
             selectedTimePeriod = getTimePeriod();
-            selectedCity = availableCities[selectedOption];
             List<String> max_min;
-            List<String> cities;
-
+            String averageData;
 
             System.out.println("\033[32m");
 
-
-            for (int i = 0; i < selectedTimePeriod.length; i++) {
-
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                Log.info("formatting date");
-                selectedTimePeriod[i] = LocalDate.parse(selectedTimePeriod[i], formatter).format(formatter2);
-            }
-
-
-
+            selectedTimePeriod = /* different Date format: yyyy-MM-dd */
+                    Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
 
             max_min = databaseOutputFormatter.selectMaxWeatherDataAllCity(selectedTimePeriod[0] + " 00:00:57");
             System.out.println(max_min);
 
+
         }
 
+    }
+
+    /**
+     * For each city, write it's name and coresponding index.
+     * We need this to display it in Terminal, so that a sinle city can be selected by user.
+     *
+     * @param cities
+     */
+    public final String generateCityWithIndex(final String[] cities) {
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < cities.length; i++) {
+            line.append(i).append("  ").append(cities[i]).append("\n");
+        }
+        line.append("\n Bitte den Index der gewünschten Ortschaft eingeben.");
+        return line.toString();
     }
 
     /**
@@ -151,25 +157,25 @@ public final class UI {
             case GlobalConstants.SELECT_DATA_OR_ALL_MENU:
             case GlobalConstants.TIMESPAN:
             case GlobalConstants.WELCOME_MENU:
-                validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each  menu
+                validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each menu
                 break;
         }
         if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) {
-            // We have an array of fixed length, containing the cities. A valid menu value is considerd valid,
-            // if 0 <= index < cities.length;
-            validMenuValues = IntStream.rangeClosed(0, GlobalConstants.cities.length - 1)
+            // A valid menu value is considerd valid,
+            // if it passes the condition 0 <= index < cities.length;
+            validMenuValues = IntStream.range(0, availableCities.length)
                     .boxed().collect(Collectors.toList());
         }
 
         do {
             try {
-                eingabe = Integer.parseInt(sc.next());
+                eingabe = Integer.parseInt(scanner.next());
                 if (!validMenuValues.contains(eingabe)) {
                     showActiveMenu();
                 }
             } catch (Exception e) {
                 /* Clear the current Buffer */
-                sc.nextLine();
+                scanner.nextLine();
                 showActiveMenu();
             }
         } while (!validMenuValues.contains(eingabe));
@@ -202,7 +208,8 @@ public final class UI {
                 currentMenu = GlobalConstants.SELECT_TIMESPAN_END;
                 showActiveMenu();
                 endDate = tryToParseDate();
-            } else {
+            } else {  // here just set the default date for convenience
+                timeframe[0] = startDate;
                 endDate = GlobalConstants.DEFAULT_DATE[1];
             }
             timeframe[1] = endDate;
@@ -216,6 +223,7 @@ public final class UI {
 
     /**
      * Try to parse a single Date.
+     * Try again, if there are issues with correct format
      */
     public String tryToParseDate() {
 
@@ -225,12 +233,13 @@ public final class UI {
         do {
             if (!input.isEmpty()) {
                 try {
-                    input = sc.next();
+                    input = scanner.next();
                     if (input.equals(GlobalConstants.DEFAULT_DATE_KEYWORD)) {
-                        System.out.printf("Benutze das Standard Datum %s bis %s%n", GlobalConstants.DEFAULT_DATE[0],
+                        System.out.printf("Benutze das Standard Datum %s bis %s", GlobalConstants.DEFAULT_DATE[0],
                                           GlobalConstants.DEFAULT_DATE[1]);
                         date = GlobalConstants.DEFAULT_DATE[0];
                     } else {
+                        input = replacePointsWithDashes(input);
                         if (isValidDate(input)) {
                             date = input;
                         } else {
@@ -240,7 +249,7 @@ public final class UI {
                     }
                 } catch (Exception e) {
                     /* Clear the current Buffer */
-                    sc.nextLine();
+                    scanner.nextLine();
                     showActiveMenu();
                 }
             }
@@ -266,50 +275,30 @@ public final class UI {
      * 26-11-
      * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT
      */
-    public static boolean isValidDate(String date) {
-        if (date.contains(".")) {  // unify format
-            date = date.replaceAll("\\.", "-");
-        }
-        date = inferYearIfNotPresent(date);
-
+    public boolean isValidDate(String date) {
+       date = replacePointsWithDashes(date);
         try {
             DateFormat df = new SimpleDateFormat(GlobalConstants.DATE_FORMAT);
             df.setLenient(false);
             df.parse(date);
-
             return true;
         } catch (ParseException e) {
             Log.warn(String.format("%s is not a valid date.", date));
-            return false;
         }
+        return false;
     }
 
-    /*
-     * adds the year 2020 if not present.
-     * Input should not contain dots.
-     * It is assumed that this method is only called inside isValidDate!
-     */
-    public static String inferYearIfNotPresent(final String date) {
-        final String deliminer = "\\-";
-
-        String[] dates = date.split(deliminer);
-        /*
-        System.out.println(Arrays.toString(dates));
-        System.out.println();
-        System.exit(0);
-        */
-
-        String modifiedDateWithYear = "";
-        if (dates.length == 2) {
-            Log.info(String.format("date format without year detected. Date= %s", date));
-            modifiedDateWithYear = date + "2020";
-            return modifiedDateWithYear;
+    public String replacePointsWithDashes(String input) {
+        if (input.contains(".")) {  // unify format
+            input = input.replaceAll("\\.", "-");
+            Log.info("replacing \" . \" with  \"- \" "  );
         }
-        return date;
+        return input;
     }
+
 
     /**
-     * Determine if login is successful.
+     *  TODO: Determine if login is successful.
      *
      * @return true if the login is a correct username / password combination, false if not.
      */
@@ -336,9 +325,9 @@ public final class UI {
         do {
             try {
                 System.out.print(GlobalConstants.ASK_USERNAME);
-                String username = sc.next();
+                String username = scanner.next();
                 System.out.print(GlobalConstants.ASK_PASSWORD);
-                String password = sc.next();
+                String password = scanner.next();
                 if (simpleLoginValidationPassed(username, password)) {
                     credentials[0] = username;
                     credentials[1] = password;
@@ -376,23 +365,23 @@ public final class UI {
     }
 
     /**
-     * For each city, write it's name and coresponding index.
-     * We then dislay this String on the Cosole, so that a sinle city can be selected by user.
-     *
-     * @param cities
+     * function to translate date from dd-mm-yyyy to yyyy-mm-dd
+     * @param input  Date to be formatted
+     * @return
      */
-    public final String generateCityWithIndex(final String[] cities) {
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i < cities.length; i++) {
-            line.append(i).append("  ").append(cities[i]).append("\n");
+
+    public String transformDateToDifferentFormat(String input) {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String formattedDate  = null;
+        try {
+            formattedDate = LocalDate.parse(input, formatter).format(formatter2);
+        } catch (Exception e) {
+            Log.info("failed parsing the Date");
+            e.printStackTrace();
         }
-        line.append("\n Bitte den Index der gewünschten Ortschaft eingeben.");
-        return line.toString();
+        return formattedDate;
     }
-
-
-
-
-
-
 }

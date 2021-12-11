@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class DatabaseOutputFormatter {
     private static final Logger Log = LogManager.getLogger(DatabaseOutputFormatter.class);
-    private DbHelper DbHelper;
+    private final DbHelper DbHelper;
     
     public DatabaseOutputFormatter() {
     	DbHelper = new DbHelper();
@@ -47,11 +47,10 @@ public final class DatabaseOutputFormatter {
         }
                                                    // expected format:  yyyy-mm-dd
         List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, startDate, endDate);
-        Log.info(requestedWeatherData);
         return requestedWeatherData;
     }
 
-    public String[] getCityNamesAsArray() {
+    public String[] convertCitiesFromArrayToList() {
 
         List<String> list = getCityNamesAsList();
         return list.toArray(new String[0]);
@@ -59,12 +58,11 @@ public final class DatabaseOutputFormatter {
 
     public List<String> getCityNamesAsList() {
 
-        List<City> cityList = null;
+        List<City> cityList;
 
         try {
             cityList = DbHelper.selectAllCities();
-            List<String> cityNames = cityList.stream().map(City::getName).collect(Collectors.toList());
-            return cityNames;
+            return cityList.stream().map(City::getName).collect(Collectors.toList());
         } catch (jakarta.persistence.NoResultException e) {
             Log.warn("that city does not (yet) exist in database");
             e.printStackTrace();
@@ -75,7 +73,7 @@ public final class DatabaseOutputFormatter {
     }
 
 
-    public String[] selectAverageWeatherDataSingleCity(String cityname, String start, String end) {
+    public String selectAverageWeatherDataSingleCity(String cityname, String start, String end) {
         java.sql.Date startDate = java.sql.Date.valueOf(start);
         java.sql.Date endDate = Date.valueOf(end);
 
@@ -87,9 +85,12 @@ public final class DatabaseOutputFormatter {
         String humidity = String.valueOf(requestedWeatherData.getHumidity());
         String pressure = String.valueOf(requestedWeatherData.getPressure());
         String temp = String.valueOf(requestedWeatherData.getTemp());
-        String[] averageValues = {humidity, pressure, temp};
+        // String[] averageValues = {humidity, pressure, temp};
 
-        return averageValues;
+        String Description =
+                String.format("Durchschnittliche Werte für Temperatur, Druck und Feuchtigkeit" + '\n' +
+                                      " %s, %s and %s", temp, pressure, humidity);
+        return Description;
 
 
     }
@@ -128,8 +129,6 @@ public final class DatabaseOutputFormatter {
 
     public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) {
 
-
-        Log.info(String.format("inputTimeStamp: %s", inputTimeStamp));
 
         WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
         WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));

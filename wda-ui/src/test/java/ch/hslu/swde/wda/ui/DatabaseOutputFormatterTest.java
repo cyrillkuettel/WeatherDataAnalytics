@@ -23,7 +23,7 @@ class DatabaseOutputFormatterTest {
     @Test
     void testSelectAllCityNamesasArray() {
         DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
-        String[] cities = dof.getCityNamesAsArray();
+        String[] cities = dof.convertCitiesFromArrayToList();
         assertThat(cities.length).isGreaterThanOrEqualTo(38);
     }
 
@@ -55,14 +55,13 @@ class DatabaseOutputFormatterTest {
         String end = "2021-11-28";
         String cityname = "Zug";
 
-        String[] averageData; // Temperatur, Luftdruck und Feuchtigkeit
+        String averageData; // Temperatur, Luftdruck und Feuchtigkeit
 
         averageData = dof.selectAverageWeatherDataSingleCity(cityname, start, end);
 
-        Log.info("\033[32m" + Arrays.toString(averageData));
 
-        Arrays.stream(averageData).forEach(el -> assertThat(el).isNotBlank());
-        Arrays.stream(averageData).forEach(el -> assertThat(el).isNotNull());
+        assertThat(averageData).isNotBlank();
+        assertThat(averageData).isNotNull();
     }
 
     @Test /** Query A04 */

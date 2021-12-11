@@ -4,14 +4,15 @@ public final class GlobalConstants {
 
 
     public static final String MIN_DATE_VALUE = "01-02-2020"; // inclusive
-    public static final String MAX_DATE_VALUE = "30-10-2021";
+    public static final String MAX_DATE_VALUE = "30-11-2021";
 
-    public static final String MIN_DATE_VALUE_db = "2020-02-01"; //
-    public static final String MAX_DATE_VALUE_DB = "2021-10-30";
+    public final static String DATE_FORMAT = "dd-MM-yyyy";
+    public static final String[] DEFAULT_DATE = {"29-11-2021", "30-11-2021"};
 
     public static final int MAX_USERNAME_LEN = 40;
     public static final int MIN_LENGTH_USERNAME = 3;
     public static final int MIN_PASSWORD_LENGTH = 8;
+    public static final String WEATHERDATA_PROVIDER = "http://swde.el.eee.intern:8080/weatherdata-provider/";
     public static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata" +
             "/cities";
     /**
@@ -46,6 +47,5 @@ public final class GlobalConstants {
                                                             "Versuchen Sie es noch einmal";
     public static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
                                                                     "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
-    public final static String DATE_FORMAT = "dd-MM-yyyy";
-    public static final String[] DEFAULT_DATE = {"29-11-2021", "30-11-2021"};
+
 }
