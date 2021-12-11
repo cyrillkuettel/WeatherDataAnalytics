@@ -29,13 +29,8 @@ import java.util.List;
 
 public final class WeatherdataDownloader {
     private static final Logger Log = LogManager.getLogger(WeatherdataDownloader.class);
-
     static final String BASE_URI = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/";
-
     public static final String ALL_SINCE_JANUARY_2020 = "/since?year=2021&month=1&day=1";
-
-
-
 
 
     public void startDownloadForCity(String city) {
@@ -62,10 +57,10 @@ public final class WeatherdataDownloader {
 
     /**
      *
-     * Universal function to send Requests. Assumes that the input is already a vaild URL.
-     * Sends HttpRequest to get XML String from the web service provider.
-     * @param URI Parameter to specicy the ressource to request.
-     * @return the raw, unprocessed Data (xml) from the Weatherdata Provider
+     * Universal function to send Requests. Assumes that the input is a valid URL.
+     * Sends a HttpRequest to the webservice Provider.
+     * @param URI Parameter to specify the ressource of interest.
+     * @return payload. This is unprocessed data (xml) from the Weatherdata Provider
      */
     public String requestRawXMLData(String URI) {
 

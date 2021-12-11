@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,23 +78,6 @@ class UITest {
 
 
 
-    @Test
-    void testDummyScannnerParsingMultipleInputs() {
-
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
-        ByteArrayInputStream in = new ByteArrayInputStream("This Works now".getBytes());
-        System.setIn(in);
-        UI ui = new UI();
-
-        // Test with System.in
-        List<String> result = ui.dummyScanner(); // Observe that the scan stops at space
-        assertThat(result.get(0)).isEqualTo("This");
-        assertThat(result.get(1)).isEqualTo("Works");
-        assertThat(result.get(2)).isEqualTo("now");
-        System.out.println(result);
-
-        System.setIn(sysInBackup);
-    }
 
     @Test
     @Disabled
@@ -162,6 +144,13 @@ class UITest {
         assertThat(credentials).isEqualTo(expectedUserCredidentals);
         // reset System.in to its original
         System.setIn(sysInBackup);
+    }
+
+    @Test
+    void testDateFormatTranslater() {
+        UI ui = new UI();
+        String testDate = "27-11-2020";
+
     }
 
 

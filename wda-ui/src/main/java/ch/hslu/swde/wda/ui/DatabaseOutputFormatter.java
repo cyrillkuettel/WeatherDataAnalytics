@@ -36,6 +36,7 @@ public final class DatabaseOutputFormatter {
 
     public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end) {
 
+
         Date startDate = null;
         Date endDate = null;
         try {
@@ -44,6 +45,7 @@ public final class DatabaseOutputFormatter {
         } catch (Exception e) {
             Log.info("change the dates ");
         }
+                                                   // expected format:  yyyy-mm-dd
         List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, startDate, endDate);
         Log.info(requestedWeatherData);
         return requestedWeatherData;

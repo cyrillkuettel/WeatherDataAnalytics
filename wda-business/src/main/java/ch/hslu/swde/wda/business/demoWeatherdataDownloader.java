@@ -22,16 +22,16 @@ public class demoWeatherdataDownloader {
     public static void main(String[] args) {
         final WeatherdataDownloader weatherdatadownloader = new WeatherdataDownloader();
 
-        weatherdatadownloader.startDownloadForCity("Zug");
+
 
         // Download all Data. This runs only one time
-/*
+
         for (String city : cities ) {
             weatherdatadownloader.startDownloadForCity(city);
             logs.add(String.format("Downloaded city %s", city));
         }
 
- */
+
 
 
 

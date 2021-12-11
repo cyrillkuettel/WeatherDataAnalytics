@@ -100,6 +100,7 @@ public final class UI {
 
             List<WeatherData> weatherdata;
 
+            //
             weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
                                                                              GlobalConstants.MIN_DATE_VALUE_db,
                                                                          GlobalConstants.MAX_DATE_VALUE_DB );
@@ -143,8 +144,6 @@ public final class UI {
      */
     public int readOptionFromUser() {
 
-        // Scanner sc = new Scanner(System.in);
-
         int eingabe = -1;
         List<Integer> validMenuValues = new ArrayList<>();
 
@@ -152,16 +151,15 @@ public final class UI {
             case GlobalConstants.SELECT_DATA_OR_ALL_MENU:
             case GlobalConstants.TIMESPAN:
             case GlobalConstants.WELCOME_MENU:
-                validMenuValues = Arrays.asList(1, 2, 0); // Almost always, there are 3 valid actions to choose for
-                // each  menu
+                validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each  menu
                 break;
         }
-        if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) { // this just generates a range of numbers, as long as cities.length
-            List<Integer> validCityIndices = IntStream.rangeClosed(0, GlobalConstants.cities.length - 1)
+        if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) {
+            // We have an array of fixed length, containing the cities. A valid menu value is considerd valid,
+            // if 0 <= index < cities.length;
+            validMenuValues = IntStream.rangeClosed(0, GlobalConstants.cities.length - 1)
                     .boxed().collect(Collectors.toList());
-            validMenuValues = validCityIndices;
         }
-
 
         do {
             try {
@@ -174,7 +172,6 @@ public final class UI {
                 sc.nextLine();
                 showActiveMenu();
             }
-
         } while (!validMenuValues.contains(eingabe));
 
         return eingabe;
@@ -210,7 +207,7 @@ public final class UI {
             }
             timeframe[1] = endDate;
 
-        } else if (selectedOption == 2) { // No constraints. All cities / Of All time
+        } else if (selectedOption == 2) { // No constraints on the date.
             timeframe[0] = GlobalConstants.MIN_DATE_VALUE;
             timeframe[1] = GlobalConstants.MAX_DATE_VALUE;
         }
@@ -232,10 +229,7 @@ public final class UI {
                     if (input.equals(GlobalConstants.DEFAULT_DATE_KEYWORD)) {
                         System.out.printf("Benutze das Standard Datum %s bis %s%n", GlobalConstants.DEFAULT_DATE[0],
                                           GlobalConstants.DEFAULT_DATE[1]);
-                        // if (isValidDate(DEFAULT_DATE[0])) {
                         date = GlobalConstants.DEFAULT_DATE[0];
-                        // }
-
                     } else {
                         if (isValidDate(input)) {
                             date = input;
@@ -254,25 +248,6 @@ public final class UI {
         return date;
     }
 
-    public List<String> dummyScanner() {
-        // Scanner sc = new Scanner(System.in);
-        String input = "";
-        List<String> parsedSTrings = new ArrayList<>();
-        int count = 0;
-        do {
-            count++;
-            try {
-                input = sc.next();
-            } catch (Exception e) {
-                /* Clear the current Buffer */
-                sc.next();
-                showActiveMenu();
-            }
-            parsedSTrings.add(input);
-        } while (sc.hasNext());
-        Log.info(String.format("Looped %d times", count));
-        return parsedSTrings;
-    }
 
 
     public void showActiveMenu() {
@@ -283,13 +258,12 @@ public final class UI {
 
 
     /**
-     * Expects a Date as String. If the year is not specified, it will asssume 2020!
+     * Expects a Date as String. I
      * Accepted Formats:
      * "27.11.2020"
      * "27-11-2020"
      * 27.11.
      * 26-11-
-     *
      * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT
      */
     public static boolean isValidDate(String date) {
@@ -298,12 +272,6 @@ public final class UI {
         }
         date = inferYearIfNotPresent(date);
 
-/*
-        if (!date.contains("2020") || !date.contains("2021")) {
-            Log.warn(String.format(" %s is is outside of the valid year range. Year should always be 2020", date));
-            return false;
-        }
-*/
         try {
             DateFormat df = new SimpleDateFormat(GlobalConstants.DATE_FORMAT);
             df.setLenient(false);
