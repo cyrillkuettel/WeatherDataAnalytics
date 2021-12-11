@@ -12,15 +12,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 import jakarta.persistence.EntityManager;
 
 public class DbHelperTest {
 
 	private static EntityManager em;
-	private final static String DBCONNECTION ="TEST";
+	private final static String DBCONNECTION = "TEST";
 	private static DbHelper DbHelper;
 	private static PersistWeatherData pd;
+	private static PersistUser pu;
 
 	@BeforeAll
 	static void dbSetup() {
@@ -29,10 +31,9 @@ public class DbHelperTest {
 
 		DbHelper = new DbHelper();
 		pd = new PersistWeatherData();
+		pu = new PersistUser();
 
-		
-		
-		// Create Test Data
+		// Create WeatherData Test Data
 		City bern = new City(3000, "Bern");
 		City zurich = new City(8000, "Zurich");
 		City basel = new City(4000, "Basel");
@@ -54,18 +55,33 @@ public class DbHelperTest {
 		weatherDataList.add(weatherData5);
 		weatherDataList.add(weatherData6);
 
-		// Set both Persisterclasses to TEST DB
+		// Create User Test Data
+		User finn = new User("Finn", "Morgenthaler", "test1");
+		User cyrill = new User("Cyrill", "Küttel", "test2");
+		User lenny = new User("Lenny", "Buddliger", "test3");
+		User nilu = new User("Nilukzil", "Fernando", "test4");
+
+		// Set all Persisterclasses to TEST DB
 		pd.selectTestDB();
 		pd.getPersistCity().selectTestDB();
+		
+		pu.selectTestDB();
 
-		// Run the insert
+		// Run the inserts
 		pd.insertWeatherData(weatherDataList);
+		
+		pu.insertUser(nilu);
+		pu.insertUser(lenny);
+		pu.insertUser(finn);
+		pu.insertUser(cyrill);
 
-		// Reset both Persisterclasses to Prod DB
+		// Reset all Persisterclasses to Prod DB
 		pd.selectProdDB();
 		pd.getPersistCity().selectProdDB();
 		
-		//Set DbHelper to Test DB, will be set to Prod DB with @AfterAll
+		pu.selectProdDB();
+
+		// Set DbHelper to Test DB, will be set to Prod DB with @AfterAll
 		DbHelper.selectTestDB();
 
 	}
@@ -77,6 +93,7 @@ public class DbHelperTest {
 		em.getTransaction().begin();
 		em.createQuery("DELETE FROM WeatherData w").executeUpdate();
 		em.createQuery("DELETE FROM City c").executeUpdate();
+		em.createQuery("DELETE FROM User u").executeUpdate();
 		em.getTransaction().commit();
 		em.close();
 
@@ -84,7 +101,6 @@ public class DbHelperTest {
 
 	@Test
 	void testSelectAllCities() {
-
 
 		// Run the select
 		List<City> cities = DbHelper.selectAllCities();
@@ -94,7 +110,6 @@ public class DbHelperTest {
 
 	@Test
 	void testSelectSingleCity() {
-
 
 		// Run the select
 		City city = DbHelper.selectSingleCity("Basel");
@@ -152,7 +167,6 @@ public class DbHelperTest {
 		// Run the select
 		WeatherData weatherData = DbHelper.selectMaxWeatherDataSingleCity("Bern", startDate, endDate);
 
-
 		assertEquals("Bern", weatherData.getCity().getName());
 		assertEquals(50, weatherData.getTemp());
 		assertEquals(150, weatherData.getPressure());
@@ -174,7 +188,6 @@ public class DbHelperTest {
 		// Run the select
 		WeatherData weatherData = DbHelper.selectMinWeatherDataSingleCity("Basel", startDate, endDate);
 
-
 		assertEquals("Basel", weatherData.getCity().getName());
 		assertEquals(20, weatherData.getTemp());
 		assertEquals(120, weatherData.getPressure());
@@ -186,10 +199,8 @@ public class DbHelperTest {
 	@Test
 	void testSelectMaxWeatherDataAllCity() {
 
-
 		// Run the select
 		WeatherData weatherData = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
-
 
 		assertEquals(20, weatherData.getTemp());
 		assertEquals(120, weatherData.getPressure());
@@ -211,7 +222,28 @@ public class DbHelperTest {
 
 	}
 	
+
 	
+	@Test
+	void testSelectAllUserData() {
+
+		// Run the select
+		List<User> users = DbHelper.selectAllUserData();
+
+		assertEquals(4, users.size());
+	}
+
+	@Test
+	void testSelectSingleUserData() {
+
+		// Run the select
+		User user = DbHelper.selectSingleUserData("nferna");
+
+		assertEquals("Nilukzil", user.getFirstname());
+
+	}
+	
+
 	@AfterAll
 	static void resetDB() {
 		DbHelper.selectProdDB();

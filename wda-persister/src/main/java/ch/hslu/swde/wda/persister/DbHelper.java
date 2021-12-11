@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -312,6 +313,43 @@ public class DbHelper {
 
 		return wd;
 	}
+	
+	
+	public User selectSingleUserData(String username) {
+		
+		Log.info("Starting selectSingleUserData with Parameters [" + username + "]"  );
+		
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+		em.getTransaction().begin();
+		TypedQuery<User> tQry = em.createQuery("SELECT u FROM User u where u.userid = :name", User.class);
+		tQry.setParameter("name", username);
+	
+		User user = tQry.getSingleResult();
+		Log.info("User found is: " + user.toString());
+		return user;
+	}
+	
+	
+	public List<User> selectAllUserData() {
+		
+		Log.info("Starting selectAllUserData with Parameters []");
+		
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+		em.getTransaction().begin();
+		TypedQuery<User> tQry = em.createQuery("SELECT u FROM User u Order by u.firstname asc", User.class);
+	
+		List<User> usersFromDb = tQry.getResultList();
+		
+		Log.info("Number of Users found: " + usersFromDb.size());
+		Log.info("These are the Users found, shown with their toString() method:");
+		for (User u : usersFromDb) {
+			Log.info(u.toString());
+		}
+		return usersFromDb;
+	}
+	
+
+	
 
 	public void selectTestDB() {
 
