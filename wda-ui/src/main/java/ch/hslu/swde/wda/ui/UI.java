@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static ch.hslu.swde.wda.GlobalConstants.LIMIT_ROWS;
+
 
 /**
  * Main Loop for Console Application
@@ -152,7 +154,10 @@ public final class UI {
                                                                                                selectedTimePeriod[0],
                                                                                                selectedTimePeriod[1]);
 
-            System.out.println("\033[32m" + weatherdata);
+            System.out.println(String.format("\033[33m Printing the first %d entries", LIMIT_ROWS));
+            // print the first N rows
+            List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
+            System.out.println("\033[32m" + weatherDataTrimmed);
 
 
         } else if (selectedOption == 2) { /* All cities are considered*/
@@ -165,13 +170,19 @@ public final class UI {
                     databaseOutputFormatter.selectWeatherOfAllCitiesInTimeframe(timePeriod_DifferentFormat[0],
                                                                                 timePeriod_DifferentFormat[1],
                                                                                 availableCities);
-            completeWeatherDataList.forEach( el -> {
-                System.out.println("\033[32m" + el );
+            // print the first N rows for each City
+            System.out.println(String.format("\033[33m Printing the first %d entries of each city", LIMIT_ROWS/2));
+            List<List<WeatherData>> weatherDataTrimmed = new ArrayList<>();
+            for (List<WeatherData> list : completeWeatherDataList) {
+                weatherDataTrimmed.add(list.stream().limit(LIMIT_ROWS/2).collect(Collectors.toList()));
+            }
+
+            weatherDataTrimmed.forEach( WeatherOfCity -> {
+                System.out.println("\033[32m" + WeatherOfCity );
             });
 
-            /*
+        /*
             List<String> max_min;
-
             max_min = databaseOutputFormatter.selectMaxWeatherDataAllCity(timePeriod_DifferentFormat[0] + " 00:00:00");
             System.out.println(max_min);
 

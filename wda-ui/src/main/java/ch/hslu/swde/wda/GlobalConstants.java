@@ -7,7 +7,7 @@ public final class GlobalConstants {
     public static final String MAX_DATE_VALUE = "30-11-2021";
 
     public final static String DATE_FORMAT = "dd-MM-yyyy";
-    public static final String[] DEFAULT_DATE = {"29-11-2021", "30-11-2021"};
+    public static final String[] DEFAULT_DATE = {"28-11-2021", "30-11-2021"};
 
     public static final int MAX_USERNAME_LEN = 40;
     public static final int MIN_LENGTH_USERNAME = 3;
@@ -47,5 +47,7 @@ public final class GlobalConstants {
                                                             "Versuchen Sie es noch einmal";
     public static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
                                                                     "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
+    public static final int LIMIT_ROWS = 10;
+
 
 }
