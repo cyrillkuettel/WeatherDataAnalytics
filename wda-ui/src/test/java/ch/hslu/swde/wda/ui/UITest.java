@@ -34,6 +34,42 @@ class UITest {
 
 
     @Test
+    @Disabled
+    void testSequenceAllcities() {
+        // we are going to test the input sequence: 1 -> testuseranme -> testpassword -> 2 -> 1 (zeitspanne) -> 12.01
+        // .2021 -> 27.11.2021 for some reason this gives an error. Maybe if because This exact timestamp does not
+        // exist?
+
+        InputStream sysInBackup = System.in; // backup System.in to restore it later
+        ByteArrayInputStream in =
+                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.01.2021 27.11.2021 ".getBytes()); //
+        // Option 2
+        // means we use all dates
+        System.setIn(in);
+        UI ui = new UI();
+        ui.startFromBeginning();
+        // reset System.in to its original
+        System.setIn(sysInBackup);
+    }
+
+
+    @Test
+    void testLoadDataOverAllCities() {
+        //   simulate user input.
+
+        InputStream sysInBackup = System.in; // backup System.in to restore it later
+        ByteArrayInputStream in =
+                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 ".getBytes());
+        System.setIn(in);
+        UI ui = new UI();
+        ui.startFromBeginning();
+        // reset System.in to its original
+        System.setIn(sysInBackup);
+    }
+
+
+
+    @Test
     void testLoginShouldRefuseEmptyStrings() {
         UI ui = new UI();
         String username = "";

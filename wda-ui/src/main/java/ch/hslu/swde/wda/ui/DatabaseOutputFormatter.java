@@ -43,11 +43,22 @@ public final class DatabaseOutputFormatter {
             startDate = Date.valueOf(start);
             endDate = Date.valueOf(end);
         } catch (Exception e) {
-            Log.info("change the dates ");
+            Log.warn("change the dates ");
         }
                                                    // expected format:  yyyy-mm-dd
         List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, startDate, endDate);
         return requestedWeatherData;
+    }
+
+
+    public List<List<WeatherData>> selectWeatherOfAllCitiesInTimeframe(final String start, final String end,
+                                                                       final String[] availableCities) {
+        List<List<WeatherData>> dataOfAllCities = new ArrayList<>();
+        for (String city : availableCities) {
+            List<WeatherData> list = selectWeatherByDateAndCity(city, start, end);
+            dataOfAllCities.add(list);
+        }
+        return dataOfAllCities;
     }
 
     public String[] convertCitiesFromArrayToList() {
@@ -128,7 +139,11 @@ public final class DatabaseOutputFormatter {
     }
 
     public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) {
+/*
+        Log.info("Timestamp.valueOf(inputTimeStamp):");
+        Log.info(Timestamp.valueOf(inputTimeStamp));
 
+ */
 
         WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
         WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));

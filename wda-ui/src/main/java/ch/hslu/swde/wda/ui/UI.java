@@ -3,6 +3,7 @@ package ch.hslu.swde.wda.ui;
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
+import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,11 +24,13 @@ import java.util.stream.IntStream;
 public final class UI {
     private static final Logger Log = LogManager.getLogger(UI.class);
 
-    /** Generated city names at Runtime */
+    /**
+     * Generated city names at Runtime
+     */
     private final String CITY_NAMES_WITH_INDEX_MENU;
 
     /**
-     The current active Menu.
+     * The current active Menu.
      */
     private String currentMenu;
     private String[] availableCities;
@@ -65,24 +68,27 @@ public final class UI {
         selectedOption = readOptionFromUser();
 
         if (selectedOption == 2) { // create new user
-           // Log.info("Staring process to create a new User");
+            // Log.info("Staring process to create a new User");
 
             newCredentials = askForUsernamePassword(0);
             System.out.println(GlobalConstants.CONFIRM_NEW_USER_CREATED);
+            User user = new User("Test", newCredentials[0], newCredentials[1]);
+
+
+
         }
 
-        String[] creds;
+        String[] credentials;
         int totalLoginAttempts = 0;
         do {
-            creds = askForUsernamePassword(totalLoginAttempts);
+            credentials = askForUsernamePassword(totalLoginAttempts);
             totalLoginAttempts++;
-        } while (!isValidLogin(creds));
+        } while (!isValidLogin(credentials));
 
-        if (isValidLogin(creds)) {
+        if (isValidLogin(credentials)) {
             System.out.println("Erfolgreich Eingeloggt!");
             currentMenu = GlobalConstants.SELECT_DATA_OR_ALL_MENU;
         }
-
 
         showActiveMenu();
         selectedOption = readOptionFromUser();
@@ -92,36 +98,41 @@ public final class UI {
             showActiveMenu();
             selectedOption = readOptionFromUser();
             selectedCity = availableCities[selectedOption];
-            System.out.println(String.format("Ausgewählte Stadt : %s", selectedCity ));
+            System.out.println(String.format("Ausgewählte Stadt : %s", selectedCity));
             selectedTimePeriod = getTimePeriod();
-            Log.info(String.format("the Date before being translated to different format is from %s to %s ",
-                                   selectedTimePeriod[0], selectedTimePeriod[1] ));
 
             selectedTimePeriod = /* different Date format: yyyy-MM-dd */
                     Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
-
 
 
             List<WeatherData> weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
                                                                                                selectedTimePeriod[0],
-                                                                                               selectedTimePeriod[1] );
+                                                                                               selectedTimePeriod[1]);
 
-            weatherdata.forEach(el -> System.out.println("\033[32m" + weatherdata.toString() + '\n'));
+            System.out.println("\033[32m" + weatherdata);
 
 
+        } else if (selectedOption == 2) { /* All cities are considered*/
 
-        } else if (selectedOption == 2) {               /* All cities are considered, and we return everything */
             selectedTimePeriod = getTimePeriod();
-            List<String> max_min;
-            String averageData;
-
-            System.out.println("\033[32m");
-
-            selectedTimePeriod = /* different Date format: yyyy-MM-dd */
+            String[] timePeriod_DifferentFormat = // different Date format: yyyy-MM-dd
                     Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
 
-            max_min = databaseOutputFormatter.selectMaxWeatherDataAllCity(selectedTimePeriod[0] + " 00:00:57");
+            List<List<WeatherData>> completeWeatherDataList =
+                    databaseOutputFormatter.selectWeatherOfAllCitiesInTimeframe(timePeriod_DifferentFormat[0],
+                                                                                timePeriod_DifferentFormat[1],
+                                                                                availableCities);
+            completeWeatherDataList.forEach( el -> {
+                System.out.println("\033[32m" + el );
+            });
+
+            /*
+            List<String> max_min;
+
+            max_min = databaseOutputFormatter.selectMaxWeatherDataAllCity(timePeriod_DifferentFormat[0] + " 00:00:00");
             System.out.println(max_min);
+
+             */
 
 
         }
@@ -258,7 +269,6 @@ public final class UI {
     }
 
 
-
     public void showActiveMenu() {
         System.out.println();
         System.out.println(currentMenu);
@@ -273,10 +283,11 @@ public final class UI {
      * "27-11-2020"
      * 27.11.
      * 26-11-
+     *
      * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT
      */
     public boolean isValidDate(String date) {
-       date = replacePointsWithDashes(date);
+        date = replacePointsWithDashes(date);
         try {
             DateFormat df = new SimpleDateFormat(GlobalConstants.DATE_FORMAT);
             df.setLenient(false);
@@ -291,14 +302,13 @@ public final class UI {
     public String replacePointsWithDashes(String input) {
         if (input.contains(".")) {  // unify format
             input = input.replaceAll("\\.", "-");
-            Log.info("replacing \" . \" with  \"- \" "  );
         }
         return input;
     }
 
 
     /**
-     *  TODO: Determine if login is successful.
+     * TODO: Determine if login is successful.
      *
      * @return true if the login is a correct username / password combination, false if not.
      */
@@ -366,16 +376,17 @@ public final class UI {
 
     /**
      * function to translate date from dd-mm-yyyy to yyyy-mm-dd
-     * @param input  Date to be formatted
-     * @return
+     *
+     * @param input Date to be formatted
+     * @return Date in new format (essentially flipped )
      */
 
     public String transformDateToDifferentFormat(String input) {
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String formattedDate  = null;
+        String formattedDate = null;
         try {
             formattedDate = LocalDate.parse(input, formatter).format(formatter2);
         } catch (Exception e) {
