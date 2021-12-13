@@ -1,11 +1,12 @@
 package ch.hslu.swde.wda.business;
 
-import java.util.List;
-
 import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 
-public interface BusinessHandler {
+import java.rmi.Remote;
+import java.util.List;
+
+public interface BusinessHandler extends Remote {
 	
 	
 	public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end);
