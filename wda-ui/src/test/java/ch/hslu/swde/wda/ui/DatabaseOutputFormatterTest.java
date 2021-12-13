@@ -21,10 +21,10 @@ class DatabaseOutputFormatterTest {
 
     /** Query A01 */
     @Test
-    void testSelectAllCityNamesasArray() {
+    void atLeastFortyCitiesInDb() {
         DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
-        String[] cities = dof.convertCitiesFromArrayToList();
-        assertThat(cities.length).isGreaterThanOrEqualTo(38);
+       List<String> availableCities = dof.getCityNamesAsList();
+        assertThat(availableCities.size()).isGreaterThanOrEqualTo(40);
     }
 
     @Test /** Query A02 */

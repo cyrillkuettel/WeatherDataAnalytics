@@ -15,6 +15,10 @@ public final class GlobalConstants {
     public static final String WEATHERDATA_PROVIDER = "http://swde.el.eee.intern:8080/weatherdata-provider/";
     public static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata" +
             "/cities";
+    public static final String STANDARD_SURNAME = "username";
+    public static final String STANDARD_FORENAME = "username";
+    public static final String STANDARD_PASSWORD = "password";
+
     /**
      * Hardcoded cities. This is only for local testing.
      */
@@ -32,10 +36,13 @@ public final class GlobalConstants {
             "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \n\"" + DEFAULT_DATE_KEYWORD + "\" für das " +
                     "Standart " +
                     "Datum";
+
+    public static final String ASK_FORANME = "Bitte Vorname eingeben: ";
+    public static final String ASK_SURNAME = "Bitte Nachname eingeben: ";
     public static final String ASK_PASSWORD = "Bitte Passwort eingeben: ";
-    public static final String ASK_USERNAME = "Bitte Benutzername eingeben: ";
-    public static final String CONFIRM_NEW_USER_CREATED = "Erstellung erfolgreich.";
-    public static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
+    public static final String CONFIRM_NEW_USER_CREATED = "Benutzererstellung erfolgreich.";
+    public static final String REFUTE_NEW_USER_CREATED = "Benutzererstellung nicht erfolgreich.";
+    public static final String WELCOME_MENU = "Start [1]      Neuer Benutzer erstellen [2]      vorhandene Benutzer bearbeiten [3]";
     public static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum (2020 - 2021) [2]       " +
             "   " +
             "Beenden [0]";

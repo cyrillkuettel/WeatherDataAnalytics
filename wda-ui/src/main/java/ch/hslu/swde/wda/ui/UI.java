@@ -2,7 +2,6 @@ package ch.hslu.swde.wda.ui;
 
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
-import ch.hslu.swde.wda.GlobalConstants;
 import ch.hslu.swde.wda.business.BusinessHandler;
 import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
@@ -20,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -50,7 +50,7 @@ public final class UI {
     public UI() {
         scanner = new Scanner(System.in);
 
-        if (!Utils.pingURL(GlobalConstants.WEATHERDATA_PROVIDER, 10000)) {
+        if (!Utils.pingURL(WEATHERDATA_PROVIDER, 10000)) {
             Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" + ANSI_RESET);
         }
 
@@ -58,7 +58,7 @@ public final class UI {
     }
 
     public void loadCityNamesToMemory() {
-        availableCities = databaseOutputFormatter.convertCitiesFromArrayToList();
+        availableCities = convertListToArray(databaseOutputFormatter.getCityNamesAsList());
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
     }
 
@@ -101,6 +101,10 @@ public final class UI {
      * starts a new User Interaction.
      */
     public void startFromBeginning() {
+
+        User admin = new User(STANDARD_FORENAME, STANDARD_SURNAME, STANDARD_PASSWORD);
+        databaseOutputFormatter.insertUser(admin);
+
         /* The cities could change in the future, so they have to be loaded dynamically  */
         loadCityNamesToMemory();
 
@@ -109,18 +113,6 @@ public final class UI {
         String[] selectedTimePeriod; // timePeriod[0] = startDate, timePeriod[1] = endDate
         String[] newCredentials;
 
-        currentMenu = GlobalConstants.WELCOME_MENU;
-        showActiveMenu();
-        selectedOption = readOptionFromUser();
-
-        if (selectedOption == 2) { // create new user
-            // Log.info("Staring process to create a new User");
-
-            newCredentials = askForUsernamePassword(0);
-            System.out.println(GlobalConstants.CONFIRM_NEW_USER_CREATED);
-            User user = new User("Test", newCredentials[0], newCredentials[1]);
-
-        }
 
         String[] credentials;
         int totalLoginAttempts = 0;
@@ -129,11 +121,34 @@ public final class UI {
             totalLoginAttempts++;
         } while (!isValidLogin(credentials));
 
-        if (isValidLogin(credentials)) {
-            System.out.println("Erfolgreich Eingeloggt!");
-            currentMenu = GlobalConstants.SELECT_DATA_OR_ALL_MENU;
+        System.out.println("Erfolgreich Eingeloggt!");
+
+
+        currentMenu = WELCOME_MENU;
+        showActiveMenu();
+        selectedOption = readOptionFromUser();
+        if (selectedOption == 2) { // create new user
+            // TODO: user CRUD
+            User user = promptUsertoCreateNewAccount();
+            if ( databaseOutputFormatter.insertUser(user)) {
+                System.out.println(CONFIRM_NEW_USER_CREATED);
+            } else {
+                System.out.println(REFUTE_NEW_USER_CREATED);
+            }
         }
 
+        if (selectedOption == 3) { // edit Users
+            List<User> allUsers = databaseOutputFormatter.selectAllUserData();
+            List<String> onlyNames = allUsers.stream().map(el -> el.getFirstname()).collect(Collectors.toList());
+            Map<Integer, String> UserIndexNameMap = IntStream.range(0, onlyNames.size()).boxed()
+                    .collect(Collectors.toMap(Function.identity(), onlyNames::get));
+            System.out.println(UserIndexNameMap);
+        }
+
+
+
+
+        currentMenu = SELECT_DATA_OR_ALL_MENU;
         showActiveMenu();
         selectedOption = readOptionFromUser();
         if (selectedOption == 1) {                /* Ony one city is requested. We can ask for min, max and average */
@@ -206,7 +221,7 @@ public final class UI {
 
             } else if (selectedOption == 2) { // Maxima
 
-                // to get a Valid Timestamp, get the oldest possible timeStamp
+                // to get a Valid Timestamp, get the 'oldest' TimeStamp that is available
                 Timestamp minimumTimeStamp_forThisWeatherData = completeWeatherDataList.stream()
                         .flatMap(List::stream)
                         .map(WeatherData::getDataTimestamp)
@@ -271,13 +286,13 @@ public final class UI {
         List<Integer> validMenuValues = new ArrayList<>();
 
         switch (currentMenu) {
-            case GlobalConstants.SELECT_DATA_OR_ALL_MENU:
-            case GlobalConstants.TIMESPAN:
-            case GlobalConstants.WELCOME_MENU:
-            case GlobalConstants.METADATA_ALL_CITY:
+            case SELECT_DATA_OR_ALL_MENU:
+            case TIMESPAN:
+            case METADATA_ALL_CITY:
                 validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each menu
                 break;
-            case GlobalConstants.METADATA:
+            case METADATA:
+            case WELCOME_MENU:
                 validMenuValues = Arrays.asList(1, 2, 3, 0);
         }
         if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) {
@@ -314,29 +329,29 @@ public final class UI {
     public String[] getTimePeriod() {
         String[] timeframe = new String[2];
 
-        currentMenu = GlobalConstants.TIMESPAN;
+        currentMenu = TIMESPAN;
         showActiveMenu();
         int selectedOption = readOptionFromUser();
         if (selectedOption == 1) {
             Log.info("You have decided to set a custom timePeriod");
-            currentMenu = GlobalConstants.SELECT_TIMESPAN_START;
+            currentMenu = SELECT_TIMESPAN_START;
             showActiveMenu();
             String startDate = tryToParseDate();
             String endDate;
-            if (!startDate.equals(GlobalConstants.DEFAULT_DATE[0])) { // no default date
+            if (!startDate.equals(DEFAULT_DATE[0])) { // no default date
                 timeframe[0] = startDate;
-                currentMenu = GlobalConstants.SELECT_TIMESPAN_END;
+                currentMenu = SELECT_TIMESPAN_END;
                 showActiveMenu();
                 endDate = tryToParseDate();
             } else {  // here just set the default date for convenience
                 timeframe[0] = startDate;
-                endDate = GlobalConstants.DEFAULT_DATE[1];
+                endDate = DEFAULT_DATE[1];
             }
             timeframe[1] = endDate;
 
         } else if (selectedOption == 2) { // No constraints on the date.
-            timeframe[0] = GlobalConstants.MIN_DATE_VALUE;
-            timeframe[1] = GlobalConstants.MAX_DATE_VALUE;
+            timeframe[0] = MIN_DATE_VALUE;
+            timeframe[1] = MAX_DATE_VALUE;
         }
         return timeframe;
     }
@@ -354,10 +369,10 @@ public final class UI {
             if (!input.isEmpty()) {
                 try {
                     input = scanner.next();
-                    if (input.equals(GlobalConstants.DEFAULT_DATE_KEYWORD)) {
-                        System.out.printf("Benutze das Standard Datum %s bis %s", GlobalConstants.DEFAULT_DATE[0],
-                                GlobalConstants.DEFAULT_DATE[1]);
-                        date = GlobalConstants.DEFAULT_DATE[0];
+                    if (input.equals(DEFAULT_DATE_KEYWORD)) {
+                        System.out.printf("Benutze das Standard Datum %s bis %s", DEFAULT_DATE[0],
+                                DEFAULT_DATE[1]);
+                        date = DEFAULT_DATE[0];
                     } else {
                         input = replacePointsWithDashes(input);
                         if (isValidDate(input)) {
@@ -398,7 +413,7 @@ public final class UI {
     public boolean isValidDate(String date) {
         date = replacePointsWithDashes(date);
         try {
-            DateFormat df = new SimpleDateFormat(GlobalConstants.DATE_FORMAT);
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
             df.setLenient(false);
             df.parse(date);
             return true;
@@ -428,37 +443,66 @@ public final class UI {
     }
 
     /**
-     * Ask the user to type in username and password. This method can be used both in login and when creating a new
-     * user. It will Loop indefinitely, until the condition in {@link #simpleLoginValidationPassed(String, String)
+     * Ask the user to type in username and password. It will Loop indefinitely, until the condition in {@link #simpleLoginValidationPassed(String, String)
      * condition passes}
      *
      * @return String Array containing the username [index: 0] and password. [index: 1]
      */
-    public String[] askForUsernamePassword(int attemptCount) {
+    public String[] askForUsernamePassword(final int attemptCount) {
 
         if (attemptCount > 0) {
-            System.out.print(GlobalConstants.WARN_INVALID_LOGIN);
+            System.out.print(WARN_INVALID_LOGIN);
         }
-        String[] credentials = new String[2];
-        // removed scanner
+        String[] credentials = new String[3];
         do {
             try {
-                System.out.print(GlobalConstants.ASK_USERNAME);
-                String username = scanner.next();
-                System.out.print(GlobalConstants.ASK_PASSWORD);
+                System.out.print(ASK_FORANME);
+                String forename = scanner.next();
+                System.out.print(ASK_SURNAME);
+                String surname = scanner.next();
+                System.out.print(ASK_PASSWORD);
                 String password = scanner.next();
-                if (simpleLoginValidationPassed(username, password)) {
-                    credentials[0] = username;
-                    credentials[1] = password;
+
+                if (simpleLoginValidationPassed(forename, password)) {
+                    credentials[0] = forename;
+                    credentials[1] = surname;
+                    credentials[2] = password;
                 } else {
-                    System.out.println(GlobalConstants.WARN_LOGIN_VALIDATION_NOT_PASSED);
+                    System.out.println(WARN_LOGIN_VALIDATION_NOT_PASSED);
                 }
             } catch (Exception e) {
                 Log.error("Error while reading Username or Password in method askForUsernamePassword", e);
                 System.err.println("\n Fehler beim Lesen der Login Daten");
             }
-        } while (credentials[0] == null && credentials[1] == null);
+        } while (credentials[0] == null && credentials[1] == null && credentials[2] == null);
         return credentials;
+    }
+
+    public User promptUsertoCreateNewAccount() {
+
+        final String[] credentials = new String[3];
+        do {
+            try {
+                System.out.print(ASK_FORANME);
+                String forname = scanner.next();
+                System.out.print(ASK_SURNAME);
+                String surname = scanner.next();
+                System.out.print(ASK_PASSWORD);
+                String password = scanner.next();
+                if (simpleLoginValidationPassed(surname, password)) {
+                    credentials[0] = forname;
+                    credentials[1] = surname;
+                    credentials[2] = password;
+                } else {
+                    System.out.println(WARN_LOGIN_VALIDATION_NOT_PASSED);
+                }
+            } catch (Exception e) {
+                Log.error("Error while reading Username or Password in method askForUsernamePassword", e);
+                System.err.println("\n Fehler beim Lesen der Login Daten");
+            }
+        } while (Arrays.stream(credentials).anyMatch(Objects::isNull));
+       return new User(credentials[0], credentials[1], credentials[1]);
+
     }
 
     /**
@@ -469,15 +513,15 @@ public final class UI {
      * @return true if the credidentals are valid, false if there is problem.
      */
     public boolean simpleLoginValidationPassed(String username, String password) {
-        if (username.length() < GlobalConstants.MIN_LENGTH_USERNAME || username.length() > GlobalConstants.MAX_USERNAME_LEN) {
+        if (username.length() < MIN_LENGTH_USERNAME || username.length() > MAX_USERNAME_LEN) {
 
             Log.info(String.format("Username Length should be at least %d and not longer than %d",
-                    GlobalConstants.MIN_LENGTH_USERNAME,
-                    GlobalConstants.MAX_USERNAME_LEN));
+                    MIN_LENGTH_USERNAME,
+                    MAX_USERNAME_LEN));
             return false;
         }
-        if (password.length() < GlobalConstants.MIN_PASSWORD_LENGTH) {
-            Log.info(String.format("The minimum Password length is %d ", GlobalConstants.MIN_PASSWORD_LENGTH));
+        if (password.length() < MIN_PASSWORD_LENGTH) {
+            Log.info(String.format("The minimum Password length is %d ", MIN_PASSWORD_LENGTH));
             return false;
         }
         return true;
@@ -504,4 +548,10 @@ public final class UI {
         }
         return formattedDate;
     }
+
+    public String[] convertListToArray(List<String> input) {
+        return input.toArray(new String[0]);
+    }
+
+
 }

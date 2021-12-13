@@ -2,8 +2,10 @@ package ch.hslu.swde.wda.ui;
 
 
 import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 import ch.hslu.swde.wda.persister.DbHelper;
+import ch.hslu.swde.wda.persister.PersistUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,11 +63,7 @@ public final class DatabaseOutputFormatter {
         return dataOfAllCities;
     }
 
-    public String[] convertCitiesFromArrayToList() {
 
-        List<String> list = getCityNamesAsList();
-        return list.toArray(new String[0]);
-    }
 
     public List<String> getCityNamesAsList() {
 
@@ -168,4 +166,22 @@ public final class DatabaseOutputFormatter {
                 String.format("Maximale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + " %s, %s and %s", temp, pressure, humidity);
         return maxDescription;
     }
+
+
+    public boolean insertUser(User user)  {
+        PersistUser persistUser = new PersistUser();
+        try {
+            persistUser.insertUser(user);
+            return true;
+        } catch (Exception e) {
+        Log.warn("Error inserting User to database");
+        }
+        return false;
+    }
+
+    public List<User> selectAllUserData() {
+            List<User> userLIst =  DbHelper.selectAllUserData();
+            return userLIst;
+    }
+
 }
