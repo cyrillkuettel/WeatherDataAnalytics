@@ -106,35 +106,39 @@ public final class DatabaseOutputFormatter {
 
     }
 
-    public List<String> selectMaxMinCity(String cityname, String start, String end) {
+    public String selectMaxWeatherDataSingleCity(String cityname, String start, String end) {
         java.sql.Date startDate = java.sql.Date.valueOf(start);
         java.sql.Date endDate = Date.valueOf(end);
 
-
         WeatherData weatherDataMAXIMUM = DbHelper.selectMaxWeatherDataSingleCity(cityname, startDate, endDate);
-        WeatherData weatherDataMINIMUM = DbHelper.selectMinWeatherDataSingleCity(cityname, startDate, endDate);
-
         String humidity = String.valueOf(weatherDataMAXIMUM.getHumidity());
         String pressure = String.valueOf(weatherDataMAXIMUM.getPressure());
         String temp = String.valueOf(weatherDataMAXIMUM.getTemp());
 
         String maxDescription =
-                String.format("Maximum Values for temperatur, pressure and humidity for %s are:" + '\n' +
+                String.format("Maximum Values for temperatur, pressure and humidity for %s:"  +
                                       " %s, %s and %s",
                               cityname, temp, pressure, humidity);
 
-        humidity = String.valueOf(weatherDataMINIMUM.getHumidity());
-        pressure = String.valueOf(weatherDataMINIMUM.getPressure());
-        temp = String.valueOf(weatherDataMINIMUM.getTemp());
+        return maxDescription;
+
+    }
+
+    public String selectMinWeatherDataSingleCity(String cityname, String start, String end) {
+        java.sql.Date startDate = java.sql.Date.valueOf(start);
+        java.sql.Date endDate = Date.valueOf(end);
+
+        WeatherData weatherDataMINIMUM = DbHelper.selectMinWeatherDataSingleCity(cityname, startDate, endDate);
+
+        String humidity = String.valueOf(weatherDataMINIMUM.getHumidity());
+        String pressure = String.valueOf(weatherDataMINIMUM.getPressure());
+        String temp = String.valueOf(weatherDataMINIMUM.getTemp());
 
         String minDescription =
-                String.format("Minimum Values for temperatur, pressure and humidity for %s are:" + '\n' +
-                                      " %s, %s and %s",
-                              cityname, temp, pressure, humidity);
-        List<String> max_min = new ArrayList<>();
-        max_min.add(maxDescription + '\n');
-        max_min.add(minDescription);
-        return max_min;
+                String.format("Minimum Values for temperatur, pressure and humidity for %s :" +
+                                " %s, %s and %s",
+                        cityname, temp, pressure, humidity);
+        return minDescription;
 
     }
 

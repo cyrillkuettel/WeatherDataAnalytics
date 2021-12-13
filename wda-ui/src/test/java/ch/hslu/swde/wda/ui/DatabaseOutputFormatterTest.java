@@ -64,23 +64,6 @@ class DatabaseOutputFormatterTest {
         assertThat(averageData).isNotNull();
     }
 
-    @Test /** Query A04 */
-    void testSelectMaxMinCity() {
-        DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
-        String start = "2020-12-30";
-        String end = "2021-11-28";
-        String cityname = "Zug";
-
-        List<String> max_min;
-
-        max_min = dof.selectMaxMinCity(cityname, start, end);
-        Log.info("\033[32m" + max_min);
-
-        assertThat(max_min.size()).isEqualTo(2);
-        max_min.stream().forEach( el -> assertThat(el).isNotBlank());
-
-    }
-
     @Test /** Query A05 (Just like A04, but all cities) */
     void testSelectMaxMinOverAllcities() {
         DatabaseOutputFormatter dof = new DatabaseOutputFormatter();

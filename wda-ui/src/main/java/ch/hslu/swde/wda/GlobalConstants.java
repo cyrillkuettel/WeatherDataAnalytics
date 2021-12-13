@@ -47,6 +47,14 @@ public final class GlobalConstants {
                                                             "Versuchen Sie es noch einmal";
     public static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
                                                                     "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
+    public static final String METADATA = "Durchschnittswerte dieser Ausgabe berechnen [1] Maxima dieser Ausgabe berechnen [2] Mimima dieser Ausgabe berechnen [3] Beenden [0]";
+
+
+    // for colored output in unix-like terminals
+    public static final String ANSI_YELLOW = "\033[33m";
+    public static final String ANSI_GREEN = "\033[32m";
+    public static final String ANSI_RESET = "\033[0m";
+
     public static final int LIMIT_ROWS = 10;
 
 

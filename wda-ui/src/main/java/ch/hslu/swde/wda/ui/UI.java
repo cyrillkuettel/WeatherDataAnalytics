@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static ch.hslu.swde.wda.GlobalConstants.LIMIT_ROWS;
+import static ch.hslu.swde.wda.GlobalConstants.*;
 
 
 /**
@@ -34,7 +34,7 @@ public final class UI {
     /**
      * Generated city names at Runtime
      */
-    private String CITY_NAMES_WITH_INDEX_MENU = "";
+    private String CITY_NAMES_WITH_INDEX_MENU = "not initialized";
 
     /**
      * The current active Menu.
@@ -50,7 +50,7 @@ public final class UI {
         scanner = new Scanner(System.in);
 
         if (!Utils.pingURL(GlobalConstants.WEATHERDATA_PROVIDER, 10000)) {
-            Log.fatal("Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?");
+            Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" + ANSI_RESET);
         }
 
     }
@@ -66,7 +66,7 @@ public final class UI {
 
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
         final String clientPolicyRelativeDir = "/wda-ui/client.policy";
-        final String policy = String.format("file:%s%s",projectDir, clientPolicyRelativeDir);
+        final String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
 
         if (System.getSecurityManager() == null) {
             System.setProperty("java.security.policy", policy);
@@ -92,9 +92,6 @@ public final class UI {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
 
@@ -137,7 +134,7 @@ public final class UI {
 
         showActiveMenu();
         selectedOption = readOptionFromUser();
-        if (selectedOption == 1) {                      /* Ony one city is requested */
+        if (selectedOption == 1) {                /* Ony one city is requested. We can ask for min, max and average */
 
             currentMenu = CITY_NAMES_WITH_INDEX_MENU;
             showActiveMenu();
@@ -151,16 +148,31 @@ public final class UI {
 
 
             List<WeatherData> weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
-                                                                                               selectedTimePeriod[0],
-                                                                                               selectedTimePeriod[1]);
+                    selectedTimePeriod[0],
+                    selectedTimePeriod[1]);
 
-            System.out.println(String.format("\033[33m Printing the first %d entries", LIMIT_ROWS));
+            System.out.println(String.format("%s Printing the first %d entries", ANSI_GREEN, LIMIT_ROWS));
             // print the first N rows
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
-            System.out.println("\033[32m" + weatherDataTrimmed);
+            System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
 
 
-        } else if (selectedOption == 2) { /* All cities are considered*/
+            currentMenu = GlobalConstants.METADATA;
+            showActiveMenu();
+            selectedOption = readOptionFromUser();
+            if (selectedOption == 1) {  // Average
+               String avg = databaseOutputFormatter.selectAverageWeatherDataSingleCity(selectedCity, selectedTimePeriod[0], selectedTimePeriod[1] );
+               System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+            } else if (selectedOption == 2) { // Minima
+                String avg = databaseOutputFormatter.selectMinWeatherDataSingleCity(selectedCity, selectedTimePeriod[0], selectedTimePeriod[1] );
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+
+            } else if (selectedOption == 3) {  // Maxima
+                String avg = databaseOutputFormatter.selectMaxWeatherDataSingleCity(selectedCity, selectedTimePeriod[0], selectedTimePeriod[1] );
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+            }
+
+        } else if (selectedOption == 2) { /* All cities are considered. */
 
             selectedTimePeriod = getTimePeriod();
             String[] timePeriod_DifferentFormat = // different Date format: yyyy-MM-dd
@@ -168,17 +180,17 @@ public final class UI {
 
             List<List<WeatherData>> completeWeatherDataList =
                     databaseOutputFormatter.selectWeatherOfAllCitiesInTimeframe(timePeriod_DifferentFormat[0],
-                                                                                timePeriod_DifferentFormat[1],
-                                                                                availableCities);
+                            timePeriod_DifferentFormat[1], availableCities);
+
             // print the first N rows for each City
-            System.out.println(String.format("\033[33m Printing the first %d entries of each city", LIMIT_ROWS/2));
+            System.out.println(String.format("%s Printing the first %d entries of each city", ANSI_GREEN, LIMIT_ROWS / 2));
             List<List<WeatherData>> weatherDataTrimmed = new ArrayList<>();
             for (List<WeatherData> list : completeWeatherDataList) {
-                weatherDataTrimmed.add(list.stream().limit(LIMIT_ROWS/2).collect(Collectors.toList()));
+                weatherDataTrimmed.add(list.stream().limit(LIMIT_ROWS / 2).collect(Collectors.toList()));
             }
 
-            weatherDataTrimmed.forEach( WeatherOfCity -> {
-                System.out.println("\033[32m" + WeatherOfCity );
+            weatherDataTrimmed.forEach(WeatherOfCity -> {
+                System.out.println(ANSI_GREEN + WeatherOfCity + ANSI_RESET);
             });
 
         /*
@@ -188,10 +200,10 @@ public final class UI {
 
              */
 
-
         }
 
     }
+
 
     /**
      * For each city, write it's name and coresponding index.
@@ -199,7 +211,7 @@ public final class UI {
      *
      * @param cities
      */
-    public final String generateCityWithIndex(final String[] cities) {
+    public String generateCityWithIndex(final String[] cities) {
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < cities.length; i++) {
             line.append(i).append("  ").append(cities[i]).append("\n");
@@ -224,6 +236,8 @@ public final class UI {
             case GlobalConstants.WELCOME_MENU:
                 validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each menu
                 break;
+            case GlobalConstants.METADATA:
+                validMenuValues = Arrays.asList(1, 2, 3, 0);
         }
         if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) {
             // A valid menu value is considerd valid,
@@ -301,7 +315,7 @@ public final class UI {
                     input = scanner.next();
                     if (input.equals(GlobalConstants.DEFAULT_DATE_KEYWORD)) {
                         System.out.printf("Benutze das Standard Datum %s bis %s", GlobalConstants.DEFAULT_DATE[0],
-                                          GlobalConstants.DEFAULT_DATE[1]);
+                                GlobalConstants.DEFAULT_DATE[1]);
                         date = GlobalConstants.DEFAULT_DATE[0];
                     } else {
                         input = replacePointsWithDashes(input);
@@ -417,8 +431,8 @@ public final class UI {
         if (username.length() < GlobalConstants.MIN_LENGTH_USERNAME || username.length() > GlobalConstants.MAX_USERNAME_LEN) {
 
             Log.info(String.format("Username Length should be at least %d and not longer than %d",
-                                   GlobalConstants.MIN_LENGTH_USERNAME,
-                                   GlobalConstants.MAX_USERNAME_LEN));
+                    GlobalConstants.MIN_LENGTH_USERNAME,
+                    GlobalConstants.MAX_USERNAME_LEN));
             return false;
         }
         if (password.length() < GlobalConstants.MIN_PASSWORD_LENGTH) {

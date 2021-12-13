@@ -1,11 +1,11 @@
 package ch.hslu.swde.wda.business;
 
+import ch.hslu.swde.wda.domain.User;
+import ch.hslu.swde.wda.domain.WeatherData;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-
-import ch.hslu.swde.wda.domain.User;
-import ch.hslu.swde.wda.domain.WeatherData;
 
 public interface BusinessHandler extends Remote {
 	
@@ -17,8 +17,11 @@ public interface BusinessHandler extends Remote {
 	
 	public String selectAverageWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
 	
-	public List<String> selectMaxMinCity(String cityname, String start, String end) throws RemoteException;
-	
+	public String selectMaxWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
+
+	public String selectMinWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
+
+
 	public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) throws RemoteException;
 	
 	public List<User> getUserNamesAsList() throws RemoteException;

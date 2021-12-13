@@ -34,17 +34,12 @@ class UITest {
 
 
     @Test
-    @Disabled
-    void testSequenceAllcities() {
-        // we are going to test the input sequence: 1 -> testuseranme -> testpassword -> 2 -> 1 (zeitspanne) -> 12.01
-        // .2021 -> 27.11.2021 for some reason this gives an error. Maybe if because This exact timestamp does not
-        // exist?
+    void testLoadDataOverAllCities() {
+        //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.01.2021 27.11.2021 ".getBytes()); //
-        // Option 2
-        // means we use all dates
+                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 ".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();
@@ -52,14 +47,13 @@ class UITest {
         System.setIn(sysInBackup);
     }
 
-
     @Test
-    void testLoadDataOverAllCities() {
+    void testLoadSpecificCity_AndLoadAverage() {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 ".getBytes());
+                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 1".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();

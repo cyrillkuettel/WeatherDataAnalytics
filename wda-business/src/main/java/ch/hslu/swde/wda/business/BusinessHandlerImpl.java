@@ -1,5 +1,13 @@
 package ch.hslu.swde.wda.business;
 
+import ch.hslu.swde.wda.domain.City;
+import ch.hslu.swde.wda.domain.User;
+import ch.hslu.swde.wda.domain.WeatherData;
+import ch.hslu.swde.wda.persister.DbHelper;
+import ch.hslu.swde.wda.persister.PersistUser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Date;
@@ -8,15 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ch.hslu.swde.wda.domain.City;
-import ch.hslu.swde.wda.domain.User;
-import ch.hslu.swde.wda.domain.WeatherData;
-import ch.hslu.swde.wda.persister.DbHelper;
-import ch.hslu.swde.wda.persister.PersistUser;
 
 public class BusinessHandlerImpl extends UnicastRemoteObject implements BusinessHandler {
 
@@ -76,34 +75,41 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 				pressure, humidity);
 		return Description;
 	}
-
 	@Override
-	public List<String> selectMaxMinCity(String cityname, String start, String end) throws RemoteException {
+	public String selectMaxWeatherDataSingleCity(String cityname, String start, String end) {
+		java.sql.Date startDate = java.sql.Date.valueOf(start);
+		java.sql.Date endDate = Date.valueOf(end);
 
-		WeatherData weatherDataMAXIMUM = DbHelper.selectMaxWeatherDataSingleCity(cityname, Date.valueOf(start),
-				Date.valueOf(end));
-		WeatherData weatherDataMINIMUM = DbHelper.selectMinWeatherDataSingleCity(cityname, Date.valueOf(start),
-				Date.valueOf(end));
-
+		WeatherData weatherDataMAXIMUM = DbHelper.selectMaxWeatherDataSingleCity(cityname, startDate, endDate);
 		String humidity = String.valueOf(weatherDataMAXIMUM.getHumidity());
 		String pressure = String.valueOf(weatherDataMAXIMUM.getPressure());
 		String temp = String.valueOf(weatherDataMAXIMUM.getTemp());
 
-		String maxDescription = String.format(
-				"Maximum Values for temperatur, pressure and humidity for %s are:" + '\n' + " %s, %s and %s", cityname,
-				temp, pressure, humidity);
+		String maxDescription =
+				String.format("Maximum Values for temperatur, pressure and humidity for %s:"  +
+								" %s, %s and %s",
+						cityname, temp, pressure, humidity);
 
-		humidity = String.valueOf(weatherDataMINIMUM.getHumidity());
-		pressure = String.valueOf(weatherDataMINIMUM.getPressure());
-		temp = String.valueOf(weatherDataMINIMUM.getTemp());
+		return maxDescription;
 
-		String minDescription = String.format(
-				"Minimum Values for temperatur, pressure and humidity for %s are:" + '\n' + " %s, %s and %s", cityname,
-				temp, pressure, humidity);
-		List<String> max_min = new ArrayList<>();
-		max_min.add(maxDescription + '\n');
-		max_min.add(minDescription);
-		return max_min;
+	}
+	@Override
+	public String selectMinWeatherDataSingleCity(String cityname, String start, String end) {
+		java.sql.Date startDate = java.sql.Date.valueOf(start);
+		java.sql.Date endDate = Date.valueOf(end);
+
+		WeatherData weatherDataMINIMUM = DbHelper.selectMinWeatherDataSingleCity(cityname, startDate, endDate);
+
+		String humidity = String.valueOf(weatherDataMINIMUM.getHumidity());
+		String pressure = String.valueOf(weatherDataMINIMUM.getPressure());
+		String temp = String.valueOf(weatherDataMINIMUM.getTemp());
+
+		String minDescription =
+				String.format("Minimum Values for temperatur, pressure and humidity for %s :" +
+								" %s, %s and %s",
+						cityname, temp, pressure, humidity);
+		return minDescription;
+
 	}
 
 	@Override
