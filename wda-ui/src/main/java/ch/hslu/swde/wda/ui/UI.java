@@ -46,6 +46,7 @@ public final class UI {
 
     Scanner scanner;
     DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
+    BusinessHandler stub = null;
 
     public UI() {
         scanner = new Scanner(System.in);
@@ -54,15 +55,12 @@ public final class UI {
             Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" + ANSI_RESET);
         }
 
-
     }
 
-    public void loadCityNamesToMemory() {
-        availableCities = convertListToArray(databaseOutputFormatter.getCityNamesAsList());
-        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
-    }
-
-    public void testRMI() {
+    /**
+     * RMI Initialization
+     */
+    public BusinessHandler createStub() {
         final String rmiServerIP = "10.155.228.206"; // change this
         final int rmiPort = 1099;
 
@@ -82,18 +80,12 @@ public final class UI {
         BusinessHandler stub = null;
         try {
             stub = (BusinessHandler) Naming.lookup(url);
+            return stub;
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             Log.info("Naming.lookup did throw an Exception");
             e.printStackTrace();
         }
-
-        List<String> list = null;
-        try {
-            list = stub.getCityNamesAsList();
-            System.out.println(list);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        return null;
     }
 
 
@@ -102,8 +94,8 @@ public final class UI {
      */
     public void startFromBeginning() {
 
-        User admin = new User(STANDARD_FORENAME, STANDARD_SURNAME, STANDARD_PASSWORD);
-        databaseOutputFormatter.insertUser(admin);
+        /* */
+       // loadUsersIntoMemory();
 
         /* The cities could change in the future, so they have to be loaded dynamically  */
         loadCityNamesToMemory();
@@ -111,15 +103,12 @@ public final class UI {
         int selectedOption;
         String selectedCity;
         String[] selectedTimePeriod; // timePeriod[0] = startDate, timePeriod[1] = endDate
-        String[] newCredentials;
-
-
-        String[] credentials;
+        User user;
         int totalLoginAttempts = 0;
         do {
-            credentials = askForUsernamePassword(totalLoginAttempts);
+            user = askForCredentials(totalLoginAttempts);
             totalLoginAttempts++;
-        } while (!isValidLogin(credentials));
+        } while (!isValidLogin(user));
 
         System.out.println("Erfolgreich Eingeloggt!");
 
@@ -129,8 +118,8 @@ public final class UI {
         selectedOption = readOptionFromUser();
         if (selectedOption == 2) { // create new user
             // TODO: user CRUD
-            User user = promptUsertoCreateNewAccount();
-            if ( databaseOutputFormatter.insertUser(user)) {
+            User newUser = askForCredentials(0);
+            if (databaseOutputFormatter.insertUser(newUser)) {
                 System.out.println(CONFIRM_NEW_USER_CREATED);
             } else {
                 System.out.println(REFUTE_NEW_USER_CREATED);
@@ -144,8 +133,6 @@ public final class UI {
                     .collect(Collectors.toMap(Function.identity(), onlyNames::get));
             System.out.println(UserIndexNameMap);
         }
-
-
 
 
         currentMenu = SELECT_DATA_OR_ALL_MENU;
@@ -165,8 +152,8 @@ public final class UI {
 
 
             List<WeatherData> weatherdata = databaseOutputFormatter.selectWeatherByDateAndCity(selectedCity,
-                    selectedTimePeriod[0],
-                    selectedTimePeriod[1]);
+                                                                                               selectedTimePeriod[0],
+                                                                                               selectedTimePeriod[1]);
 
             System.out.println(String.format("%s Printing the first %d entries", ANSI_GREEN, LIMIT_ROWS));
             // print the first N rows
@@ -184,7 +171,7 @@ public final class UI {
 
             List<List<WeatherData>> completeWeatherDataList =
                     databaseOutputFormatter.selectWeatherOfAllCitiesInTimeframe(timePeriod_DifferentFormat[0],
-                            timePeriod_DifferentFormat[1], availableCities);
+                                                                                timePeriod_DifferentFormat[1], availableCities);
 
             // print the first N rows for each City
             System.out.println(String.format("%s Printing the first %d entries of each city", ANSI_GREEN, LIMIT_ROWS / 2));
@@ -243,7 +230,8 @@ public final class UI {
 
         while (selectedOption != 0) {
             if (selectedOption == 1) {  // Average
-                String avg = databaseOutputFormatter.selectAverageWeatherDataSingleCity(city, timePeriod[0], timePeriod[1]);
+                String avg =
+                        databaseOutputFormatter.selectAverageWeatherDataSingleCity(city, timePeriod[0], timePeriod[1]);
                 System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
             } else if (selectedOption == 2) { // Minima
                 String avg = databaseOutputFormatter.selectMinWeatherDataSingleCity(city, timePeriod[0], timePeriod[1]);
@@ -371,7 +359,7 @@ public final class UI {
                     input = scanner.next();
                     if (input.equals(DEFAULT_DATE_KEYWORD)) {
                         System.out.printf("Benutze das Standard Datum %s bis %s", DEFAULT_DATE[0],
-                                DEFAULT_DATE[1]);
+                                          DEFAULT_DATE[1]);
                         date = DEFAULT_DATE[0];
                     } else {
                         input = replacePointsWithDashes(input);
@@ -432,24 +420,25 @@ public final class UI {
 
 
     /**
-     * TODO: Determine if login is successful.
-     *
-     * @return true if the login is a correct username / password combination, false if not.
+     * @return true if the login succeeds, false otherwise
      */
-    private boolean isValidLogin(String[] checkThisLogin) {
-        // only for testing (this will change as soon as we can validate logins on
-        // the server-side)
-        return checkThisLogin[0] != " " && checkThisLogin[1].length() > 0 && checkThisLogin[0].length() > 0;
+    private boolean isValidLogin(User validateThisUser) {
+        return true;
+        /*
+       List<User> currentUserList =  databaseOutputFormatter.selectAllUserData();
+       //  note: from a security standpoint, this validation should not be done on the client side
+       return currentUserList.stream().anyMatch(el -> el.equals(validateThisUser));
+         */
     }
 
     /**
-     * Ask the user to type in username and password. It will Loop indefinitely, until the condition in {@link #simpleLoginValidationPassed(String, String)
+     * Ask the user to type in forename, surname and password. It will Loop indefinitely, until the condition in
+     * {@link #simpleLoginValidationPassed(String[] )
      * condition passes}
      *
      * @return String Array containing the username [index: 0] and password. [index: 1]
      */
-    public String[] askForUsernamePassword(final int attemptCount) {
-
+    public User askForCredentials(final int attemptCount) {
         if (attemptCount > 0) {
             System.out.print(WARN_INVALID_LOGIN);
         }
@@ -462,37 +451,8 @@ public final class UI {
                 String surname = scanner.next();
                 System.out.print(ASK_PASSWORD);
                 String password = scanner.next();
-
-                if (simpleLoginValidationPassed(forename, password)) {
-                    credentials[0] = forename;
-                    credentials[1] = surname;
-                    credentials[2] = password;
-                } else {
-                    System.out.println(WARN_LOGIN_VALIDATION_NOT_PASSED);
-                }
-            } catch (Exception e) {
-                Log.error("Error while reading Username or Password in method askForUsernamePassword", e);
-                System.err.println("\n Fehler beim Lesen der Login Daten");
-            }
-        } while (credentials[0] == null && credentials[1] == null && credentials[2] == null);
-        return credentials;
-    }
-
-    public User promptUsertoCreateNewAccount() {
-
-        final String[] credentials = new String[3];
-        do {
-            try {
-                System.out.print(ASK_FORANME);
-                String forname = scanner.next();
-                System.out.print(ASK_SURNAME);
-                String surname = scanner.next();
-                System.out.print(ASK_PASSWORD);
-                String password = scanner.next();
-                if (simpleLoginValidationPassed(surname, password)) {
-                    credentials[0] = forname;
-                    credentials[1] = surname;
-                    credentials[2] = password;
+                if (simpleLoginValidationPassed(new String[]{forename, surname, password})) {
+                    credentials = new String[]{forename, surname, password};
                 } else {
                     System.out.println(WARN_LOGIN_VALIDATION_NOT_PASSED);
                 }
@@ -501,7 +461,7 @@ public final class UI {
                 System.err.println("\n Fehler beim Lesen der Login Daten");
             }
         } while (Arrays.stream(credentials).anyMatch(Objects::isNull));
-       return new User(credentials[0], credentials[1], credentials[1]);
+        return new User(credentials[0], credentials[1], credentials[2]);
 
     }
 
@@ -512,15 +472,14 @@ public final class UI {
      *
      * @return true if the credidentals are valid, false if there is problem.
      */
-    public boolean simpleLoginValidationPassed(String username, String password) {
-        if (username.length() < MIN_LENGTH_USERNAME || username.length() > MAX_USERNAME_LEN) {
+    public boolean simpleLoginValidationPassed(String[] creds) {
 
-            Log.info(String.format("Username Length should be at least %d and not longer than %d",
-                    MIN_LENGTH_USERNAME,
-                    MAX_USERNAME_LEN));
+        if (creds[0].length() < MIN_LENGTH_NAME || creds[1].length() < MIN_LENGTH_NAME) {
+
+            Log.info(String.format("Username Length should be at least %d characters", MIN_LENGTH_NAME));
             return false;
         }
-        if (password.length() < MIN_PASSWORD_LENGTH) {
+        if (creds[2].length() < MIN_PASSWORD_LENGTH) {
             Log.info(String.format("The minimum Password length is %d ", MIN_PASSWORD_LENGTH));
             return false;
         }
@@ -553,5 +512,37 @@ public final class UI {
         return input.toArray(new String[0]);
     }
 
+    public void loadCityNamesToMemory() {
+        availableCities = convertListToArray(databaseOutputFormatter.getCityNamesAsList());
+        CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
+    }
 
+    public void loadUsersIntoMemory() {
+        User finn = new User("Finn", "Morgenthaler", "test1");
+        User cyrill = new User("Cyrill", "Küttel", "test2");
+        User lenny = new User("Lenny", "Buddliger", "test3");
+        User nilu = new User("Nilukzil", "Fernando", "test4");
+
+        databaseOutputFormatter.persistUser(nilu);
+        databaseOutputFormatter.persistUser(lenny);
+        databaseOutputFormatter.persistUser(finn);
+        databaseOutputFormatter.persistUser(cyrill);
+    }
+
+
+    public void testRMI_PrintCities() {
+        stub = createStub();
+
+        if (stub != null) {
+            List<String> list = null;
+            try {
+                list = stub.getCityNamesAsList();
+                System.out.println("Remote Object Invocation:");
+                System.out.println(list);
+            } catch (RemoteException e) {
+                Log.info("Remote Object Invocation did not succeed.");
+                e.printStackTrace();
+            }
+        }
+    }
 }

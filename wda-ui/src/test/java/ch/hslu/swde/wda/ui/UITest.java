@@ -86,28 +86,23 @@ class UITest {
     @Test
     void testLoginShouldRefuseEmptyStrings() {
         UI ui = new UI();
-        String username = "";
+        String forename = "";
+        String surname = "";
         String password = "";
-        assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
+        String[] creds = {forename, surname, password };
+        assertThat(ui.simpleLoginValidationPassed(creds)).isFalse();
     }
 
-    @Test
-    void testMaximumUsernameLengthShouldNotExceedAValue() {
-        UI ui = new UI();
-        String username = "";
-        String password = "asdfadsfdsfdsf";
-        for (int i = 0; i < GlobalConstants.MAX_USERNAME_LEN * 2; i++) {
-            username += "u";
-        }
-        assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
-    }
+
 
     @Test
     void testPasswordAtLeast8Characters() {
         UI ui = new UI();
-        String username = "test";
+        String forename = "test123";
+        String surname = "blablabla";
         String password = "pw";
-        assertThat(ui.simpleLoginValidationPassed(username, password)).isFalse();
+        String[] creds = {forename, surname, password };
+        assertThat(ui.simpleLoginValidationPassed(creds)).isFalse();
     }
 
     @Test
@@ -164,22 +159,6 @@ class UITest {
         String completlyIncorrectDate = "10.11"; // expect everything!
         UI ui = new UI();
         assertFalse(ui.isValidDate(completlyIncorrectDate));
-    }
-
-
-    @Test
-    @Disabled
-    void testaskForUsernamePassword() {
-        String[] expectedUserCredidentals = {"username", "ultimate_secret_password"};
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
-        ByteArrayInputStream in = new ByteArrayInputStream("username ultimate_secret_password".getBytes());
-        System.setIn(in);
-
-        UI ui = new UI();
-        String[] credentials = ui.askForUsernamePassword(0);
-        assertThat(credentials).isEqualTo(expectedUserCredidentals);
-        // reset System.in to its original
-        System.setIn(sysInBackup);
     }
 
 

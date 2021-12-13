@@ -30,9 +30,11 @@ import java.util.stream.Collectors;
 public final class DatabaseOutputFormatter {
     private static final Logger Log = LogManager.getLogger(DatabaseOutputFormatter.class);
     private final DbHelper DbHelper;
+    private final PersistUser persistUser;
 
     public DatabaseOutputFormatter() {
         DbHelper = new DbHelper();
+        persistUser = new PersistUser();
     }
 
 
@@ -62,7 +64,6 @@ public final class DatabaseOutputFormatter {
         }
         return dataOfAllCities;
     }
-
 
 
     public List<String> getCityNamesAsList() {
@@ -98,7 +99,7 @@ public final class DatabaseOutputFormatter {
 
         String Description =
                 String.format("Durchschnittliche Werte für Temperatur, Druck und Feuchtigkeit" + '\n' +
-                        " %s, %s and %s", temp, pressure, humidity);
+                                      " %s, %s and %s", temp, pressure, humidity);
         return Description;
 
 
@@ -115,8 +116,8 @@ public final class DatabaseOutputFormatter {
 
         String maxDescription =
                 String.format("Maximum Values for temperatur, pressure and humidity for %s:" +
-                                " %s, %s and %s",
-                        cityname, temp, pressure, humidity);
+                                      " %s, %s and %s",
+                              cityname, temp, pressure, humidity);
 
         return maxDescription;
 
@@ -134,8 +135,8 @@ public final class DatabaseOutputFormatter {
 
         String minDescription =
                 String.format("Minimum Values for temperatur, pressure and humidity for %s :" +
-                                " %s, %s and %s",
-                        cityname, temp, pressure, humidity);
+                                      " %s, %s and %s",
+                              cityname, temp, pressure, humidity);
         return minDescription;
 
     }
@@ -149,7 +150,7 @@ public final class DatabaseOutputFormatter {
 
         String minDescription =
                 String.format("Minimale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + '\n' +
-                        " %s, %s and %s", temp, pressure, humidity);
+                                      " %s, %s and %s", temp, pressure, humidity);
 
         return minDescription;
     }
@@ -168,20 +169,23 @@ public final class DatabaseOutputFormatter {
     }
 
 
-    public boolean insertUser(User user)  {
-        PersistUser persistUser = new PersistUser();
+    public boolean insertUser(User user) {
+
         try {
             persistUser.insertUser(user);
             return true;
         } catch (Exception e) {
-        Log.warn("Error inserting User to database");
+            Log.warn("Error inserting User to database");
         }
         return false;
     }
 
     public List<User> selectAllUserData() {
-            List<User> userLIst =  DbHelper.selectAllUserData();
-            return userLIst;
+        return DbHelper.selectAllUserData();
+    }
+
+    public void persistUser(User user) {
+        persistUser.insertUser(user);
     }
 
 }
