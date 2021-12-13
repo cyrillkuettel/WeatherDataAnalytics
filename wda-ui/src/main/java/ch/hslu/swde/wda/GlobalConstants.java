@@ -29,25 +29,28 @@ public final class GlobalConstants {
     public static final String SELECT_TIMESPAN_END = "Enddatum: ";
     public static final String DEFAULT_DATE_KEYWORD = "skip";
     public static final String SELECT_TIMESPAN_START =
-                    "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \n\"" + DEFAULT_DATE_KEYWORD + "\" für das " +
-                            "Standart " +
-                            "Datum";
+            "Startdatum angeben. Erwartetes Format ist \"dd.MM.yyyy\" \n\"" + DEFAULT_DATE_KEYWORD + "\" für das " +
+                    "Standart " +
+                    "Datum";
     public static final String ASK_PASSWORD = "Bitte Passwort eingeben: ";
     public static final String ASK_USERNAME = "Bitte Benutzername eingeben: ";
     public static final String CONFIRM_NEW_USER_CREATED = "Erstellung erfolgreich.";
     public static final String WELCOME_MENU = " Einloggen [1]      Neuer Benutzer erstellen [2] ";
     public static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum (2020 - 2021) [2]       " +
             "   " +
-                                    "Beenden [0]";
+            "Beenden [0]";
     public static final String SELECT_DATA_OR_ALL_MENU =
-                                            "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
-                                                    "alle " + "Ortschaften laden [2] " + "     " +
-                                                    "Beenden " + "[0]";
+            "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
+                    "alle " + "Ortschaften laden [2] " + "     " +
+                    "Beenden " + "[0]";
     public static final String WARN_INVALID_LOGIN = "Ist nicht eine korrekte Benutzername / Password Kombination. " +
-                                                            "Versuchen Sie es noch einmal";
+            "Versuchen Sie es noch einmal";
     public static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
-                                                                    "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
-    public static final String METADATA = "Durchschnittswerte dieser Ausgabe berechnen [1] Maxima dieser Ausgabe berechnen [2] Mimima dieser Ausgabe berechnen [3] Beenden [0]";
+            "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
+    public static final String METADATA = "Durchschnittswerte dieser Ausgabe berechnen [1]     Maxima dieser Ausgabe berechnen [2]     Mimima dieser Ausgabe berechnen [3]     Beenden [0]";
+
+
+    public static final String METADATA_ALL_CITY = "Maxima aller Ortschaften in diesem Zeitraum berechnen [1]     Maxima aller Ortschaften in diesem Zeitraum berechnen [2]     Beenden [0]";
 
 
     // for colored output in unix-like terminals

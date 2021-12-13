@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,7 @@ public final class UI {
         if (!Utils.pingURL(GlobalConstants.WEATHERDATA_PROVIDER, 10000)) {
             Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" + ANSI_RESET);
         }
+
 
     }
 
@@ -156,21 +158,8 @@ public final class UI {
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
             System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
 
+            loop_ToggleMaximumAndMinimumAndAverage(selectedCity, selectedTimePeriod);
 
-            currentMenu = GlobalConstants.METADATA;
-            showActiveMenu();
-            selectedOption = readOptionFromUser();
-            if (selectedOption == 1) {  // Average
-               String avg = databaseOutputFormatter.selectAverageWeatherDataSingleCity(selectedCity, selectedTimePeriod[0], selectedTimePeriod[1] );
-               System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
-            } else if (selectedOption == 2) { // Minima
-                String avg = databaseOutputFormatter.selectMinWeatherDataSingleCity(selectedCity, selectedTimePeriod[0], selectedTimePeriod[1] );
-                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
-
-            } else if (selectedOption == 3) {  // Maxima
-                String avg = databaseOutputFormatter.selectMaxWeatherDataSingleCity(selectedCity, selectedTimePeriod[0], selectedTimePeriod[1] );
-                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
-            }
 
         } else if (selectedOption == 2) { /* All cities are considered. */
 
@@ -193,15 +182,66 @@ public final class UI {
                 System.out.println(ANSI_GREEN + WeatherOfCity + ANSI_RESET);
             });
 
-        /*
-            List<String> max_min;
-            max_min = databaseOutputFormatter.selectMaxWeatherDataAllCity(timePeriod_DifferentFormat[0] + " 00:00:00");
-            System.out.println(max_min);
-
-             */
+            loop_ToggleMaximumAndMinimum(completeWeatherDataList);
 
         }
+    }
 
+    public void loop_ToggleMaximumAndMinimum(List<List<WeatherData>> completeWeatherDataList) {
+        currentMenu = METADATA_ALL_CITY;
+        showActiveMenu();
+        int selectedOption = readOptionFromUser();
+
+        while (selectedOption != 0) {
+
+            if (selectedOption == 1) {  // Minima
+                // to get a Valid Timestamp, get the oldest possible timeStamp
+                Timestamp minimumTimeStamp_forThisWeatherData = completeWeatherDataList.stream()
+                        .flatMap(List::stream)
+                        .map(WeatherData::getDataTimestamp)
+                        .max(Timestamp::compareTo).get();
+
+                String avg = databaseOutputFormatter.selectMinWeatherDataAllCity(minimumTimeStamp_forThisWeatherData);
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+
+            } else if (selectedOption == 2) { // Maxima
+
+                // to get a Valid Timestamp, get the oldest possible timeStamp
+                Timestamp minimumTimeStamp_forThisWeatherData = completeWeatherDataList.stream()
+                        .flatMap(List::stream)
+                        .map(WeatherData::getDataTimestamp)
+                        .max(Timestamp::compareTo).get();
+
+                String avg = databaseOutputFormatter.selectMaxWeatherDataAllCity(minimumTimeStamp_forThisWeatherData);
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+            }
+            currentMenu = METADATA_ALL_CITY;
+            showActiveMenu();
+            selectedOption = readOptionFromUser();
+        }
+    }
+
+    public void loop_ToggleMaximumAndMinimumAndAverage(String city, String[] timePeriod) {
+        currentMenu = METADATA;
+        showActiveMenu();
+        int selectedOption = readOptionFromUser();
+
+        while (selectedOption != 0) {
+            if (selectedOption == 1) {  // Average
+                String avg = databaseOutputFormatter.selectAverageWeatherDataSingleCity(city, timePeriod[0], timePeriod[1]);
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+            } else if (selectedOption == 2) { // Minima
+                String avg = databaseOutputFormatter.selectMinWeatherDataSingleCity(city, timePeriod[0], timePeriod[1]);
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+
+            } else if (selectedOption == 3) {  // Maxima
+                String avg = databaseOutputFormatter.selectMaxWeatherDataSingleCity(city, timePeriod[0], timePeriod[1]);
+                System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
+            }
+            currentMenu = METADATA;
+            showActiveMenu();
+            selectedOption = readOptionFromUser();
+        }
     }
 
 
@@ -234,6 +274,7 @@ public final class UI {
             case GlobalConstants.SELECT_DATA_OR_ALL_MENU:
             case GlobalConstants.TIMESPAN:
             case GlobalConstants.WELCOME_MENU:
+            case GlobalConstants.METADATA_ALL_CITY:
                 validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each menu
                 break;
             case GlobalConstants.METADATA:

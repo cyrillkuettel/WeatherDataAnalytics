@@ -5,6 +5,7 @@ import ch.hslu.swde.wda.domain.WeatherData;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface BusinessHandler extends Remote {
@@ -21,9 +22,10 @@ public interface BusinessHandler extends Remote {
 
 	public String selectMinWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
 
+	public String selectMaxWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException;
 
-	public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) throws RemoteException;
-	
+	public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException;
+
 	public List<User> getUserNamesAsList() throws RemoteException;
 	
 	public boolean insertUser(User user) throws RemoteException;

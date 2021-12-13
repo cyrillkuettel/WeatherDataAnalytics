@@ -12,167 +12,165 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class BusinessHandlerImpl extends UnicastRemoteObject implements BusinessHandler {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7973402984033177026L;
-	
-	private static final Logger Log = LogManager.getLogger(BusinessHandlerImpl.class);
-	private DbHelper DbHelper;
-	private PersistUser persistUser;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7973402984033177026L;
 
-	public BusinessHandlerImpl() throws RemoteException {
-		DbHelper = new DbHelper();
-		persistUser = new PersistUser();
-	}
+    private static final Logger Log = LogManager.getLogger(BusinessHandlerImpl.class);
+    private DbHelper DbHelper;
+    private PersistUser persistUser;
 
-	@Override
-	public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end)
-			throws RemoteException {
+    public BusinessHandlerImpl() throws RemoteException {
+        DbHelper = new DbHelper();
+        persistUser = new PersistUser();
+    }
 
-		List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, Date.valueOf(start),
-				Date.valueOf(end));
-		Log.info(requestedWeatherData);
-		return requestedWeatherData;
-	}
+    @Override
+    public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end)
+            throws RemoteException {
 
-	@Override
-	public List<String> getCityNamesAsList() throws RemoteException {
-		List<City> cityList;
+        List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, Date.valueOf(start),
+                Date.valueOf(end));
+        Log.info(requestedWeatherData);
+        return requestedWeatherData;
+    }
 
-		try {
-			cityList = DbHelper.selectAllCities();
-			return cityList.stream().map(City::getName).collect(Collectors.toList());
-		} catch (jakarta.persistence.NoResultException e) {
-			Log.warn("that city does not (yet) exist in database");
-			e.printStackTrace();
-		}
-		Log.warn("City List is empty! ");
-		return Collections.emptyList();
-	}
+    @Override
+    public List<String> getCityNamesAsList() throws RemoteException {
+        List<City> cityList;
 
-	@Override
-	public String selectAverageWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException {
+        try {
+            cityList = DbHelper.selectAllCities();
+            return cityList.stream().map(City::getName).collect(Collectors.toList());
+        } catch (jakarta.persistence.NoResultException e) {
+            Log.warn("that city does not (yet) exist in database");
+            e.printStackTrace();
+        }
+        Log.warn("City List is empty! ");
+        return Collections.emptyList();
+    }
 
-		WeatherData requestedWeatherData;
+    @Override
+    public String selectAverageWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException {
 
-		requestedWeatherData = DbHelper.selectAverageWeatherDataSingleCity(cityname, Date.valueOf(start),
-				Date.valueOf(end));
+        WeatherData requestedWeatherData;
 
-		String humidity = String.valueOf(requestedWeatherData.getHumidity());
-		String pressure = String.valueOf(requestedWeatherData.getPressure());
-		String temp = String.valueOf(requestedWeatherData.getTemp());
+        requestedWeatherData = DbHelper.selectAverageWeatherDataSingleCity(cityname, Date.valueOf(start),
+                Date.valueOf(end));
 
-		String Description = String.format(
-				"Durchschnittliche Werte für Temperatur, Druck und Feuchtigkeit" + '\n' + " %s, %s and %s", temp,
-				pressure, humidity);
-		return Description;
-	}
-	@Override
-	public String selectMaxWeatherDataSingleCity(String cityname, String start, String end) {
-		java.sql.Date startDate = java.sql.Date.valueOf(start);
-		java.sql.Date endDate = Date.valueOf(end);
+        String humidity = String.valueOf(requestedWeatherData.getHumidity());
+        String pressure = String.valueOf(requestedWeatherData.getPressure());
+        String temp = String.valueOf(requestedWeatherData.getTemp());
 
-		WeatherData weatherDataMAXIMUM = DbHelper.selectMaxWeatherDataSingleCity(cityname, startDate, endDate);
-		String humidity = String.valueOf(weatherDataMAXIMUM.getHumidity());
-		String pressure = String.valueOf(weatherDataMAXIMUM.getPressure());
-		String temp = String.valueOf(weatherDataMAXIMUM.getTemp());
+        String Description = String.format(
+                "Durchschnittliche Werte für Temperatur, Druck und Feuchtigkeit" + '\n' + " %s, %s and %s", temp,
+                pressure, humidity);
+        return Description;
+    }
 
-		String maxDescription =
-				String.format("Maximum Values for temperatur, pressure and humidity for %s:"  +
-								" %s, %s and %s",
-						cityname, temp, pressure, humidity);
+    @Override
+    public String selectMaxWeatherDataSingleCity(String cityname, String start, String end) {
+        java.sql.Date startDate = java.sql.Date.valueOf(start);
+        java.sql.Date endDate = Date.valueOf(end);
 
-		return maxDescription;
+        WeatherData weatherDataMAXIMUM = DbHelper.selectMaxWeatherDataSingleCity(cityname, startDate, endDate);
+        String humidity = String.valueOf(weatherDataMAXIMUM.getHumidity());
+        String pressure = String.valueOf(weatherDataMAXIMUM.getPressure());
+        String temp = String.valueOf(weatherDataMAXIMUM.getTemp());
 
-	}
-	@Override
-	public String selectMinWeatherDataSingleCity(String cityname, String start, String end) {
-		java.sql.Date startDate = java.sql.Date.valueOf(start);
-		java.sql.Date endDate = Date.valueOf(end);
+        String maxDescription =
+                String.format("Maximum Values for temperatur, pressure and humidity for %s:" +
+                                " %s, %s and %s",
+                        cityname, temp, pressure, humidity);
 
-		WeatherData weatherDataMINIMUM = DbHelper.selectMinWeatherDataSingleCity(cityname, startDate, endDate);
+        return maxDescription;
 
-		String humidity = String.valueOf(weatherDataMINIMUM.getHumidity());
-		String pressure = String.valueOf(weatherDataMINIMUM.getPressure());
-		String temp = String.valueOf(weatherDataMINIMUM.getTemp());
+    }
 
-		String minDescription =
-				String.format("Minimum Values for temperatur, pressure and humidity for %s :" +
-								" %s, %s and %s",
-						cityname, temp, pressure, humidity);
-		return minDescription;
+    @Override
+    public String selectMinWeatherDataSingleCity(String cityname, String start, String end) {
+        java.sql.Date startDate = java.sql.Date.valueOf(start);
+        java.sql.Date endDate = Date.valueOf(end);
 
-	}
+        WeatherData weatherDataMINIMUM = DbHelper.selectMinWeatherDataSingleCity(cityname, startDate, endDate);
 
-	@Override
-	public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) throws RemoteException {
+        String humidity = String.valueOf(weatherDataMINIMUM.getHumidity());
+        String pressure = String.valueOf(weatherDataMINIMUM.getPressure());
+        String temp = String.valueOf(weatherDataMINIMUM.getTemp());
 
-		WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
-		WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
+        String minDescription = String.format("Maximale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:"
+                + " %s, %s and %s", temp, pressure, humidity);
+        return minDescription;
 
-		String humidity = String.valueOf(weatherDataMaxAll.getHumidity());
-		String pressure = String.valueOf(weatherDataMaxAll.getPressure());
-		String temp = String.valueOf(weatherDataMaxAll.getTemp());
+    }
 
-		String maxDescription = String.format(
-				"Maximum Values for temperatur, pressure and humidity over all cities are:" + '\n' + " %s, %s and %s",
-				temp, pressure, humidity);
+    @Override
+    public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException {
 
-		humidity = String.valueOf(weatherDataMinAll.getHumidity());
-		pressure = String.valueOf(weatherDataMinAll.getPressure());
-		temp = String.valueOf(weatherDataMinAll.getTemp());
+        WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(inputTimeStamp);
+        String humidity = String.valueOf(weatherDataMinAll.getHumidity());
+        String pressure = String.valueOf(weatherDataMinAll.getPressure());
+        String temp = String.valueOf(weatherDataMinAll.getTemp());
 
-		String minDescription = String.format(
-				"Minimum Values for temperatur, pressure and humidity over all cities are:" + '\n' + " %s, %s and %s",
-				temp, pressure, humidity);
+        String minDescription =
+                String.format("Minimum Values for temperatur, pressure and humidity over all cities are:" + '\n' +
+                        " %s, %s and %s", temp, pressure, humidity);
 
-		List<String> max_min = new ArrayList<>();
-		max_min.add(maxDescription + '\n');
-		max_min.add(minDescription);
-		return max_min;
+        return minDescription;
+    }
 
-	}
+    @Override
+    public String selectMaxWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException {
 
-	@Override
-	public List<User> getUserNamesAsList() throws RemoteException {
-		List<User> userList;
+        WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(inputTimeStamp);
 
-		userList = DbHelper.selectAllUserData();
-		return userList;
-	}
+        String humidity = String.valueOf(weatherDataMaxAll.getHumidity());
+        String pressure = String.valueOf(weatherDataMaxAll.getPressure());
+        String temp = String.valueOf(weatherDataMaxAll.getTemp());
 
-	@Override
-	public boolean insertUser(User user) throws RemoteException {
+        String maxDescription =
+                String.format("Maximale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + " %s, %s and %s", temp, pressure, humidity);
+        return maxDescription;
+    }
 
-		try {
-			persistUser.insertUser(user);
-		}
-		catch(jakarta.persistence.NoResultException e){
-			
-		}
-		
+    @Override
+    public List<User> getUserNamesAsList() throws RemoteException {
+        List<User> userList;
 
-		return true;
-	}
+        userList = DbHelper.selectAllUserData();
+        return userList;
+    }
 
-	@Override
-	public boolean updateUser(User user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean insertUser(User user) throws RemoteException {
 
-	@Override
-	public boolean deleteUser(User user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+        try {
+            persistUser.insertUser(user);
+        } catch (jakarta.persistence.NoResultException e) {
+
+        }
+
+
+        return true;
+    }
+
+    @Override
+    public boolean updateUser(User user) throws RemoteException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean deleteUser(User user) throws RemoteException {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
 }

@@ -39,7 +39,7 @@ class UITest {
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 ".getBytes());
+                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 1 0".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();
@@ -48,12 +48,26 @@ class UITest {
     }
 
     @Test
-    void testLoadSpecificCity_AndLoadAverage() {
+    void testLoadAllCities_AndLoadAverageOfAll() {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 1".getBytes());
+                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 1 0".getBytes());
+        System.setIn(in);
+        UI ui = new UI();
+        ui.startFromBeginning();
+        // reset System.in to its original
+        System.setIn(sysInBackup);
+    }
+
+    @Test
+    void testLoadZurich_AndLoadAverageOfAll() {
+        //   simulate user input.
+
+        InputStream sysInBackup = System.in; // backup System.in to restore it later
+        ByteArrayInputStream in =
+                new ByteArrayInputStream("1 testuseranme testpassword 1 39 1 12.11.2021 13.11.2021 1 2 3 0".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();

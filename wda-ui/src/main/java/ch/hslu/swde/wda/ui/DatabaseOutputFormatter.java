@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 public final class DatabaseOutputFormatter {
     private static final Logger Log = LogManager.getLogger(DatabaseOutputFormatter.class);
     private final DbHelper DbHelper;
-    
+
     public DatabaseOutputFormatter() {
-    	DbHelper = new DbHelper();
+        DbHelper = new DbHelper();
     }
 
 
@@ -45,7 +45,7 @@ public final class DatabaseOutputFormatter {
         } catch (Exception e) {
             Log.warn("change the dates ");
         }
-                                                   // expected format:  yyyy-mm-dd
+        // expected format:  yyyy-mm-dd
         List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, startDate, endDate);
         return requestedWeatherData;
     }
@@ -100,7 +100,7 @@ public final class DatabaseOutputFormatter {
 
         String Description =
                 String.format("Durchschnittliche Werte für Temperatur, Druck und Feuchtigkeit" + '\n' +
-                                      " %s, %s and %s", temp, pressure, humidity);
+                        " %s, %s and %s", temp, pressure, humidity);
         return Description;
 
 
@@ -116,9 +116,9 @@ public final class DatabaseOutputFormatter {
         String temp = String.valueOf(weatherDataMAXIMUM.getTemp());
 
         String maxDescription =
-                String.format("Maximum Values for temperatur, pressure and humidity for %s:"  +
-                                      " %s, %s and %s",
-                              cityname, temp, pressure, humidity);
+                String.format("Maximum Values for temperatur, pressure and humidity for %s:" +
+                                " %s, %s and %s",
+                        cityname, temp, pressure, humidity);
 
         return maxDescription;
 
@@ -142,38 +142,30 @@ public final class DatabaseOutputFormatter {
 
     }
 
-    public List<String> selectMaxWeatherDataAllCity(String inputTimeStamp) {
-/*
-        Log.info("Timestamp.valueOf(inputTimeStamp):");
-        Log.info(Timestamp.valueOf(inputTimeStamp));
+    public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) {
 
- */
+        WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(inputTimeStamp);
+        String humidity = String.valueOf(weatherDataMinAll.getHumidity());
+        String pressure = String.valueOf(weatherDataMinAll.getPressure());
+        String temp = String.valueOf(weatherDataMinAll.getTemp());
 
-        WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
-        WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf(inputTimeStamp));
+        String minDescription =
+                String.format("Minimale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + '\n' +
+                        " %s, %s and %s", temp, pressure, humidity);
+
+        return minDescription;
+    }
+
+    public String selectMaxWeatherDataAllCity(Timestamp inputTimeStamp) {
+
+        WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(inputTimeStamp);
 
         String humidity = String.valueOf(weatherDataMaxAll.getHumidity());
         String pressure = String.valueOf(weatherDataMaxAll.getPressure());
         String temp = String.valueOf(weatherDataMaxAll.getTemp());
 
         String maxDescription =
-                String.format("Maximum Values for temperatur, pressure and humidity over all cities are:" + '\n' +
-                                      " %s, %s and %s", temp, pressure, humidity);
-
-        humidity = String.valueOf(weatherDataMinAll.getHumidity());
-        pressure = String.valueOf(weatherDataMinAll.getPressure());
-        temp = String.valueOf(weatherDataMinAll.getTemp());
-
-        String minDescription =
-                String.format("Minimum Values for temperatur, pressure and humidity over all cities are:" + '\n' +
-                                      " %s, %s and %s", temp, pressure, humidity);
-
-
-        List<String> max_min = new ArrayList<>();
-        max_min.add(maxDescription + '\n');
-        max_min.add(minDescription);
-        return max_min;
-
-
+                String.format("Maximale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + " %s, %s and %s", temp, pressure, humidity);
+        return maxDescription;
     }
 }

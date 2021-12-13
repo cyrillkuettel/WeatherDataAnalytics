@@ -65,15 +65,14 @@ class DatabaseOutputFormatterTest {
     }
 
     @Test /** Query A05 (Just like A04, but all cities) */
-    void testSelectMaxMinOverAllcities() {
+    void testSelectMaxOverAllcities() {
         DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
-        List<String> max_min;
 
-        max_min = dof.selectMaxWeatherDataAllCity("2021-01-01 00:00:57");
-        System.out.println(max_min);
 
-        assertThat(max_min.size()).isEqualTo(2);
-        max_min.stream().forEach( el -> assertThat(el).isNotBlank());
+        String max  = dof.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
+        System.out.println(max);
+
+        assertThat(max).isNotBlank();
 
     }
 
