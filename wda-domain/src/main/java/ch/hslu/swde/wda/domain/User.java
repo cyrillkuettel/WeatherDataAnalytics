@@ -1,10 +1,10 @@
 package ch.hslu.swde.wda.domain;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "userdata")
@@ -63,6 +63,28 @@ public class User implements Serializable {
 
 	public void setUserpwd(String userpwd) {
 		this.userpwd = userpwd;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		User user = (User) o;
+
+		if (!userid.equals(user.userid)) return false;
+		if (!firstname.equals(user.firstname)) return false;
+		if (!lastname.equals(user.lastname)) return false;
+		return userpwd.equals(user.userpwd);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = userid.hashCode();
+		result = 31 * result + firstname.hashCode();
+		result = 31 * result + lastname.hashCode();
+		result = 31 * result + userpwd.hashCode();
+		return result;
 	}
 
 	@Override
