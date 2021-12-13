@@ -32,7 +32,7 @@ public final class UI {
     /**
      * Generated city names at Runtime
      */
-    private final String CITY_NAMES_WITH_INDEX_MENU;
+    private String CITY_NAMES_WITH_INDEX_MENU = "";
 
     /**
      * The current active Menu.
@@ -51,23 +51,26 @@ public final class UI {
             Log.fatal("Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?");
         }
 
-        /* The cities could change in the future, so they have to be loaded dynamically  */
+    }
+
+    public void loadCityNamesToMemory() {
         availableCities = databaseOutputFormatter.convertCitiesFromArrayToList();
-
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
-
     }
 
     public void testRMI() {
-        final String rmiServerIP = "10.180.254.57";
+        final String rmiServerIP = "10.155.228.206"; // change this
         final int rmiPort = 1099;
-        final String policy="file:/home/cyrill/Desktop/g07-wda/wda-ui/client.policy";
+
+        final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
+        final String clientPolicyRelativeDir = "/wda-ui/client.policy";
+        final String policy = String.format("file:%s%s",projectDir, clientPolicyRelativeDir);
 
         if (System.getSecurityManager() == null) {
             System.setProperty("java.security.policy", policy);
             System.setSecurityManager(new SecurityManager());
         } else {
-            Log.info("There is already an installed security manager");
+            Log.info("There is already an installed security manager. java.security.policy might not have been set");
         }
 
         final String url = "rmi://" + rmiServerIP + ":" + rmiPort + "/" + BusinessHandler.RO_NAME;
@@ -76,11 +79,20 @@ public final class UI {
         try {
             stub = (BusinessHandler) Naming.lookup(url);
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            Log.info("Naming.lookup did throw an Exception");
             e.printStackTrace();
         }
 
-        List<String> list = stub.getCityNamesAsList();
-        System.out.println(list);
+        List<String> list = null;
+        try {
+            list = stub.getCityNamesAsList();
+            System.out.println(list);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
 
@@ -88,6 +100,9 @@ public final class UI {
      * starts a new User Interaction.
      */
     public void startFromBeginning() {
+        /* The cities could change in the future, so they have to be loaded dynamically  */
+        loadCityNamesToMemory();
+
         int selectedOption;
         String selectedCity;
         String[] selectedTimePeriod; // timePeriod[0] = startDate, timePeriod[1] = endDate
@@ -103,8 +118,6 @@ public final class UI {
             newCredentials = askForUsernamePassword(0);
             System.out.println(GlobalConstants.CONFIRM_NEW_USER_CREATED);
             User user = new User("Test", newCredentials[0], newCredentials[1]);
-
-
 
         }
 
