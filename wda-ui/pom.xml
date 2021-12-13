@@ -73,6 +73,15 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
+        <dependency>
+            <!-- https://mvnrepository.com/artifact/com.mitchtalmadge/ascii-data -->
+            <groupId>com.mitchtalmadge</groupId>
+            <artifactId>ascii-data</artifactId>
+            <version>1.4.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>

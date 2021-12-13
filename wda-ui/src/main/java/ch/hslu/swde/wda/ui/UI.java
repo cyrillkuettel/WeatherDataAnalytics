@@ -5,6 +5,7 @@ import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.business.BusinessHandler;
 import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
+import com.mitchtalmadge.asciidata.graph.ASCIIGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -160,6 +161,8 @@ public final class UI {
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
             System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
 
+            plotTemperature(weatherdata);
+
             loop_ToggleMaximumAndMinimumAndAverage(selectedCity, selectedTimePeriod);
 
 
@@ -186,6 +189,18 @@ public final class UI {
 
             loop_ToggleMaximumAndMinimum(completeWeatherDataList);
 
+        }
+    }
+
+    public void plotTemperature(List<WeatherData> weatherData) {
+        Comparator<WeatherData> weatherDataComparator = Comparator.comparing(WeatherData::getDataTimestamp);
+        weatherData.sort(weatherDataComparator);
+        final double[] temperatures = weatherData.stream().map(WeatherData::getTemp).mapToDouble(v -> v).toArray();
+        if(temperatures.length > 0) {
+            System.out.println();
+            System.out.println(ANSI_CYAN);
+            System.out.println(ASCIIGraph.fromSeries(temperatures).plot());
+            System.out.println(ANSI_RESET);
         }
     }
 

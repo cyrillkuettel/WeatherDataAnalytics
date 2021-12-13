@@ -62,6 +62,7 @@ public final class GlobalConstants {
     // for colored output in unix-like terminals
     public static final String ANSI_YELLOW = "\033[33m";
     public static final String ANSI_GREEN = "\033[32m";
+    public static final String ANSI_CYAN = "\033[36m";
     public static final String ANSI_RESET = "\033[0m";
 
     public static final int LIMIT_ROWS = 10;
