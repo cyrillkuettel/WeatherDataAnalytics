@@ -12,10 +12,10 @@ public class RMIServerClass {
 	public static void setup() {
 	
 	// IP Adresse des RMI Servers (von Aussen erreichbar) und die RMI-Port-Nummer
-	String hostIp = "10.155.228.143";
+	String hostIp = "10.155.228.206";
 	int rmiPort = 1099;
 	// Host-IP als System-Property setzen (wird zu Clients im Stub zugestellt)
-//	System.setProperty("java.rmi.server.hostname", hostIp);
+	System.setProperty("java.rmi.server.hostname", hostIp);
 	// Entferntes Objekt erzeugen
 	BusinessHandler businessHandlerRO = null;
 	Registry reg = null;
