@@ -3,11 +3,16 @@ package ch.hslu.swde.wda.ui;
 
 import ch.hslu.swde.wda.CheckConnection.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
+import ch.hslu.swde.wda.business.BusinessHandler;
 import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,6 +56,31 @@ public final class UI {
 
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
 
+    }
+
+    public void testRMI() {
+        final String rmiServerIP = "10.180.254.57";
+        final int rmiPort = 1099;
+        final String policy="file:/home/cyrill/Desktop/g07-wda/wda-ui/client.policy";
+
+        if (System.getSecurityManager() == null) {
+            System.setProperty("java.security.policy", policy);
+            System.setSecurityManager(new SecurityManager());
+        } else {
+            Log.info("There is already an installed security manager");
+        }
+
+        final String url = "rmi://" + rmiServerIP + ":" + rmiPort + "/" + BusinessHandler.RO_NAME;
+
+        BusinessHandler stub = null;
+        try {
+            stub = (BusinessHandler) Naming.lookup(url);
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            e.printStackTrace();
+        }
+
+        List<String> list = stub.getCityNamesAsList();
+        System.out.println(list);
     }
 
 

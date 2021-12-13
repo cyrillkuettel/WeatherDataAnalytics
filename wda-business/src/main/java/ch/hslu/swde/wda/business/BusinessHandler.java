@@ -7,8 +7,10 @@ import java.rmi.Remote;
 import java.util.List;
 
 public interface BusinessHandler extends Remote {
-	
-	
+
+
+	String RO_NAME = "BUSNESS_HANDLER_RO" ;
+
 	public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end);
 		
 	public List<String> getCityNamesAsList();
