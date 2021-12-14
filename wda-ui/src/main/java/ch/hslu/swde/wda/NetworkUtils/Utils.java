@@ -15,7 +15,7 @@ public final class Utils {
 
     public String getIPAdress()  {
 
-    String pattern= "10.155."; // filter the Adresses, to start with this
+    String pattern= "10."; // filter the Adresses, to start with this
 
         List<String> listAdresses = getInetAddressFromNetworkInterface().stream().map(el -> el.getHostAddress())
                 .filter(address -> address.startsWith(pattern))

@@ -62,7 +62,10 @@ public final class UI {
      * RMI Initialization
      */
     public BusinessHandler createStub() {
-        final String rmiServerIP = "10.155.229.109"; // change this
+
+        // DBS Server: 10.177.6.157;
+
+        final String rmiServerIP = "10.177.6.157"; // change this
         final int rmiPort = 1099;
 
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
@@ -100,7 +103,7 @@ public final class UI {
     public void startFromBeginning() {
 
         /* */
-        loadUsersIntoMemory();
+       // loadUsersIntoMemory();
 
         /* The cities could change in the future, so they have to be loaded dynamically  */
         loadCityNamesToMemory();
@@ -442,12 +445,14 @@ public final class UI {
      * @return true if the login succeeds, false otherwise
      */
     private boolean isValidLogin(User validateThisUser) {
-        return true;
-        /*
+        // return true;
+
        List<User> currentUserList =  databaseOutputFormatter.selectAllUserData();
        //  note: from a security standpoint, this validation should not be done on the client side
        return currentUserList.stream().anyMatch(el -> el.equals(validateThisUser));
-         */
+
+
+
     }
 
     /**
@@ -565,5 +570,10 @@ public final class UI {
         } else {
             Log.info("stub == null");
         }
+    }
+
+    public List<User> selectAllUserData() {
+        List<User> currentUserList =  databaseOutputFormatter.selectAllUserData();
+        return currentUserList;
     }
 }
