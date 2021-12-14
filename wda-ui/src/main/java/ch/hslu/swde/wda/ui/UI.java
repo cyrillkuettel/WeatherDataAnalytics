@@ -62,12 +62,13 @@ public final class UI {
      * RMI Initialization
      */
     public BusinessHandler createStub() {
-        final String rmiServerIP = "10.155.228.206"; // change this
+        final String rmiServerIP = "10.155.229.101"; // change this
         final int rmiPort = 1099;
 
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
         final String clientPolicyRelativeDir = "/wda-ui/client.policy";
         final String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
+        Log.info(policy);
 
         if (System.getSecurityManager() == null) {
             System.setProperty("java.security.policy", policy);
@@ -77,6 +78,7 @@ public final class UI {
         }
 
         final String url = "rmi://" + rmiServerIP + ":" + rmiPort + "/" + BusinessHandler.RO_NAME;
+        Log.info(url);
 
         BusinessHandler stub = null;
         try {
@@ -96,7 +98,7 @@ public final class UI {
     public void startFromBeginning() {
 
         /* */
-       // loadUsersIntoMemory();
+        loadUsersIntoMemory();
 
         /* The cities could change in the future, so they have to be loaded dynamically  */
         loadCityNamesToMemory();
@@ -558,6 +560,8 @@ public final class UI {
                 Log.info("Remote Object Invocation did not succeed.");
                 e.printStackTrace();
             }
+        } else {
+            Log.info("stub == null");
         }
     }
 }

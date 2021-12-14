@@ -2,6 +2,8 @@ package ch.hslu.swde.wda.ui;
 
 import com.mitchtalmadge.asciidata.graph.ASCIIGraph;
 
+import java.io.IOException;
+
 public class demoASCIIGraph {
 
     private static final double[] sinWaveSeries = new double[240];
@@ -16,12 +18,10 @@ public class demoASCIIGraph {
             sinWaveSeries[i] = 15 * Math.sin(i * ((Math.PI * 4) / sinWaveSeries.length));
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        System.out.println(ASCIIGraph.fromSeries(randomWaveSeries).plot());
+        //  System.out.println(ASCIIGraph.fromSeries(randomWaveSeries).plot());
         System.out.println(ASCIIGraph.fromSeries(sinWaveSeries).plot());
-
-
 
     }
 }

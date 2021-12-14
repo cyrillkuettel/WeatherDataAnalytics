@@ -3,7 +3,7 @@ package ch.hslu.swde.wda;
 public final class GlobalConstants {
 
 
-    public static final String MIN_DATE_VALUE = "01-02-2020"; // inclusive
+    public static final String MIN_DATE_VALUE = "01-02-2021"; // inclusive
     public static final String MAX_DATE_VALUE = "30-11-2021";
 
     public final static String DATE_FORMAT = "dd-MM-yyyy";
