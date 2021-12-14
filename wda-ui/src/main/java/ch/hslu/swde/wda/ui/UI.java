@@ -1,7 +1,7 @@
 package ch.hslu.swde.wda.ui;
 
 
-import ch.hslu.swde.wda.CheckConnection.Utils;
+import ch.hslu.swde.wda.NetworkUtils.Utils;
 import ch.hslu.swde.wda.business.BusinessHandler;
 import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
@@ -62,10 +62,11 @@ public final class UI {
      * RMI Initialization
      */
     public BusinessHandler createStub() {
-        final String rmiServerIP = "10.155.229.101"; // change this
+        final String rmiServerIP = "10.155.229.109"; // change this
         final int rmiPort = 1099;
 
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
+        System.out.println(projectDir);
         final String clientPolicyRelativeDir = "/wda-ui/client.policy";
         final String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
         Log.info(policy);
@@ -83,6 +84,7 @@ public final class UI {
         BusinessHandler stub = null;
         try {
             stub = (BusinessHandler) Naming.lookup(url);
+            Log.info("created Stub");
             return stub;
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             Log.info("Naming.lookup did throw an Exception");

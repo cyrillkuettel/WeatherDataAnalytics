@@ -1,6 +1,6 @@
 package ch.hslu.swde.wda.ui;
 
-import ch.hslu.swde.wda.CheckConnection.Utils;
+import ch.hslu.swde.wda.NetworkUtils.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

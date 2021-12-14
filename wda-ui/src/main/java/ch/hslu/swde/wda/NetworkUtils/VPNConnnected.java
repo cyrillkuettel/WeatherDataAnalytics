@@ -1,4 +1,4 @@
-package ch.hslu.swde.wda.CheckConnection;
+package ch.hslu.swde.wda.NetworkUtils;
 
 import ch.hslu.swde.wda.business.demoWeatherdataDownloader;
 import org.apache.logging.log4j.LogManager;
