@@ -169,6 +169,9 @@ public final class DatabaseOutputFormatter {
     }
 
 
+
+    /**  new functions: various user administration stuff */
+
     public boolean insertUser(User user) {
 
         try {

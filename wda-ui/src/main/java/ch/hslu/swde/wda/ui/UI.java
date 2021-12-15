@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.security.AccessControlException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -68,18 +69,7 @@ public final class UI {
         final String rmiServerIP = "10.177.6.157"; // change this
         final int rmiPort = 1099;
 
-        final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
-        System.out.println(projectDir);
-        final String clientPolicyRelativeDir = "/wda-ui/client.policy";
-        final String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
-        Log.info(policy);
-
-        if (System.getSecurityManager() == null) {
-            System.setProperty("java.security.policy", policy);
-            System.setSecurityManager(new SecurityManager());
-        } else {
-            Log.info("There is already an installed security manager. java.security.policy might not have been set");
-        }
+        configureSecurityManager();
 
         final String url = "rmi://" + rmiServerIP + ":" + rmiPort + "/" + BusinessHandler.RO_NAME;
         Log.info(url);
@@ -90,10 +80,36 @@ public final class UI {
             Log.info("created Stub");
             return stub;
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
-            Log.info("Naming.lookup did throw an Exception");
+            Log.info("Naming.lookup has thrown an Exception. Stub could not be created. ");
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void configureSecurityManager() {
+        final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
+        Log.info(String.format("System.getProperty(\"user.dir\") == %s", projectDir));
+        final String clientPolicyRelativeDir = "/wda--ui/client.policy";
+        String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
+        Log.info(policy);
+
+        // if all else fails, use the hardcoded path here
+        // policy = "file:/home/cyrill/Desktop/g07-wda/wda-ui/client.policy";
+
+        if (System.getSecurityManager() == null) {
+            System.setProperty("java.security.policy", policy);
+            System.setSecurityManager(new SecurityManager());
+            Log.info(String.format("Installed Security manager at %s", policy));
+        } else {
+            Log.info("There is already an installed security manager. java.security.policy might not have been set");
+        }
+
+        try {
+            Log.info(System.getProperty("java.security.policy"));
+        } catch (AccessControlException e) {  // "trick" to check if the security.policy has been set
+            Log.fatal("Could not read the java.security.policy file. Probably because the specified path  does not " +
+                              "exist.");
+        }
     }
 
 
@@ -211,6 +227,7 @@ public final class UI {
         }
     }
 
+    /** Loop and prompt User for input on selection option: Min or Max*/
     public void loop_ToggleMaximumAndMinimum(List<List<WeatherData>> completeWeatherDataList) {
         currentMenu = METADATA_ALL_CITY;
         showActiveMenu();
@@ -245,6 +262,10 @@ public final class UI {
         }
     }
 
+    /** Loop and prompt User for input on selection option:  average, min or max
+     * Note that this method is almost idential to {@link #loop_ToggleMaximumAndMinimum(List<List<WeatherData>>)}
+     * However, this method has extended functinality, is supports the average option. That's just becuase average is
+     * only interesting for single places. */
     public void loop_ToggleMaximumAndMinimumAndAverage(String city, String[] timePeriod) {
         currentMenu = METADATA;
         showActiveMenu();
@@ -330,10 +351,9 @@ public final class UI {
 
 
     /**
-     * Asks the user to specify a Timespan. If the user does not want to restric search,
+     * Prompt user input to specify Timespan. If the user does not want to restric search,
      * we simply select the largest possible value for the date interval in 2020.
      * If the startDate is not older than endDate, this just swaps them.
-     *
      * @return Array with index 0 representing start, and index 1 representing the end date.
      */
     public String[] getTimePeriod() {
@@ -368,7 +388,10 @@ public final class UI {
 
     /**
      * Try to parse a single Date.
-     * Try again, if there are issues with correct format
+     * As simple as it sounds, this is actually a very meticulous affair.
+     * The format may be wrong in a number of different ways - this has to be checked hence the size of the method.
+     * Because the process is kind of inconvenient, you can select the default date with keyword
+     * {@link ch.hslu.swde.wda.GlobalConstants#DEFAULT_DATE_KEYWORD}
      */
     public String tryToParseDate() {
 
@@ -421,6 +444,7 @@ public final class UI {
      * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT
      */
     public boolean isValidDate(String date) {
+        final String DATE_FORMAT = "dd-MM-yyyy";
         date = replacePointsWithDashes(date);
         try {
             DateFormat df = new SimpleDateFormat(DATE_FORMAT);
@@ -536,6 +560,10 @@ public final class UI {
         return input.toArray(new String[0]);
     }
 
+    /**
+     * We want to have access to the cities as soon as the application starts.
+     * This is because the menu provides selection options of cities.
+     */
     public void loadCityNamesToMemory() {
         availableCities = convertListToArray(databaseOutputFormatter.getCityNamesAsList());
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
@@ -561,14 +589,14 @@ public final class UI {
             List<String> list = null;
             try {
                 list = stub.getCityNamesAsList();
-                System.out.println("Remote Object Invocation:");
+                System.out.println("Remote Method Invocation worked :)");
                 System.out.println(list);
             } catch (RemoteException e) {
                 Log.info("Remote Object Invocation did not succeed.");
                 e.printStackTrace();
             }
         } else {
-            Log.info("stub == null");
+            Log.warn("stub == null");
         }
     }
 

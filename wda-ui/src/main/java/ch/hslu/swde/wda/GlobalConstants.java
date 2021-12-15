@@ -6,7 +6,6 @@ public final class GlobalConstants {
     public static final String MIN_DATE_VALUE = "01-02-2021"; // inclusive
     public static final String MAX_DATE_VALUE = "30-11-2021";
 
-    public final static String DATE_FORMAT = "dd-MM-yyyy";
     public static final String[] DEFAULT_DATE = {"28-11-2021", "30-11-2021"};
 
     public static final int MIN_LENGTH_NAME = 5;

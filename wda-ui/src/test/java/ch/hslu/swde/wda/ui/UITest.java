@@ -1,7 +1,7 @@
 package ch.hslu.swde.wda.ui;
 
-import ch.hslu.swde.wda.NetworkUtils.Utils;
 import ch.hslu.swde.wda.GlobalConstants;
+import ch.hslu.swde.wda.NetworkUtils.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Disabled;
@@ -11,9 +11,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import static ch.hslu.swde.wda.GlobalConstants.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static ch.hslu.swde.wda.GlobalConstants.*;
 
 
 /**
@@ -31,7 +31,6 @@ class UITest {
         final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata/cities";
         assertTrue(Utils.pingURL(CITY_URL, 10000));
     }
-
 
 
     @Test
