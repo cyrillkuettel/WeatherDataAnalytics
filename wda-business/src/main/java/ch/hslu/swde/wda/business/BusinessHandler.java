@@ -9,15 +9,16 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public interface BusinessHandler extends Remote {
-	
+
 	String RO_NAME = "BUSINESS_HANDLER_RO";
-	
-	public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end) throws RemoteException;
-		
+
+	public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end)
+			throws RemoteException;
+
 	public List<String> getCityNamesAsList() throws RemoteException;
-	
+
 	public String selectAverageWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
-	
+
 	public String selectMaxWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
 
 	public String selectMinWeatherDataSingleCity(String cityname, String start, String end) throws RemoteException;
@@ -27,12 +28,13 @@ public interface BusinessHandler extends Remote {
 	public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException;
 
 	public List<User> getUserNamesAsList() throws RemoteException;
-	
+
 	public boolean insertUser(User user) throws RemoteException;
-	
+
 	public boolean updateUser(User user) throws RemoteException;
-	
+
 	public boolean deleteUser(User user) throws RemoteException;
 
-}
+	public void writeCSV(List<WeatherData> weatherDataList) throws RemoteException;
 
+}
