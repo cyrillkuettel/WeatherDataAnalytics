@@ -48,7 +48,10 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, Date.valueOf(start),
 				Date.valueOf(end));
 		Log.info(requestedWeatherData);
-		return requestedWeatherData;
+		//CSV is being created automatically with the full Weatherdata information
+		writeCSV(requestedWeatherData);
+		
+		return requestedWeatherData.subList(0, 10);
 	}
 
 	@Override

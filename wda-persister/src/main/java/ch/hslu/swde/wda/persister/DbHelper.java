@@ -95,7 +95,7 @@ public class DbHelper {
 
 		em.getTransaction().begin();
 		TypedQuery<WeatherData> tQry = em.createQuery(
-				"SELECT w FROM WeatherData w where w.city = :city and w.datatimestamp between :startdate and :enddate",
+				"SELECT w FROM WeatherData w where w.city = :city and w.datatimestamp between :startdate and :enddate Order by w.datatimestamp asc",
 				WeatherData.class);
 		tQry.setParameter("city", city);
 		tQry.setParameter("startdate", startDate);

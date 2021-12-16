@@ -93,7 +93,7 @@ public class WeatherData implements Serializable {
 			return "Weatherdata: [WeatherData: Timestamp=" + datatimestamp + ", WeatherData: Temperatur=" + temp
 			+ ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity + "]";
 		}else {
-			return "Weatherdata: [City: ZIP=" + city.getZIPCode() + "City: Name=" + city.getName()
+			return "Weatherdata: [City: ZIP=" + city.getZIPCode() + " City: Name=" + city.getName()
 			+ ", WeatherData: Timestamp=" + datatimestamp + ", WeatherData: Temperatur=" + temp
 			+ ", WeatherData: Pressure=" + pressure + ", WeatherData: Humidity=" + humidity + "]";
 		}
