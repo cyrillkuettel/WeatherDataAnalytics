@@ -173,18 +173,23 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		return true;
 	}
 
-	@Override
-	public boolean updateUser(User user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean updateUser(User user) throws RemoteException {
+		try {
+			persistUser.updateUsers(user);
+		} catch (jakarta.persistence.NoResultException e) {
 
-	@Override
-	public boolean deleteUser(User user) throws RemoteException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+		}
 
+		return true;
+    }
+
+    @Override
+    public boolean deleteUser(User user) throws RemoteException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+    
 	@Override
 	public void writeCSV(List<WeatherData> weatherDataList) throws RemoteException {
 		// first create file object for file placed at location
