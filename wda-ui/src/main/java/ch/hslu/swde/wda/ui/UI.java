@@ -48,15 +48,19 @@ public final class UI {
 
     Scanner scanner;
     DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
+
+    /**
+     * Probably the most important field of the application.
+     * All RMI flow through this.
+     */
     BusinessHandler stub = null;
+
 
     public UI() {
         scanner = new Scanner(System.in);
-
         if (!Utils.pingURL(WEATHERDATA_PROVIDER, 10000)) {
             Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" + ANSI_RESET);
         }
-
     }
 
     /**
@@ -114,14 +118,13 @@ public final class UI {
 
 
     /**
-     * starts a new User Interaction.
+     * start a new User interaction. ( CLI Loop )
      */
     public void startFromBeginning() {
 
-        /* */
-       // loadUsersIntoMemory();
+        // loadUsersIntoMemory();
 
-        /* The cities could change in the future, so they have to be loaded dynamically  */
+        /* The cities could change in the future, so they will to be fetched at starttime dynamically  */
         loadCityNamesToMemory();
 
         int selectedOption;
@@ -141,21 +144,41 @@ public final class UI {
         showActiveMenu();
         selectedOption = readOptionFromUser();
         if (selectedOption == 2) { // create new user
-            // TODO: user CRUD
+
             User newUser = askForCredentials(0);
+
             if (databaseOutputFormatter.insertUser(newUser)) {
                 System.out.println(CONFIRM_NEW_USER_CREATED);
             } else {
                 System.out.println(REFUTE_NEW_USER_CREATED);
             }
+
         }
 
-        if (selectedOption == 3) { // edit Users
+        if (selectedOption == 3) { // edit Users: Update and Delete
             List<User> allUsers = databaseOutputFormatter.selectAllUserData();
             List<String> onlyNames = allUsers.stream().map(el -> el.getFirstname()).collect(Collectors.toList());
-            Map<Integer, String> UserIndexNameMap = IntStream.range(0, onlyNames.size()).boxed()
+            Map<Integer, String> userindexToName = IntStream.range(0, onlyNames.size()).boxed()
                     .collect(Collectors.toMap(Function.identity(), onlyNames::get));
-            System.out.println(UserIndexNameMap);
+            userindexToName.entrySet().forEach(entry -> {
+                System.out.println(entry.getKey() + " " + entry.getValue());
+            });
+
+            currentMenu = USER_EDIT;
+            showActiveMenu();
+            int selectedUser;
+            do {
+                selectedUser = readOptionFromUser();
+            } while (!userindexToName.containsKey(selectedUser));
+            currentMenu = SELECT_ACTION_FOR_USER;
+            showActiveMenu();
+            selectedOption = readOptionFromUser();
+            if (selectedOption == 1) { // update
+
+            } else if ( selectedOption == 2) { // delete
+            //  TODO User management.
+
+            }
         }
 
 
@@ -320,11 +343,14 @@ public final class UI {
             case SELECT_DATA_OR_ALL_MENU:
             case TIMESPAN:
             case METADATA_ALL_CITY:
+            case SELECT_ACTION_FOR_USER:
                 validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each menu
                 break;
             case METADATA:
             case WELCOME_MENU:
                 validMenuValues = Arrays.asList(1, 2, 3, 0);
+            case USER_EDIT: // we check for valid index when calling the method
+                validMenuValues = IntStream.range(0, Integer.MAX_VALUE-1).boxed().collect(Collectors.toList());
         }
         if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) {
             // A valid menu value is considerd valid,
@@ -466,17 +492,15 @@ public final class UI {
 
 
     /**
+     * Compare all current user from database with the input User.
+     * Comparision is being done with the equals method of User.
      * @return true if the login succeeds, false otherwise
      */
     private boolean isValidLogin(User validateThisUser) {
-        // return true;
-
        List<User> currentUserList =  databaseOutputFormatter.selectAllUserData();
-       //  note: from a security standpoint, this validation should not be done on the client side
-       return currentUserList.stream().anyMatch(el -> el.equals(validateThisUser));
-
-
-
+       //  note: from a security standpoint, this is is inferior.
+        // validation should probably be done completly on the server, without reading all users.
+       return currentUserList.stream().anyMatch(user -> user.equals(validateThisUser));
     }
 
     /**
@@ -569,7 +593,7 @@ public final class UI {
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
     }
 
-    public void loadUsersIntoMemory() {
+    private void loadUsersIntoMemory() {
         User finn = new User("Finn", "Morgenthaler", "test1");
         User cyrill = new User("Cyrill", "Küttel", "test2");
         User lenny = new User("Lenny", "Buddliger", "test3");

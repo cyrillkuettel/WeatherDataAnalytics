@@ -72,7 +72,20 @@ class UITest {
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("1 testuseranme testpassword 1 39 1 12.11.2021 13.11.2021 1 2 3 0".getBytes());
+                new ByteArrayInputStream("Cyrill Küttel test2 1 39 1 12.11.2021 13.11.2021 1 2 3 0".getBytes());
+        System.setIn(in);
+        UI ui = new UI();
+        ui.startFromBeginning();
+        // reset System.in to its original
+        System.setIn(sysInBackup);
+    }
+
+    @Test
+    void testEditUsers() {
+        //   simulate user input.
+        InputStream sysInBackup = System.in; // backup System.in to restore it later
+        ByteArrayInputStream in =
+                new ByteArrayInputStream("Cyrill Küttel test2 3 0".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();
@@ -161,16 +174,6 @@ class UITest {
     }
 
 
-
-
-    @Test
-    void testisValidDateFromString() {
-        UI ui = new UI();
-
-        assertThat(GlobalConstants.DATE_FORMAT).isEqualTo("dd-MM-yyyy");
-        String testDate = "27-11-2020";
-        assertTrue(ui.isValidDate(testDate));
-    }
 
     @Test
     void testisValidDateFromStringDifferentFormat() {
