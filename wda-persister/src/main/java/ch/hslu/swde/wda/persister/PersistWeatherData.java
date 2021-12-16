@@ -14,7 +14,7 @@ public class PersistWeatherData {
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
 	// Change this value by using the respective selectDB method
-	public String DBCONNECTION = "PROD";
+	private String DBCONNECTION = "PROD";
 	private PersistCity persistCity;
 
 	public PersistWeatherData() {
@@ -117,7 +117,11 @@ public class PersistWeatherData {
 	}
 
 	private void setPersistCityDB() {
-		persistCity.DBCONNECTION = this.DBCONNECTION;
+		if (this.DBCONNECTION.equals("PROD")) {
+			persistCity.selectProdDB();
+		} else {
+			persistCity.selectTestDB();
+		}
 	}
 
 }

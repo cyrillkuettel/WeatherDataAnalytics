@@ -38,7 +38,11 @@ public class User implements Serializable {
 	}
 
 	public void setUserid(String firstname, String lastname) {
-		this.userid = firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH);
+		this.userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase();
+	}
+	
+	public void setUseridWithIterator(String firstname, String lastname, int i) {
+		this.userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase() + i;
 	}
 
 	public String getFirstname() {

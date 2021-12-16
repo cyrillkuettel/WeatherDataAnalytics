@@ -33,9 +33,11 @@ public class demoUI {
 
 		List<User> users = b.getUserNamesAsList();
 		
-		User getuser = users.get(4);
+		User getuser = users.get(2);
 		
-		getuser.setLastname("Test");
+		getuser.setFirstname("Maximilian");
+		getuser.setLastname("Muster");
+		getuser.setUserpwd("test1234");
 		
 		b.updateUser(getuser);
 	}

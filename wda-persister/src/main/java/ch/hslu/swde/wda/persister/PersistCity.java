@@ -11,7 +11,7 @@ public class PersistCity {
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
 	// Change this value by using the respective selectDB method
-	public String DBCONNECTION = "PROD";
+	private String DBCONNECTION = "PROD";
 
 	/**
 	 * DO NOT USE THIS METHOD WITH ANY OTHER CLASS AS IT IS NOT CHECKING WHETHER THE

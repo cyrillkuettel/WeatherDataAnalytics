@@ -176,7 +176,7 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
     @Override
     public boolean updateUser(User user) throws RemoteException {
 		try {
-			persistUser.updateUsers(user);
+			persistUser.updateUser(user);
 		} catch (jakarta.persistence.NoResultException e) {
 
 		}
@@ -186,8 +186,9 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 
     @Override
     public boolean deleteUser(User user) throws RemoteException {
-        // TODO Auto-generated method stub
-        return false;
+
+		persistUser.deleteUser(user);
+        return true;
     }
     
 	@Override

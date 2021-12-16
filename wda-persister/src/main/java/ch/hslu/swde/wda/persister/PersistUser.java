@@ -12,103 +12,118 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 public class PersistUser {
-	
+
 	// Change this value by using the respective selectDB method
-		public String DBCONNECTION = "PROD";
-		private static final Logger Log = LogManager.getLogger(DbHelper.class);
+	private String DBCONNECTION = "PROD";
+	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
+	/**
+	 * 
+	 * @param
+	 */
+	public void insertUser(User user) throws EntityExistsException {
+		
+		Log.info("Starting insertUser");
 
-		/**
-		 * 
-		 * @param 
-		 */
-		public void insertUser(User user) throws EntityExistsException {
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
-			EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+		em.getTransaction().begin();
 
-			em.getTransaction().begin();
-
-			try {
+		try {
 			em.persist(user);
-			Log.info("User persisted in DB");
+			Log.info(user.toString() + " persisted in DB");
 
-			em.getTransaction().commit();
-			em.close();}
-			catch (EntityExistsException e){
-				Log.warn("This User already exists in DB!");
-				e.printStackTrace();
-				throw (e);
-			}
-
-		}
-		
-		
-		public void updateUsers(User user) throws EntityExistsException {
-
-			//	Log.info("Starting selectSingleUserData with Parameters [" + username + "]"  );
-
-				EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
-				em.getTransaction().begin();
-				
-				User dbuser = em.find(User.class, user.getUserid());
-				
-				//check if username is already in DB
-				
-
-				
-				dbuser.setFirstname(user.getFirstname());
-				dbuser.setLastname(user.getLastname());
-				dbuser.setUserpwd(user.getUserpwd());
-				
-				
-				dbuser.setUserid(user.getFirstname(), user.getLastname());
-
-				Log.info("User values are: " + dbuser.toString());
-				em.getTransaction().commit();
-				em.close();
-				
-		}
-	
-		public void checkExistingUser(User user) {
-			EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
-			em.getTransaction().begin();
-		
-			User dbuser = em.find(User.class, user.getUserid());
-			if (dbuser == null) {
-				dbuser.setUserid(user.getFirstname(), user.getLastname());
-			}else {
-				dbuser.setUserid(user.getFirstname(), user.getLastname());
-			}
-					
 			em.getTransaction().commit();
 			em.close();
+		} catch (EntityExistsException e) {
+			Log.warn("This User already exists in DB!");
+			e.printStackTrace();
+			throw (e);
 		}
 
+	}
+
+	public void updateUser(User user) throws EntityExistsException {
+
+		Log.info("Starting updateUser");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+		em.getTransaction().begin();
+
+		User dbuser = em.find(User.class, user.getUserid());
+
+		if (!(dbuser.getFirstname().equals(user.getFirstname()))
+				|| !(dbuser.getLastname().equals(user.getLastname()))) {
+
+			Log.info(
+					"Firstname or Lastname have changed, this means userid will change as well. As we can't update primary key, the user will be deleted and reinserted with his new values");
+
+			deleteUser(dbuser);
+
+			user.setUserid(user.getFirstname(), user.getLastname());
 			
-		public void deleteUsers(User user) throws EntityExistsException {
+			//Checking if new userid is already taken
+			user = checkExistingUser(user);
+			insertUser(user);
 
-			//	Log.info("Starting selectSingleUserData with Parameters [" + username + "]"  );
-				
-				EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
-				em.getTransaction().begin();
-				
-				User getuser = em.find(User.class, user.getUserid());
-				getuser.setLastname("Test");
-				Log.info("User values are: " + user.toString());
-				em.getTransaction().commit();
-				em.close();
-				
+		} else {
+			Log.info("Only password has been changed");
+			dbuser.setUserpwd(user.getUserpwd());
+
 		}
+
+		em.getTransaction().commit();
+		em.close();
+
+	}
+
+	public User checkExistingUser(User user) {
 		
-		
-		public void selectTestDB() {
+		Log.info("Starting checkExistingUser ");
 
-			DBCONNECTION = "TEST";
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+		int i = 1;
+		em.getTransaction().begin();
+
+		//Adding an incremental number at the end of the username if username exists already in DB
+		while (em.find(User.class, user.getUserid()) != null) {
+
+			user.setUseridWithIterator(user.getFirstname(), user.getLastname(),i);
+			i++;
+
 		}
+		Log.info("Userid " +user.getUserid() + " was the next available Userid");
 
-		public void selectProdDB() {
+		em.getTransaction().commit();
+		em.close();
 
-			DBCONNECTION = "PROD";
-		}
+		return user;
+	}
+
+	public void deleteUser(User user) {
+
+		Log.info("Starting deleteUser");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+		em.getTransaction().begin();
+
+		user = em.find(User.class, user.getUserid());
+		em.remove(user);
+
+		Log.info(user.toString() + " has been removed from DB");
+		em.getTransaction().commit();
+		em.close();
+
+	}
+
+	public void selectTestDB() {
+
+		DBCONNECTION = "TEST";
+	}
+
+	public void selectProdDB() {
+
+		DBCONNECTION = "PROD";
+	}
 
 }
