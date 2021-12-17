@@ -93,6 +93,9 @@ public final class UI {
         return null;
     }
 
+    /**
+     * Helper funciton for RMI. Security Manger is currently allowing all permissions.
+     */
     public void configureSecurityManager() {
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
         Log.info(String.format("System.getProperty(\"user.dir\") == %s", projectDir));
@@ -125,7 +128,7 @@ public final class UI {
      */
     public void startFromBeginning() {
 
-        // loadUsersIntoMemory();
+        // loadUsersIntoMemory(); // only one time
 
         /* The cities could change in the future, so they will to be fetched at starttime dynamically  */
         loadCityNamesToMemory();

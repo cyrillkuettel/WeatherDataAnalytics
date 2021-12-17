@@ -5,14 +5,9 @@ import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
 import ch.hslu.swde.wda.persister.DbHelper;
 import ch.hslu.swde.wda.persister.PersistUser;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
+import com.opencsv.CSVWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -50,8 +45,8 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		Log.info(requestedWeatherData);
 		//CSV is being created automatically with the full Weatherdata information
 		writeCSV(requestedWeatherData);
-		
-		return requestedWeatherData.subList(0, 10);
+
+		return requestedWeatherData.subList(0, requestedWeatherData.size());
 	}
 
 	@Override
