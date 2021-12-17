@@ -13,11 +13,16 @@ public final class Utils {
 
     private static final Logger Log = LogManager.getLogger(Utils.class);
 
+    /**
+     * Returns the IP Address of the client within the hslu networks.
+     * It is assumed that the address starst starts with "10."
+     * @return IP Adress. If the Network can't be reached, it returns an empty String.
+     */
     public String getIPAdress()  {
 
-    String pattern= "10."; // filter the Adresses, to start with this
-
-        List<String> listAdresses = getInetAddressFromNetworkInterface().stream().map(el -> el.getHostAddress())
+    String pattern= "10."; // filter the Adresses,
+        List<String> listAdresses = getInetAddressFromNetworkInterface().stream()
+                .map(element -> element.getHostAddress())
                 .filter(address -> address.startsWith(pattern))
                 .collect(Collectors.toList());
         if (!listAdresses.isEmpty()) {
@@ -26,7 +31,6 @@ public final class Utils {
         Log.warn("List of addresses is empty");
         return "";
     }
-
     public static List<InetAddress> getInetAddressFromNetworkInterface() {
         try {
             return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()

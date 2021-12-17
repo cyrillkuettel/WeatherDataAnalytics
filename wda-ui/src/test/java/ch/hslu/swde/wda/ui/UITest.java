@@ -81,6 +81,7 @@ class UITest {
     }
 
     @Test
+    @Disabled
     void testEditUsers() {
         //   simulate user input.
         InputStream sysInBackup = System.in; // backup System.in to restore it later

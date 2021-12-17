@@ -57,10 +57,13 @@ public final class UI {
 
 
     public UI() {
+
         scanner = new Scanner(System.in);
         if (!Utils.pingURL(WEATHERDATA_PROVIDER, 10000)) {
-            Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" + ANSI_RESET);
+            Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" +
+                    ANSI_RESET);
         }
+        stub = createStub();
     }
 
     /**
@@ -68,7 +71,7 @@ public final class UI {
      */
     public BusinessHandler createStub() {
 
-        // DBS Server: 10.177.6.157;
+        // Server: 10.177.6.157;
 
         final String rmiServerIP = "10.177.6.157"; // change this
         final int rmiPort = 1099;
@@ -93,11 +96,11 @@ public final class UI {
     public void configureSecurityManager() {
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
         Log.info(String.format("System.getProperty(\"user.dir\") == %s", projectDir));
-        final String clientPolicyRelativeDir = "/wda--ui/client.policy";
+        final String clientPolicyRelativeDir = "/wda-ui/client.policy";
         String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
         Log.info(policy);
 
-        // if all else fails, use the hardcoded path here
+        // if all else fails, the hardcoded path here
         // policy = "file:/home/cyrill/Desktop/g07-wda/wda-ui/client.policy";
 
         if (System.getSecurityManager() == null) {
@@ -285,7 +288,7 @@ public final class UI {
         }
     }
 
-    /** Loop and prompt User for input on selection option:  average, min or max
+    /** Loop and prompt User for input on selection option:  average, min or max.
      * Note that this method is almost idential to {@link #loop_ToggleMaximumAndMinimum(List<List<WeatherData>>)}
      * However, this method has extended functinality, is supports the average option. That's just becuase average is
      * only interesting for single places. */
@@ -349,8 +352,10 @@ public final class UI {
             case METADATA:
             case WELCOME_MENU:
                 validMenuValues = Arrays.asList(1, 2, 3, 0);
+                break;
             case USER_EDIT: // we check for valid index when calling the method
-                validMenuValues = IntStream.range(0, Integer.MAX_VALUE-1).boxed().collect(Collectors.toList());
+                validMenuValues = IntStream.range(0, MAXIMUM_NUMBER_OF_USERS).boxed().collect(Collectors.toList());
+                break;
         }
         if (currentMenu.equals(CITY_NAMES_WITH_INDEX_MENU)) {
             // A valid menu value is considerd valid,

@@ -7,7 +7,6 @@ public class ColourConsoleDemo {
      */
 
     public static void main(String[] args) {
-        // TODO code application logic here
         System.out.println("\033[0m BLACK");
         System.out.println("\033[31m RED");
         System.out.println("\033[32m GREEN");

@@ -66,6 +66,7 @@ public final class GlobalConstants {
     public static final String ANSI_RESET = "\033[0m";
 
     public static final int LIMIT_ROWS = 10;
+    public static final int MAXIMUM_NUMBER_OF_USERS = 1000;
 
 
 }
