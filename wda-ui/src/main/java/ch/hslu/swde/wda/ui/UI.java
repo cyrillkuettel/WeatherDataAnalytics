@@ -48,8 +48,8 @@ public final class UI {
 
     Scanner scanner;
 
-   // deprecated. Instead of DatabaseOutputFormatter, we use RMI now.
-   // DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
+    // deprecated. Instead of DatabaseOutputFormatter, we use RMI now.
+    // DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
 
     /**
      * Probably the most important field of the application.
@@ -63,7 +63,7 @@ public final class UI {
         scanner = new Scanner(System.in);
         if (!Utils.pingURL(WEATHERDATA_PROVIDER, 10000)) {
             Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" +
-                    ANSI_RESET);
+                              ANSI_RESET);
         }
         stub = createStub();
     }
@@ -83,7 +83,7 @@ public final class UI {
         final String url = "rmi://" + rmiServerIP + ":" + rmiPort + "/" + BusinessHandler.RO_NAME;
         Log.info(url);
 
-        BusinessHandler stub = null;
+        BusinessHandler stub;
         try {
             stub = (BusinessHandler) Naming.lookup(url);
             Log.info("created Stub");
@@ -147,12 +147,10 @@ public final class UI {
 
         System.out.println("Erfolgreich Eingeloggt!");
 
-        boolean userManagemntLoop = true;
-
+        boolean userManagemntLoop;
         do {
             userManagemntLoop = showUserManagementDialog();
         } while (userManagemntLoop);
-
 
 
         currentMenu = SELECT_DATA_OR_ALL_MENU;
@@ -172,8 +170,8 @@ public final class UI {
 
 
             List<WeatherData> weatherdata = stub.selectWeatherByDateAndCity(selectedCity,
-                                                                                               selectedTimePeriod[0],
-                                                                                               selectedTimePeriod[1]);
+                                                                            selectedTimePeriod[0],
+                                                                            selectedTimePeriod[1]);
 
             System.out.printf("%s Printing the first %d entries%n", ANSI_GREEN, LIMIT_ROWS);
             // print the first N rows
@@ -193,7 +191,8 @@ public final class UI {
 
             List<List<WeatherData>> completeWeatherDataList =
                     selectWeatherOfAllCitiesInTimeframe(timePeriod_DifferentFormat[0],
-                                                                                timePeriod_DifferentFormat[1], availableCities);
+                                                        timePeriod_DifferentFormat[1],
+                                                        availableCities);
 
             // print the first N rows for each City
             System.out.printf("%s Printing the first %d entries of each city%n", ANSI_GREEN, LIMIT_ROWS / 2);
@@ -215,8 +214,9 @@ public final class UI {
      * Shows the user managment menu, as long as the User does not select Option 1.
      * When the user has selected option 1, this means he has finisehd the user administration and wants to use the
      * application. In this case, we return False.
+     *
      * @return True if the user has not selected the option [1] start
-     * @throws RemoteException
+     * @throws RemoteException if there was an exception in the RMI connection.
      */
     public boolean showUserManagementDialog() throws RemoteException {
         currentMenu = WELCOME_MENU;
@@ -241,11 +241,9 @@ public final class UI {
             Map<Integer, User> usersWithIndex = IntStream.range(0, allUsers.size())
                     .boxed()
                     .collect(Collectors.toMap(Function.identity(), allUsers::get));
-            assert usersWithIndex.size() == allUsers.size();
 
-            usersWithIndex.entrySet().forEach(entry -> {  // display all users on screen
-                User usr = entry.getValue();
-                System.out.printf("%s %s %s %s%n", entry.getKey(), usr.getUserid(), usr.getFirstname(),
+            usersWithIndex.forEach((key, usr) -> {  // display all users on screen
+                System.out.printf("%s %s %s %s%n", key, usr.getUserid(), usr.getFirstname(),
                                   usr.getLastname());
             });
 
@@ -258,17 +256,25 @@ public final class UI {
                 selectedUser = usersWithIndex.get(index);
             } while (!usersWithIndex.containsKey(index));
 
-            System.out.printf("Der Benutzer %s (%s) ist ausgewählt.%n", selectedUser.getFirstname(),
+            System.out.printf("Benutzer %s (%s) ausgewählt.%n", selectedUser.getFirstname(),
                               selectedUser.getUserid());
             currentMenu = SELECT_ACTION_FOR_USER;
             showActiveMenu();
             selectedOption = readOptionFromUser();
             if (selectedOption == 1) { // update
                 System.out.println("Benutzerinformationen anpassen. . . ");
-            } else if ( selectedOption == 2) { // delete
-                System.out.println("Benutzer löschen. . . ");
-                Log.info(selectedUser);
+                User updatedUser;
+                int totalLoginAttempts = 0;
+                do {
+                    updatedUser = askForCredentials(totalLoginAttempts);
+                    totalLoginAttempts++;
+                } while (!isValidLogin(updatedUser));
 
+                // now update with the new user information
+                stub.updateUser(updatedUser);
+
+            } else if (selectedOption == 2) { // delete
+                System.out.println("Benutzer löschen. . . ");
                 boolean success = stub.deleteUser(selectedUser);
                 if (success) {
                     System.out.printf("Benutzer %s gelöscht!%n", selectedUser.getFirstname());
@@ -282,9 +288,9 @@ public final class UI {
     }
 
 
-
     /**
-     * Function calls selectWeatherByDateAndCity on the sub for a provided Array of Cities.
+     * Function calls selectWeatherByDateAndCity on the stub. This just executes the function on all Cities, which
+     * are a parameter. Then a nested List is returned, for each city the weather data.
      */
     public List<List<WeatherData>> selectWeatherOfAllCitiesInTimeframe(final String start, final String end,
                                                                        final String[] availableCities) throws RemoteException {
@@ -300,7 +306,7 @@ public final class UI {
         Comparator<WeatherData> weatherDataComparator = Comparator.comparing(WeatherData::getDataTimestamp);
         weatherData.sort(weatherDataComparator);
         final double[] temperatures = weatherData.stream().map(WeatherData::getTemp).mapToDouble(v -> v).toArray();
-        if(temperatures.length > 0) {
+        if (temperatures.length > 0) {
             System.out.println();
             System.out.println(ANSI_CYAN);
             System.out.println(ASCIIGraph.fromSeries(temperatures).plot());
@@ -308,7 +314,9 @@ public final class UI {
         }
     }
 
-    /** Loop and prompt User for input on selection option: Min or Max*/
+    /**
+     * Loop and prompt User for input on selection option: Min or Max
+     */
     public void loop_ToggleMaximumAndMinimum(List<List<WeatherData>> completeWeatherDataList) throws RemoteException {
         currentMenu = METADATA_ALL_CITY;
         showActiveMenu();
@@ -317,11 +325,11 @@ public final class UI {
         while (selectedOption != 0) {
 
             if (selectedOption == 1) {  // Minima
-                // to get a Valid Timestamp, get the oldest possible timeStamp
+                // get the oldest possible timeStamp to get a Valid Timestamp range
                 Timestamp minimumTimeStamp_forThisWeatherData = completeWeatherDataList.stream()
                         .flatMap(List::stream)
                         .map(WeatherData::getDataTimestamp)
-                        .max(Timestamp::compareTo).get();
+                        .max(Timestamp::compareTo).get(); // TODO: isPresent Check
 
                 String avg = stub.selectMinWeatherDataAllCity(minimumTimeStamp_forThisWeatherData);
                 System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
@@ -343,10 +351,12 @@ public final class UI {
         }
     }
 
-    /** Loop and prompt User for input on selection option:  average, min or max.
+    /**
+     * Loop and prompt User for input on selection option:  average, min or max.
      * Note that this method is almost idential to {@link #loop_ToggleMaximumAndMinimum(List<List<WeatherData>>)}
      * However, this method has extended functinality, is supports the average option. That has been implemented like
-     * that just because the 'average' option is only provided for single places. */
+     * that just because the 'average' option is only provided for single places.
+     */
     public void loop_ToggleMaximumAndMinimumAndAverage(String city, String[] timePeriod) throws RemoteException {
         currentMenu = METADATA;
         showActiveMenu();
@@ -376,7 +386,7 @@ public final class UI {
      * For each city, write it's name and coresponding index.
      * We need this to display it in Terminal, so that a sinle city can be selected by user.
      *
-     * @param cities
+     * @param cities Array of Cities for which to generate the index
      */
     public String generateCityWithIndex(final String[] cities) {
         StringBuilder line = new StringBuilder();
@@ -438,6 +448,7 @@ public final class UI {
      * Prompt user input to specify Timespan. If the user does not want to restric search,
      * we simply select the largest possible value for the date interval in 2020.
      * If the startDate is not older than endDate, this just swaps them.
+     *
      * @return Array with index 0 representing start, and index 1 representing the end date.
      */
     public String[] getTimePeriod() {
@@ -552,18 +563,19 @@ public final class UI {
     /**
      * Compare all current user from database with the input User.
      * Comparision is being done with the equals method of User.
+     *
      * @return true if the login succeeds, false otherwise
      */
     private boolean isValidLogin(User validateThisUser) throws RemoteException {
-       List<User> currentUserList =  stub.getUserNamesAsList();
-       //  note: from a security standpoint, this is is inferior.
+        List<User> currentUserList = stub.getUserNamesAsList();
+        //  note: from a security standpoint, this is is inferior.
         // validation should probably be done completly on the server, without reading all users.
-       return currentUserList.stream().anyMatch(user -> user.equals(validateThisUser));
+        return currentUserList.stream().anyMatch(user -> user.equals(validateThisUser));
     }
 
     /**
      * Ask the user to type in forename, surname and password. It will Loop indefinitely, until the condition in
-     * {@link #simpleLoginValidationPassed(String[] )
+     * {@link #simpleLoginValidationPassed(String[])
      * condition passes}
      *
      * @return String Array containing the username [index: 0] and password. [index: 1]
@@ -666,9 +678,4 @@ public final class UI {
         stub.insertUser(cyrill);
     }
 
-
-    public List<User> selectAllUserData() throws RemoteException {
-        List<User> currentUserList =  stub.getUserNamesAsList();
-        return currentUserList;
-    }
 }
