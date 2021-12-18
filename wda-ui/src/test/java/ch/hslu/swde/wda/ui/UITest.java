@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 
 import static ch.hslu.swde.wda.GlobalConstants.*;
@@ -35,7 +36,7 @@ class UITest {
 
     @Test
     @Disabled
-    void testLoadDataOverAllCities() {
+    void testLoadDataOverAllCities() throws RemoteException {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
@@ -52,7 +53,7 @@ class UITest {
 
     @Test
     @Disabled
-    void testLoadAllCities_AndLoadAverageOfAll() {
+    void testLoadAllCities_AndLoadAverageOfAll() throws RemoteException {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
@@ -67,7 +68,7 @@ class UITest {
 
     @Test
     @Disabled
-    void testLoadZurich_AndLoadAverageOfAll() {
+    void testLoadZurich_AndLoadAverageOfAll() throws RemoteException {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
@@ -82,7 +83,7 @@ class UITest {
 
     @Test
     @Disabled
-    void testEditUsers() {
+    void testEditUsers() throws RemoteException {
         //   simulate user input.
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =

@@ -10,8 +10,14 @@ public class demoUI {
 	private static final Logger Log = LogManager.getLogger(demoUI.class);
 
 	public static void main(String[] args) throws RemoteException {
-		UI ui = new UI();
-		ui.startFromBeginning();
+
+		try {
+			UI ui = new UI();
+			ui.startFromBeginning();
+		} catch (RemoteException e) {
+			Log.error("A Method in UI threw a java.rmi.RemoteException");
+			e.printStackTrace();
+		}
 
 /*
 		BusinessHandlerImpl b = new BusinessHandlerImpl();

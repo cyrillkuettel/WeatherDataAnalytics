@@ -183,6 +183,7 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
     public boolean deleteUser(User user) throws RemoteException {
 
 		persistUser.deleteUser(user);
+		Log.info("Called Delete User");
         return true;
     }
     
