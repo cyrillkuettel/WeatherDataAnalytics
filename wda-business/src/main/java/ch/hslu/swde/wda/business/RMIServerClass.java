@@ -12,7 +12,7 @@ public class RMIServerClass {
 	public static void setup() {
 	
 	// IP Adresse des RMI Servers (von Aussen erreichbar) und die RMI-Port-Nummer
-	String hostIp = "10.155.229.106";
+	String hostIp = "10.177.6.157";
 	int rmiPort = 1099;
 	// Host-IP als System-Property setzen (wird zu Clients im Stub zugestellt)
 	System.setProperty("java.rmi.server.hostname", hostIp);
