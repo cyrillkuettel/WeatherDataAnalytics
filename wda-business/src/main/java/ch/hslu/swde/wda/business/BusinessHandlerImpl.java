@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,14 +41,13 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 	@Override
 	public List<WeatherData> selectWeatherByDateAndCity(String cityname, String start, String end)
 			throws RemoteException {
-
 		List<WeatherData> requestedWeatherData = DbHelper.selectWeatherDataSingleCity(cityname, Date.valueOf(start),
 				Date.valueOf(end));
 		Log.info(requestedWeatherData);
 		//CSV is being created automatically with the full Weatherdata information
-		writeCSV(requestedWeatherData);
+		// writeCSV(requestedWeatherData);
 
-		return requestedWeatherData.subList(0, requestedWeatherData.size());
+		return new ArrayList<WeatherData>(requestedWeatherData);
 	}
 
 	@Override
