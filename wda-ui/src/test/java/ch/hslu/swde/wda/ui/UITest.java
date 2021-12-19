@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
-import static ch.hslu.swde.wda.GlobalConstants.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,7 +47,7 @@ class UITest {
         InputStream sysInBackup = System.in; // backup System.in to restore it later
 
         ByteArrayInputStream in =    // bedeutet: Alle Ortschaften, mit StandartDatum
-                new ByteArrayInputStream("Cyrill Küttel test2 1 2  1 skip".getBytes());
+                new ByteArrayInputStream("Cyrill Küttel test2 1 2 1 skip".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();
@@ -56,37 +55,8 @@ class UITest {
         // reset System.in to its original
         System.setIn(sysInBackup);
     }
-    @Test
-    @Disabled
-    void testLoadDataOverAllCities() throws RemoteException {
-        //   simulate user input.
 
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
 
-        ByteArrayInputStream in =
-                new ByteArrayInputStream(String.format("%s %s %s 2 1 12.11.2021 13.11.2021 1 0",
-                        STANDARD_FORENAME, STANDARD_SURNAME, STANDARD_PASSWORD).getBytes());
-        System.setIn(in);
-        UI ui = new UI();
-        ui.startFromBeginning();
-        // reset System.in to its original
-        System.setIn(sysInBackup);
-    }
-
-    @Test
-    @Disabled
-    void testLoadAllCities_AndLoadAverageOfAll() throws RemoteException {
-        //   simulate user input.
-
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
-        ByteArrayInputStream in =
-                new ByteArrayInputStream("1 testuseranme testpassword 2 1 12.11.2021 13.11.2021 1 0".getBytes());
-        System.setIn(in);
-        UI ui = new UI();
-        ui.startFromBeginning();
-        // reset System.in to its original
-        System.setIn(sysInBackup);
-    }
 
     @Test
     @Disabled
@@ -95,7 +65,7 @@ class UITest {
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("Cyrill Küttel test2 1 39 1 12.11.2021 13.11.2021 1 2 3 0".getBytes());
+                new ByteArrayInputStream("Cyrill Küttel test2 1 1 39 1 12.11.2021 13.11.2021 1 2 3 0".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();

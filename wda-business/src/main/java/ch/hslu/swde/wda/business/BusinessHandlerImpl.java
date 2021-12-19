@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Date;
@@ -20,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BusinessHandlerImpl extends UnicastRemoteObject implements BusinessHandler {
+public class BusinessHandlerImpl extends UnicastRemoteObject implements BusinessHandler, Serializable {
 
 	/**
 	 *

@@ -49,7 +49,7 @@ public final class GlobalConstants {
                     "alle " + "Ortschaften laden [2] " + "     " +
                     "Beenden " + "[0]";
     public static final String WARN_INVALID_LOGIN = "Ist nicht eine korrekte Benutzername / Password Kombination. " +
-            "Versuchen Sie es noch einmal";
+            "Versuchen Sie es noch einmal \n";
     public static final String WARN_LOGIN_VALIDATION_NOT_PASSED = "Das ist ein ungülties Passwort / Benutzername. " +
             "Passwort muss mindestens 8 Zeichen lang sein, Benutzername mindestens 3 Zeichen";
     public static final String METADATA = "Durchschnittswerte dieser Ausgabe berechnen [1]     Maxima dieser Ausgabe berechnen [2]     Mimima dieser Ausgabe berechnen [3]     Beenden [0]";

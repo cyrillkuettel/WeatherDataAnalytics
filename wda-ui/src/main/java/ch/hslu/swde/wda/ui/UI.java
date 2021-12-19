@@ -165,7 +165,7 @@ public final class UI {
         loadCityNamesToMemory();
 
         int selectedOption;
-        String selectedCity;
+
         String[] selectedTimePeriod; // timePeriod[0] = startDate, timePeriod[1] = endDate
         User user;
         int totalLoginAttempts = 0;
@@ -187,13 +187,14 @@ public final class UI {
             currentMenu = CITY_NAMES_WITH_INDEX_MENU;
             showActiveMenu();
             selectedOption = readOptionFromUser();
-            selectedCity = availableCities[selectedOption];
+            String selectedCity = availableCities[selectedOption];
             System.out.printf("Ausgewählte Stadt : %s%n", selectedCity);
             selectedTimePeriod = getTimePeriod();
 
             selectedTimePeriod = /* different Date format: yyyy-MM-dd */
                     Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
-            List<WeatherData> weatherdata = stub.selectWeatherByDateAndCity(selectedCity,
+
+            final List<WeatherData> weatherdata = stub.selectWeatherByDateAndCity(selectedCity,
                                                                             selectedTimePeriod[0],
                                                                             selectedTimePeriod[1]);
 
@@ -208,7 +209,7 @@ public final class UI {
             String[] timePeriod_DifferentFormat = // different Date format: yyyy-MM-dd
                     Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
 
-            List<List<WeatherData>> completeWeatherDataList =
+            final List<List<WeatherData>> completeWeatherDataList =
                     selectWeatherOfAllCitiesInTimeframe(timePeriod_DifferentFormat[0],
                                                         timePeriod_DifferentFormat[1],
                                                         availableCities);
@@ -283,11 +284,8 @@ public final class UI {
             if (selectedOption == 1) { // update
                 System.out.println("Benutzerinformationen anpassen. . . ");
                 User updatedUser;
-                int totalLoginAttempts = 0;
-                do {
-                    updatedUser = askForCredentials(totalLoginAttempts);
-                    totalLoginAttempts++;
-                } while (!isValidLogin(updatedUser));
+
+                updatedUser = askForCredentials(0);
 
                 // now update with the new user information
                 stub.updateUser(updatedUser);
@@ -691,10 +689,11 @@ public final class UI {
         User lenny = new User("Lenny", "Buddliger", "test3");
         User nilu = new User("Nilukzil", "Fernando", "test4");
 
+        stub.insertUser(cyrill);
         stub.insertUser(nilu);
         stub.insertUser(lenny);
         stub.insertUser(finn);
-        stub.insertUser(cyrill);
+
     }
 
 }
