@@ -9,6 +9,8 @@ import com.mitchtalmadge.asciidata.graph.ASCIIGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -201,9 +203,11 @@ public final class UI {
                                                                             selectedTimePeriod[1]);
 
             System.out.printf("%s Printing the first %d entries%n", ANSI_GREEN, LIMIT_ROWS);
-            // print the first N rows
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
             System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
+
+            downloadFileFromServer();
+
             plotTemperature(weatherdata);
             loop_ToggleMaximumAndMinimumAndAverage(selectedCity, selectedTimePeriod);
         } else if (selectedOption == 2) { /* All cities are considered. */
@@ -230,6 +234,24 @@ public final class UI {
             loop_ToggleMaximumAndMinimum(completeWeatherDataList);
 
         }
+    }
+
+    private boolean downloadFileFromServer() throws RemoteException {
+        byte [] mydata = stub.downloadWeatherDataAsCSV();
+        System.out.println("downloading...");
+
+        final String downloadDirectoy = System.getProperty("user.dir");
+        File clientpathfile = new File(downloadDirectoy);
+        try (FileOutputStream out = new FileOutputStream(clientpathfile)) {
+            out.write(mydata);
+            out.flush();
+            out.close();
+            System.out.printf("Downloaded File to %s", downloadDirectoy);
+        } catch (Exception ex) {
+            Log.warn("failed writing file ");
+            return false;
+        }
+        return true;
     }
 
     /**

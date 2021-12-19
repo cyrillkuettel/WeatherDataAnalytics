@@ -104,5 +104,6 @@ public interface BusinessHandler extends Remote {
 	
 	public void writeCSV(List<WeatherData> weatherDataList) throws RemoteException;
 
+	public byte[] downloadWeatherDataAsCSV() throws RemoteException;
 	
 }

@@ -9,10 +9,7 @@ import com.opencsv.CSVWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Date;
@@ -32,6 +29,7 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 	private static final Logger Log = LogManager.getLogger(BusinessHandlerImpl.class);
 	private DbHelper DbHelper;
 	private PersistUser persistUser;
+	private String CSV_Path;
 
 	public BusinessHandlerImpl() throws RemoteException {
 		DbHelper = new DbHelper();
@@ -187,42 +185,80 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		Log.info("Called Delete User");
         return true;
     }
-    
-	@Override
-	public void writeCSV(List<WeatherData> weatherDataList) throws RemoteException {
-		// first create file object for file placed at location
-		// specified by filepath
-		String home = System.getProperty("user.home");
-		String fileName = "Weatherdata";
-		File file = new File(home + "/Downloads/" + fileName + ".csv");
-		try {
-			// create FileWriter object with file as parameter
-			FileWriter outputfile = new FileWriter(file);
 
-			// create CSVWriter object filewriter object as parameter
-			CSVWriter writer = new CSVWriter(outputfile);
+    @Override
+    public void writeCSV(List<WeatherData> weatherDataList) throws RemoteException {
+        // first create file object for file placed at location
+        // specified by filepath
+        String home = System.getProperty("user.home");
+        String fileName = "Weatherdata";
+        String path = "Not initialized";
+        File file = new File(home + "/Downloads/" + fileName + ".csv");
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter outputfile = new FileWriter(file);
 
-			// adding header to csv
-			String[] header = { "Datatimestamp", "Zipcode", "Cityname", "Temperature", "Pressure", "Humidity" };
-			writer.writeNext(header);
+            // create CSVWriter object filewriter object as parameter
+            CSVWriter writer = new CSVWriter(outputfile);
 
-			// add data to csv
+            // adding header to csv
+            String[] header = {"Datatimestamp", "Zipcode", "Cityname", "Temperature", "Pressure", "Humidity"};
+            writer.writeNext(header);
 
-			for (WeatherData w : weatherDataList) {
+            // add data to csv
 
-				String[] data = { w.getDataTimestamp().toString(), String.valueOf(w.getCity().getZIPCode()),
-						w.getCity().getName(), String.valueOf(w.getTemp()), String.valueOf(w.getPressure()),
-						String.valueOf(w.getHumidity()) };
-				writer.writeNext(data);
+            for (WeatherData w : weatherDataList) {
 
-			}
+                String[] data = {w.getDataTimestamp().toString(), String.valueOf(w.getCity().getZIPCode()),
+                        w.getCity().getName(), String.valueOf(w.getTemp()), String.valueOf(w.getPressure()),
+                        String.valueOf(w.getHumidity())};
+                writer.writeNext(data);
 
-			// closing writer connection
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+            }
+
+            // closing writer connection
+            writer.close();
+            path = home + "/Downloads/" + fileName + ".csv";
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Now we can send this File to client. Specify the path.
+        CSV_Path = path;
+    }
+
+    /**
+     * This method assumes that it is always called after writeCSV.
+     * Depends on the CSV_Path field of this class.
+     * @return The cvs File as bytes.
+     * @throws RemoteException Throws Exception.
+     */
+    @Override
+    public byte[] downloadWeatherDataAsCSV() throws RemoteException {
+
+        byte[] rawData;
+
+        File serverpathfile = new File(CSV_Path);
+        rawData = new byte[(int) serverpathfile.length()];
+        FileInputStream in;
+        try {
+            in = new FileInputStream(serverpathfile);
+            try {
+                in.read(rawData, 0, rawData.length);
+            } catch (IOException e) {
+                Log.warn("Failed to read in FileInputStream");
+                e.printStackTrace();
+            }
+            try {
+                in.close();
+            } catch (IOException e) {
+                Log.warn("Failed to close the File after using FileInputStream.");
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return rawData;
+    }
 
 }
