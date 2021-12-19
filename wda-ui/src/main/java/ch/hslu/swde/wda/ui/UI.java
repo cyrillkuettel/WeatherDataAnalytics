@@ -95,8 +95,11 @@ public final class UI {
         return null;
     }
 
+
+
     /**
-     * Helper funciton for RMI. Security Manger is currently allowing all permissions.
+     * Helper funciton for RMI.
+     * Security Manger is currently allowing all permissions.
      */
     public void configureSecurityManager() {
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
@@ -105,8 +108,9 @@ public final class UI {
         String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
         Log.info(policy);
 
-        // if all else fails, the hardcoded path here
-        // policy = "file:/home/cyrill/Desktop/g07-wda/wda-ui/client.policy";
+        // adjust path if necesary
+        policy = removeReduntantPathDirectory(policy);
+
 
         if (System.getSecurityManager() == null) {
             System.setProperty("java.security.policy", policy);
@@ -122,6 +126,31 @@ public final class UI {
             Log.fatal("Could not read the java.security.policy file. Probably because the specified path  does not " +
                               "exist.");
         }
+    }
+
+    /**
+     * This is a hacky way to correct incorrect path.  The file path for client.policy)is based on the "user.dir.
+     * This property is not static, but actually based on the path from where the main method is called.
+     * This sometimes results in unexpected behaviour.
+     * Basically, in some instances, System.getProperty("user.dir") returns a different path than what one might
+     * expect. For example, if the  UI class is created in the context of unit test, the user.dir is based on the test
+     * directory, therefore deviating from the actual runtime path. This method addresses this problem.
+     * @param path The "wrong" poath
+     * @return returns the Path to the security.policy file
+     */
+    public static String removeReduntantPathDirectory(String path) {
+        final String word = "wda-ui/";
+        int count = 0;
+        String copyOfPath = path;
+        while (copyOfPath.contains(word)) {
+            copyOfPath = copyOfPath.replaceFirst(word, "");
+            count++;
+        }
+        if (count == 2) {
+            path = path.replaceFirst(word, "");
+            return path;
+        }
+        return path;
     }
 
 
@@ -151,13 +180,10 @@ public final class UI {
         do {
             userManagemntLoop = showUserManagementDialog();
         } while (userManagemntLoop);
-
-
         currentMenu = SELECT_DATA_OR_ALL_MENU;
         showActiveMenu();
         selectedOption = readOptionFromUser();
         if (selectedOption == 1) {                /* Ony one city is requested. We can ask for min, max and average */
-
             currentMenu = CITY_NAMES_WITH_INDEX_MENU;
             showActiveMenu();
             selectedOption = readOptionFromUser();
@@ -167,8 +193,6 @@ public final class UI {
 
             selectedTimePeriod = /* different Date format: yyyy-MM-dd */
                     Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);
-
-
             List<WeatherData> weatherdata = stub.selectWeatherByDateAndCity(selectedCity,
                                                                             selectedTimePeriod[0],
                                                                             selectedTimePeriod[1]);
@@ -177,14 +201,9 @@ public final class UI {
             // print the first N rows
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
             System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
-
             plotTemperature(weatherdata);
-
             loop_ToggleMaximumAndMinimumAndAverage(selectedCity, selectedTimePeriod);
-
-
         } else if (selectedOption == 2) { /* All cities are considered. */
-
             selectedTimePeriod = getTimePeriod();
             String[] timePeriod_DifferentFormat = // different Date format: yyyy-MM-dd
                     Arrays.stream(selectedTimePeriod).map(this::transformDateToDifferentFormat).toArray(String[]::new);

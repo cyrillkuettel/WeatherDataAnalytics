@@ -33,7 +33,29 @@ class UITest {
         assertTrue(Utils.pingURL(CITY_URL, 10000));
     }
 
+    @Test
+    void testRemoveRedundantPathDirecotry() {
 
+        String incorrectPath = "/home/cyrill/Desktop/g07-wda/wda-ui/wda-ui/client.policy";
+        String adjustedPath = UI.removeReduntantPathDirectory(incorrectPath);
+        assertThat(adjustedPath).isEqualTo("/home/cyrill/Desktop/g07-wda/wda-ui/client.policy");
+    }
+
+
+    @Test
+    @Disabled
+    void testAllCitiesWithStandardDate() throws RemoteException {
+        InputStream sysInBackup = System.in; // backup System.in to restore it later
+
+        ByteArrayInputStream in =    // bedeutet: Alle Ortschaften, mit StandartDatum
+                new ByteArrayInputStream("Cyrill Küttel test2 1 2  1 skip".getBytes());
+        System.setIn(in);
+        UI ui = new UI();
+        ui.startFromBeginning();
+
+        // reset System.in to its original
+        System.setIn(sysInBackup);
+    }
     @Test
     @Disabled
     void testLoadDataOverAllCities() throws RemoteException {
