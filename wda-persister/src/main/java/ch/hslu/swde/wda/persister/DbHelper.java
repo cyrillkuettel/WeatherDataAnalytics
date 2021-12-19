@@ -245,15 +245,12 @@ public class DbHelper {
 	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
 	 * by timestamp) - Query A05
 	 * 
-	 * @param cityname  - City for which the Weatherdata should be fetched
 	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
 	 * @return Weatherdata Object matching with the parameters given
 	 */
 	public WeatherData selectMaxWeatherDataAllCity(Timestamp timestamp) {
 
 		Log.info("Starting selectMaxWeatherDataAllCity with Parameters [Timestamp: " + timestamp + "]");
-
-		// City city = selectSingleCity(cityname);
 
 		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
@@ -282,15 +279,13 @@ public class DbHelper {
 	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
 	 * by timestamp) - Query A05
 	 * 
-	 * @param cityname  - City for which the Weatherdata should be fetched
+	 * 
 	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
 	 * @return Weatherdata Object matching with the parameters given
 	 */
 	public WeatherData selectMinWeatherDataAllCity(Timestamp timestamp) {
 
 		Log.info("Starting selectMinWeatherDataAllCity with Parameters [Timestamp: " + timestamp + "]");
-
-		// City city = selectSingleCity(cityname);
 
 		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
@@ -313,33 +308,31 @@ public class DbHelper {
 
 		return wd;
 	}
-	
-	
+
 	public User selectSingleUserData(String username) {
-		
-		Log.info("Starting selectSingleUserData with Parameters [" + username + "]"  );
-		
+
+		Log.info("Starting selectSingleUserData with Parameters [" + username + "]");
+
 		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 		em.getTransaction().begin();
 		TypedQuery<User> tQry = em.createQuery("SELECT u FROM User u where u.userid = :name", User.class);
 		tQry.setParameter("name", username);
-	
+
 		User user = tQry.getSingleResult();
 		Log.info("User found is: " + user.toString());
 		return user;
 	}
-	
-	
+
 	public List<User> selectAllUserData() {
-		
+
 		Log.info("Starting selectAllUserData with Parameters []");
-		
+
 		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 		em.getTransaction().begin();
 		TypedQuery<User> tQry = em.createQuery("SELECT u FROM User u Order by u.firstname asc", User.class);
-	
+
 		List<User> usersFromDb = tQry.getResultList();
-		
+
 		Log.info("Number of Users found: " + usersFromDb.size());
 		Log.info("These are the Users found, shown with their toString() method:");
 		for (User u : usersFromDb) {
@@ -347,25 +340,7 @@ public class DbHelper {
 		}
 		return usersFromDb;
 	}
-	
-	public List<User> deleteAllUserData() {
-		
-		Log.info("Starting selectAllUserData with Parameters []");
-		
-		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
-		em.getTransaction().begin();
-		TypedQuery<User> tQry = em.createQuery("SELECT u FROM User u Order by u.firstname asc", User.class);
-	
-		List<User> usersFromDb = tQry.getResultList();
-		
-		Log.info("Number of Users found: " + usersFromDb.size());
-		Log.info("These are the Users found, shown with their toString() method:");
-		for (User u : usersFromDb) {
-			Log.info(u.toString());
-		}
-		return usersFromDb;
-	}
-	
+
 
 	public void selectTestDB() {
 
