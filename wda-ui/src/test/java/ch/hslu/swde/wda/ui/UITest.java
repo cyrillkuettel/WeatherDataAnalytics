@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Testcases fuer {@link ch.hslu.swde.wda.ui.UI}.
  */
 
-// create tests to check if date in valid timespan 01.01.2020 ( integrate this in project afterwards)
-// create tests to check if user added
 
 class UITest {
     private static final Logger Log = LogManager.getLogger(UITest.class);
@@ -77,12 +75,12 @@ class UITest {
 
     @Test
     @Disabled
-    void testLoadZurich_AndLoadAverage() throws RemoteException {
+    void testLoadDataForZurich() throws RemoteException {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later
         ByteArrayInputStream in =
-                new ByteArrayInputStream("Cyrill Küttel test1234 1 1 39 1 12.11.2021 13.11.2021 1 2 3 0".getBytes());
+                new ByteArrayInputStream("Cyrill Küttel test1234 1 1 39 1 10.08.2021 30.08.2021 2 1 2 3 0".getBytes());
         System.setIn(in);
         UI ui = new UI();
         ui.startFromBeginning();

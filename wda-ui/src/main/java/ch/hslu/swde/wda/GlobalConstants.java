@@ -58,6 +58,9 @@ public final class GlobalConstants {
     public static final String METADATA_ALL_CITY = "Maxima aller Ortschaften in diesem Zeitraum berechnen [1]     Maxima aller Ortschaften in diesem Zeitraum berechnen [2]     Beenden [0]";
     public static final String USER_EDIT = "Index des Benutzers angeben.";
     public static final String SELECT_ACTION_FOR_USER = "Aktion: Update User [1]     Delete User[2]    ";
+    public static final String DOWNLOAD_MENU = "Wetterdaten Herunterladen?  CSV Herunterladen [1]      Überspringen " +
+            "[2]    ";
+
 
     // for colored output in unix-like terminals
     public static final String ANSI_YELLOW = "\033[33m";
