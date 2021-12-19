@@ -8,7 +8,7 @@ public final class GlobalConstants {
 
     public static final String[] DEFAULT_DATE = {"28-11-2021", "30-11-2021"};
 
-    public static final int MIN_LENGTH_NAME = 5;
+    public static final int MIN_LENGTH_NAME = 2;
     public static final int MIN_PASSWORD_LENGTH = 5;
     public static final String WEATHERDATA_PROVIDER = "http://swde.el.eee.intern:8080/weatherdata-provider/";
     public static final String CITY_URL = "http://swde.el.eee.intern:8080/weatherdata-provider/rest/weatherdata" +

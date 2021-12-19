@@ -78,7 +78,7 @@ public final class UI {
 
         // Server: 10.177.6.157;
 
-        final String rmiServerIP = "10.155.231.41"; // change this
+        final String rmiServerIP = "10.177.6.157"; // change this
         final int rmiPort = 1099;
 
         configureSecurityManager();
