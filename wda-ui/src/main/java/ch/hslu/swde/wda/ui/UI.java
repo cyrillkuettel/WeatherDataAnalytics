@@ -61,13 +61,13 @@ public final class UI {
 
 
     public UI() {
-
         scanner = new Scanner(System.in);
         if (!Utils.pingURL(WEATHERDATA_PROVIDER, 10000)) {
             Log.fatal(ANSI_YELLOW + "Could not ping swde.el.ee.intern:80. Are you connected to https://vpn.hslu.ch?" +
                               ANSI_RESET);
         }
         stub = createStub();
+
     }
 
     /**
@@ -78,7 +78,7 @@ public final class UI {
 
         // Server: 10.177.6.157;
 
-        final String rmiServerIP = "10.155.231.107"; // change this
+        final String rmiServerIP = "10.155.231.41"; // change this
         final int rmiPort = 1099;
 
         configureSecurityManager();
@@ -163,7 +163,7 @@ public final class UI {
      */
     public void startFromBeginning() throws RemoteException {
 
-        // loadUsersIntoMemory(); // only one time
+
 
         /* The cities could change in the future, so they will to be fetched at starttime dynamically  */
         loadCityNamesToMemory();
@@ -206,7 +206,7 @@ public final class UI {
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
             System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
 
-            downloadFileFromServer();
+             downloadFileFromServer();
 
             plotTemperature(weatherdata);
             loop_ToggleMaximumAndMinimumAndAverage(selectedCity, selectedTimePeriod);
@@ -241,7 +241,8 @@ public final class UI {
         System.out.println("downloading...");
 
         final String downloadDirectoy = System.getProperty("user.dir");
-        File clientpathfile = new File(downloadDirectoy);
+        final String fileName = "WeatherData.csv";
+        File clientpathfile = new File(downloadDirectoy + "/" + fileName);
         try (FileOutputStream out = new FileOutputStream(clientpathfile)) {
             out.write(mydata);
             out.flush();
@@ -249,6 +250,7 @@ public final class UI {
             System.out.printf("Downloaded File to %s", downloadDirectoy);
         } catch (Exception ex) {
             Log.warn("failed writing file ");
+            ex.printStackTrace();
             return false;
         }
         return true;
