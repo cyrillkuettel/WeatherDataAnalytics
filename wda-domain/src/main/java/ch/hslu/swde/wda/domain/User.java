@@ -27,7 +27,12 @@ public class User implements Serializable {
 	public User(String firstname, String lastname, String userpwd) {
 
 		// userid created by using first letter of firstname and 5 letters of lastname
-		userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase();
+		if (lastname.length() < 5) {
+			userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname).toLowerCase();
+		}else {
+			userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase();
+		}
+		
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.userpwd = userpwd;
@@ -38,11 +43,21 @@ public class User implements Serializable {
 	}
 
 	public void setUserid(String firstname, String lastname) {
-		this.userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase();
+		
+		if (lastname.length() < 5) {
+			userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname).toLowerCase();
+		}else {
+			userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase();
+		}
 	}
 	
 	public void setUseridWithIterator(String firstname, String lastname, int i) {
-		this.userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase() + i;
+		
+		if (lastname.length() < 5) {
+			userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname).toLowerCase() + i;
+		}else {
+			userid = (firstname.substring(0, FIRSTNAMELENGTH) + lastname.substring(0, LASTNAMELENGTH)).toLowerCase() + i;
+		}
 	}
 
 	public String getFirstname() {

@@ -23,6 +23,7 @@ public class PersistUser {
 		em.getTransaction().begin();
 
 		try {
+			user = checkExistingUser(user);
 			em.persist(user);
 			Log.info(user.toString() + " persisted in DB");
 
@@ -55,8 +56,7 @@ public class PersistUser {
 
 			user.setUserid(user.getFirstname(), user.getLastname());
 			
-			//Checking if new userid is already taken
-			user = checkExistingUser(user);
+
 			insertUser(user);
 
 		} else {
