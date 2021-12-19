@@ -102,9 +102,7 @@ public final class WeatherdataDownloader {
      *   NodeList are objects which represent an ordered list of nodes. In a NodeList, the nodes are returned in the
      *   order in which they are specified in the XML document.
      * @return a NodeList of XML Tags
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
+
      */
     public NodeList generateXMLNodeList(String rawXML) throws ParserConfigurationException, IOException, SAXException {
 
@@ -123,10 +121,7 @@ public final class WeatherdataDownloader {
      * This method has to be called after requestRawXMLData. It assumes that the input string contains the xml dump
      * of all requested data for a single city.
      * @param xmlString The return value of method requestRawXMLData.
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
-     * @return The List<WeatherData> for that particular city. The return value can be used ( for testing), but does
+     * @return The List of WeatherData for that particular city. The return value can be used ( for testing), but does
      * not have to be
      * used.
      */
@@ -159,10 +154,11 @@ public final class WeatherdataDownloader {
     }
 
     /**
-     * Extract all the Data of Weather, along with City into a WeatherDataObject.
-     * This is the method that does all the "heavy-lifting"
-     * @param el
-     * @return
+     * Extract all the Data of Weather, along with City into a WeatherData Object.
+     * This is the method that does all the "heavy-lifting".
+     * Is uses substring many times, which is does have an impact on performance.
+     * @param el The Node element to be parsed.
+     * @return The generated WeaterData from the XML.
      */
     public WeatherData parseXMLData_ToWeatherDataObjects(Element el) {
 

@@ -10,7 +10,10 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,10 +60,24 @@ class UITest {
     }
 
 
+    @Test
+    void test_rmi() {
+        UI ui = new UI();
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+            Date parsedDate = dateFormat.parse("2021-11-28 00:33:30.0");
+            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+            String max = ui.stub.selectMaxWeatherDataAllCity(timestamp);
+            assertThat(max).isNotBlank();
+            Log.info(max);
+        } catch(Exception e) { //this generic but you can control another types of exception
+            // look the origin of excption
+        }
+    }
 
     @Test
     @Disabled
-    void testLoadZurich_AndLoadAverageOfAll() throws RemoteException {
+    void testLoadZurich_AndLoadAverage() throws RemoteException {
         //   simulate user input.
 
         InputStream sysInBackup = System.in; // backup System.in to restore it later

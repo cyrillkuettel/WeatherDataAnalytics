@@ -4,8 +4,8 @@ public class ColourConsoleDemo {
 
     /**
      * Example of ANSI sequences to print colored output on terminal.
+     * @param args No Input.
      */
-
     public static void main(String[] args) {
         System.out.println("\033[0m BLACK");
         System.out.println("\033[31m RED");

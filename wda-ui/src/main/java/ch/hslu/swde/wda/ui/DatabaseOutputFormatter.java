@@ -17,11 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class is intended to format the List<WeaatherData> Objects, so that it can be displayed as String
+ * This class is intended to format the List of WeaatherData Objects, so that it can be displayed as String
  * in the Terminal.
- * <p>
- * <p>
- * <p>
  * There will always be 3 parameters:
  * City (Always a single city, or EVERY City)
  * startDate ( user specified )
@@ -170,8 +167,7 @@ public final class DatabaseOutputFormatter {
 
 
 
-    /**  new functions: various user administration stuff */
-
+    /*  new functions: various user administration stuff */
     public boolean insertUser(User user) {
 
         try {

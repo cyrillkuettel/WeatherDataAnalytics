@@ -1,10 +1,11 @@
 package ch.hslu.swde.wda.persister;
 
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import ch.hslu.swde.wda.domain.City;
 import jakarta.persistence.EntityManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 public class PersistCity {
 
@@ -15,12 +16,12 @@ public class PersistCity {
 
 	/**
 	 * DO NOT USE THIS METHOD WITH ANY OTHER CLASS AS IT IS NOT CHECKING WHETHER THE
-	 * CITY ALREADY EXISTS IN THE DB (THIS CHECK IS PERFORMED IN ADVANCE IN
+	 * CITY ALREADY EXISTS IN THE DB. (THIS CHECK IS PERFORMED IN ADVANCE IN
 	 * PERSISTWEATHERDATA) This Method persists a single City entity and should only
 	 * be called from PersistWeatherData if the City object related to a WeatherData
 	 * Object is not yet in the DB.
 	 * 
-	 * @param city The city object which should be persisted
+	 * @param city The city object which should be persisted.
 	 */
 	public void insertSingleCity(City city) {
 
@@ -42,7 +43,7 @@ public class PersistCity {
 	 * Primary Key (Zip Code) being defined as unique. This method can be safely
 	 * accessed from any class as the needed DB checks are implemented.
 	 * 
-	 * @param city The list of city objects which should be persisted
+	 * @param cities The list of city objects which should be persisted.
 	 */
 	public void insertCities(List<City> cities) {
 

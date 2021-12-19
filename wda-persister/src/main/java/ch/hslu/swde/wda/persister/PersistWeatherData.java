@@ -1,13 +1,12 @@
 package ch.hslu.swde.wda.persister;
 
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ch.hslu.swde.wda.domain.City;
 import ch.hslu.swde.wda.domain.WeatherData;
 import jakarta.persistence.EntityManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 public class PersistWeatherData {
 
@@ -33,7 +32,7 @@ public class PersistWeatherData {
 	 * DB. This method can be safely accessed from any class as the needed DB checks
 	 * are implemented.
 	 * 
-	 * @param city The list of city objects which should be persisted
+	 * @param wd The WeatherData object to be inserted.
 	 */
 	public void insertSingleWeatherData(WeatherData wd) {
 
@@ -71,7 +70,7 @@ public class PersistWeatherData {
 	 * DB. This method can be safely accessed from any class as the needed DB checks
 	 * are implemented.
 	 * 
-	 * @param city The list of city objects which should be persisted
+	 * @param weatherData The list of city objects which should be persisted
 	 */
 	public void insertWeatherData(List<WeatherData> weatherData) {
 

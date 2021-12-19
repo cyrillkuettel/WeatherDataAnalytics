@@ -45,7 +45,7 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 				Date.valueOf(end));
 		Log.info(requestedWeatherData);
 		//CSV is being created automatically with the full Weatherdata information
-		// writeCSV(requestedWeatherData);
+		writeCSV(requestedWeatherData);
 
 		return new ArrayList<WeatherData>(requestedWeatherData);
 	}

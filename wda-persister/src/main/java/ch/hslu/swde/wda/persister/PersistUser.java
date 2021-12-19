@@ -1,15 +1,10 @@
 package ch.hslu.swde.wda.persister;
 
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ch.hslu.swde.wda.domain.City;
 import ch.hslu.swde.wda.domain.User;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PersistUser {
 
@@ -17,10 +12,8 @@ public class PersistUser {
 	private String DBCONNECTION = "PROD";
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
-	/**
-	 * 
-	 * @param
-	 */
+
+
 	public void insertUser(User user) throws EntityExistsException {
 		
 		Log.info("Starting insertUser");

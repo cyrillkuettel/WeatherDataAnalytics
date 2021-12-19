@@ -69,13 +69,14 @@ public final class UI {
     }
 
     /**
-     * RMI Initialization
+     * RMI Initialization.
+     * @return The stub Object.
      */
     public BusinessHandler createStub() {
 
         // Server: 10.177.6.157;
 
-        final String rmiServerIP = "10.177.6.157"; // change this
+        final String rmiServerIP = "10.155.231.107"; // change this
         final int rmiPort = 1099;
 
         configureSecurityManager();
@@ -129,14 +130,14 @@ public final class UI {
     }
 
     /**
-     * This is a hacky way to correct incorrect path.  The file path for client.policy)is based on the "user.dir.
+     * This is a hacky way to correct incorrect path. The file path for client.policy)is based on the "user.dir.
      * This property is not static, but actually based on the path from where the main method is called.
      * This sometimes results in unexpected behaviour.
      * Basically, in some instances, System.getProperty("user.dir") returns a different path than what one might
      * expect. For example, if the  UI class is created in the context of unit test, the user.dir is based on the test
      * directory, therefore deviating from the actual runtime path. This method addresses this problem.
-     * @param path The "wrong" poath
-     * @return returns the Path to the security.policy file
+     * @param path The "wrong" poath to be corrected.
+     * @return returns the Path to the security.policy file.
      */
     public static String removeReduntantPathDirectory(String path) {
         final String word = "wda-ui/";
@@ -155,7 +156,8 @@ public final class UI {
 
 
     /**
-     * start a new User interaction. ( CLI Loop )
+     * Start a new User interaction. ( CLI Loop )
+     * @throws RemoteException If RMI communication with stub throws this Exception.
      */
     public void startFromBeginning() throws RemoteException {
 
@@ -235,7 +237,7 @@ public final class UI {
      * When the user has selected option 1, this means he has finisehd the user administration and wants to use the
      * application. In this case, we return False.
      *
-     * @return True if the user has not selected the option [1] start
+     * @return True if the user has not selected the option [1] start.
      * @throws RemoteException if there was an exception in the RMI connection.
      */
     public boolean showUserManagementDialog() throws RemoteException {
@@ -308,6 +310,11 @@ public final class UI {
     /**
      * Function calls selectWeatherByDateAndCity on the stub. This just executes the function on all Cities, which
      * are a parameter. Then a nested List is returned, for each city the weather data.
+     * @param start Inclusive start Date.
+     * @param end Inclusive start Date.
+     * @param availableCities The Array of cities for which to get the Data.
+     * @throws RemoteException Exception in RMI.
+     * @return Nested List, each entry is corresponds to one city.
      */
     public List<List<WeatherData>> selectWeatherOfAllCitiesInTimeframe(final String start, final String end,
                                                                        final String[] availableCities) throws RemoteException {
@@ -332,7 +339,10 @@ public final class UI {
     }
 
     /**
-     * Loop and prompt User for input on selection option: Min or Max
+     * Loop and prompt User for input on selection option Min or Max.
+     * @param completeWeatherDataList This is the result of the selectWeatherOfAllCitiesInTimeframe method. They are
+     *                                called inside startFromBeginning method.
+     * @throws RemoteException Exception in RMI.
      */
     public void loop_ToggleMaximumAndMinimum(List<List<WeatherData>> completeWeatherDataList) throws RemoteException {
         currentMenu = METADATA_ALL_CITY;
@@ -370,9 +380,13 @@ public final class UI {
 
     /**
      * Loop and prompt User for input on selection option:  average, min or max.
-     * Note that this method is almost idential to {@link #loop_ToggleMaximumAndMinimum(List<List<WeatherData>>)}
+     * Note that this method is almost idential to {@link UI#loop_ToggleMaximumAndMinimum(List)}
      * However, this method has extended functinality, is supports the average option. That has been implemented like
      * that just because the 'average' option is only provided for single places.
+     * @throws RemoteException Exception in RMI.
+     * @param city City for which to select this data.
+     * @param timePeriod Limit the selection to this timeperiod.
+     * @throws RemoteException Exception in RMI.
      */
     public void loop_ToggleMaximumAndMinimumAndAverage(String city, String[] timePeriod) throws RemoteException {
         currentMenu = METADATA;
@@ -402,8 +416,9 @@ public final class UI {
     /**
      * For each city, write it's name and coresponding index.
      * We need this to display it in Terminal, so that a sinle city can be selected by user.
-     *
-     * @param cities Array of Cities for which to generate the index
+     * @param cities Array of Cities for which to generate the index.
+     * @return String, seperated by newline character.
+     * *
      */
     public String generateCityWithIndex(final String[] cities) {
         StringBuilder line = new StringBuilder();
@@ -416,7 +431,6 @@ public final class UI {
 
     /**
      * Read user input: Numerical in all cases. The actual meaning of the number can be read from the currentMenu.
-     *
      * @return the action the user takes as a numerical value.
      */
     public int readOptionFromUser() {
@@ -502,8 +516,9 @@ public final class UI {
      * Try to parse a single Date.
      * As simple as it sounds, this is actually a very meticulous affair.
      * The format may be wrong in a number of different ways - this has to be checked hence the size of the method.
-     * Because the process is kind of inconvenient, you can select the default date with keyword
+     * Because the process is kind of inconvenient, you can select the default date with keyword.
      * {@link ch.hslu.swde.wda.GlobalConstants#DEFAULT_DATE_KEYWORD}
+     * @return The Date.
      */
     public String tryToParseDate() {
 
@@ -552,8 +567,8 @@ public final class UI {
      * "27-11-2020"
      * 27.11.
      * 26-11-
-     *
-     * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT
+     * @param date The Date to be checked for validity.
+     * @return True if the the input String is a valid Date, according to the specificed DATA_FORMAT.
      */
     public boolean isValidDate(String date) {
         final String DATE_FORMAT = "dd-MM-yyyy";
@@ -580,8 +595,8 @@ public final class UI {
     /**
      * Compare all current user from database with the input User.
      * Comparision is being done with the equals method of User.
-     *
-     * @return true if the login succeeds, false otherwise
+     * @return true if the login succeeds, false otherwise.
+     * @throws RemoteException Exception in RMI.
      */
     private boolean isValidLogin(User validateThisUser) throws RemoteException {
         List<User> currentUserList = stub.getUserNamesAsList();
@@ -592,10 +607,9 @@ public final class UI {
 
     /**
      * Ask the user to type in forename, surname and password. It will Loop indefinitely, until the condition in
-     * {@link #simpleLoginValidationPassed(String[])
-     * condition passes}
-     *
-     * @return String Array containing the username [index: 0] and password. [index: 1]
+     * {@link #simpleLoginValidationPassed(String[]) condition passes}
+     * @param attemptCount How many times the user has already attempted to log in.
+     * @return String Array containing the username [index: 0] and password. [index: 1].
      */
     public User askForCredentials(final int attemptCount) {
         if (attemptCount > 0) {
@@ -628,8 +642,8 @@ public final class UI {
      * This Function already checks if the username and password pass certain basic validations.
      * This is not a security measure, it just prevents sending malformed data to our server: For example: the username
      * cannot be an empty String.
-     *
      * @return true if the credidentals are valid, false if there is problem.
+     * @param creds the Data to be validated.
      */
     public boolean simpleLoginValidationPassed(String[] creds) {
 
@@ -646,7 +660,7 @@ public final class UI {
     }
 
     /**
-     * function to translate date from dd-mm-yyyy to yyyy-mm-dd
+     * function to translate date from dd-mm-yyyy to yyyy-mm-dd.
      *
      * @param input Date to be formatted
      * @return Date in new format (essentially flipped )
@@ -671,18 +685,17 @@ public final class UI {
         return input.toArray(new String[0]);
     }
 
+
     /**
      * We want to have access to the cities as soon as the application starts.
      * This is because the menu provides selection options of cities.
+     * @throws RemoteException Exception in RMI.
      */
     public void loadCityNamesToMemory() throws RemoteException {
         availableCities = convertListToArray(stub.getCityNamesAsList());
         CITY_NAMES_WITH_INDEX_MENU = generateCityWithIndex(availableCities);
     }
 
-    /**
-     * This method runs only once.
-     */
     private void loadUsersIntoMemory() throws RemoteException {
         User finn = new User("Finn", "Morgenthaler", "test1");
         User cyrill = new User("Cyrill", "Küttel", "test2");
