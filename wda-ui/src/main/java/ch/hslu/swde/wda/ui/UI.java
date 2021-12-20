@@ -112,7 +112,7 @@ public final class UI {
         String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
 
         Log.info(policy);
-        policy = "file/"; // write to root
+        // policy = "file/"; // write to root
 
                 // adjust path if necesary
         policy = removeReduntantPathDirectory(policy);
