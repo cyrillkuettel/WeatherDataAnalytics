@@ -108,10 +108,13 @@ public final class UI {
         final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
         Log.info(String.format("System.getProperty(\"user.dir\") == %s", projectDir));
         final String clientPolicyRelativeDir = "/wda-ui/client.policy";
-        String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
-        Log.info(policy);
 
-        // adjust path if necesary
+        String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
+
+        Log.info(policy);
+        policy = "file/"; // write to root
+
+                // adjust path if necesary
         policy = removeReduntantPathDirectory(policy);
 
 
@@ -130,6 +133,7 @@ public final class UI {
                               "exist.");
         }
     }
+
 
     /**
      * This is a hacky way to correct incorrect path. The file path for client.policy)is based on the "user.dir.
