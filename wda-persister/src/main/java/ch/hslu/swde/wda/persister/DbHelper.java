@@ -2,6 +2,7 @@ package ch.hslu.swde.wda.persister;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -248,32 +249,232 @@ public class DbHelper {
 	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
 	 * @return Weatherdata Object matching with the parameters given
 	 */
-	public WeatherData selectMaxWeatherDataAllCity(Timestamp timestamp) {
+	public List<WeatherData> selectMaxTemperatureAllCities(Timestamp timestamp) {
 
-		Log.info("Starting selectMaxWeatherDataAllCity with Parameters [Timestamp: " + timestamp + "]");
+		Log.info("Starting selectMaxTemperatureAllCities with Parameters [Timestamp: " + timestamp + "]");
 
 		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
 
 		em.getTransaction().begin();
 		TypedQuery<Object[]> tQry = em.createQuery(
-				"SELECT MAX(w.temp), MAX(w.pressure), MAX(w.humidity) FROM WeatherData w where w.datatimestamp = :timestamp",
+				"SELECT w.city,w.temp as temp FROM WeatherData w where w.temp =(SELECT MAX(w.temp) from WeatherData w where w.datatimestamp = :timestamp) and w.datatimestamp = :timestamp",
 				Object[].class);
 
 		tQry.setParameter("timestamp", timestamp);
 
-		/* Get the single City-Entity from DB (matched by WHERE-condition) */
-		Object[] result = tQry.getSingleResult();
+		List<Object[]> dbresult = tQry.getResultList();
 
 		em.close();
+		
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		for (Object[] result : dbresult) {
+			WeatherData wd = new WeatherData((City)result[0], timestamp, (Double) result[1],-99, -99);
+			weatherDataList.add(wd);
+			Log.info(wd.toString());
+		}
 
-		WeatherData wd = new WeatherData(null, null, (Double) result[0], (Double) result[1], (Double) result[2]);
+		
 
 		Log.info("These are the WeatherData found, shown with their toString() method:");
-		Log.info(wd.toString());
 
-		return wd;
+		return weatherDataList;
 	}
 
+	/**
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
+	 * 
+	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
+	 * @return Weatherdata Object matching with the parameters given
+	 */
+	public List<WeatherData> selectMinTemperatureAllCities(Timestamp timestamp) {
+
+		Log.info("Starting selectMinTemperatureAllCities with Parameters [Timestamp: " + timestamp + "]");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+
+		em.getTransaction().begin();
+		TypedQuery<Object[]> tQry = em.createQuery(
+				"SELECT w.city,w.temp as temp FROM WeatherData w where w.temp =(SELECT MIN(w.temp) from WeatherData w where w.datatimestamp = :timestamp) and w.datatimestamp = :timestamp",
+				Object[].class);
+
+		tQry.setParameter("timestamp", timestamp);
+
+		List<Object[]> dbresult = tQry.getResultList();
+
+		em.close();
+		
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		for (Object[] result : dbresult) {
+			WeatherData wd = new WeatherData((City)result[0], timestamp, (Double) result[1],-99, -99);
+			weatherDataList.add(wd);
+			Log.info(wd.toString());
+		}
+
+		
+
+		Log.info("These are the WeatherData found, shown with their toString() method:");
+
+		return weatherDataList;
+	}
+
+	/**
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
+	 * 
+	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
+	 * @return Weatherdata Object matching with the parameters given
+	 */
+	public List<WeatherData> selectMaxPressureAllCities(Timestamp timestamp) {
+
+		Log.info("Starting selectMaxTemperatureAllCities with Parameters [Timestamp: " + timestamp + "]");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+
+		em.getTransaction().begin();
+		TypedQuery<Object[]> tQry = em.createQuery(
+				"SELECT w.city,w.pressure as pressure FROM WeatherData w where w.pressure =(SELECT MAX(w.pressure) from WeatherData w where w.datatimestamp = :timestamp) and w.datatimestamp = :timestamp",
+				Object[].class);
+
+		tQry.setParameter("timestamp", timestamp);
+
+		List<Object[]> dbresult = tQry.getResultList();
+
+		em.close();
+		
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		for (Object[] result : dbresult) {
+			WeatherData wd = new WeatherData((City)result[0], timestamp, -99,(Double) result[1], -99);
+			weatherDataList.add(wd);
+			Log.info(wd.toString());
+		}
+
+		
+
+		Log.info("These are the WeatherData found, shown with their toString() method:");
+
+		return weatherDataList;
+	}
+
+	/**
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
+	 * 
+	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
+	 * @return Weatherdata Object matching with the parameters given
+	 */
+	public List<WeatherData> selectMinPressureAllCities(Timestamp timestamp) {
+
+		Log.info("Starting selectMinTemperatureAllCities with Parameters [Timestamp: " + timestamp + "]");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+
+		em.getTransaction().begin();
+		TypedQuery<Object[]> tQry = em.createQuery(
+				"SELECT w.city,w.pressure as pressure FROM WeatherData w where w.pressure =(SELECT MIN(w.pressure) from WeatherData w where w.datatimestamp = :timestamp) and w.datatimestamp = :timestamp",
+				Object[].class);
+
+		tQry.setParameter("timestamp", timestamp);
+
+		List<Object[]> dbresult = tQry.getResultList();
+
+		em.close();
+		
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		for (Object[] result : dbresult) {
+			WeatherData wd = new WeatherData((City)result[0], timestamp,-99,(Double) result[1], -99);
+			weatherDataList.add(wd);
+			Log.info(wd.toString());
+		}
+
+		
+
+		Log.info("These are the WeatherData found, shown with their toString() method:");
+
+		return weatherDataList;
+	}
+
+	/**
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
+	 * 
+	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
+	 * @return Weatherdata Object matching with the parameters given
+	 */
+	public List<WeatherData> selectMaxHumidityAllCities(Timestamp timestamp) {
+
+		Log.info("Starting selectMaxTemperatureAllCities with Parameters [Timestamp: " + timestamp + "]");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+
+		em.getTransaction().begin();
+		TypedQuery<Object[]> tQry = em.createQuery(
+				"SELECT w.city,w.humidity as humidity FROM WeatherData w where w.humidity =(SELECT MAX(w.humidity) from WeatherData w where w.datatimestamp = :timestamp) and w.datatimestamp = :timestamp",
+				Object[].class);
+
+		tQry.setParameter("timestamp", timestamp);
+
+		List<Object[]> dbresult = tQry.getResultList();
+
+		em.close();
+		
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		for (Object[] result : dbresult) {
+			WeatherData wd = new WeatherData((City)result[0], timestamp,-99,-99, (Double) result[1]);
+			weatherDataList.add(wd);
+			Log.info(wd.toString());
+		}
+
+		
+
+		Log.info("These are the WeatherData found, shown with their toString() method:");
+
+		return weatherDataList;
+	}
+	
+	/**
+	 * This Query returns a Weatherdata Object with the max
+	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
+	 * by timestamp) - Query A05
+	 * 
+	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
+	 * @return Weatherdata Object matching with the parameters given
+	 */
+	public List<WeatherData> selectMinHumidityAllCities(Timestamp timestamp) {
+
+		Log.info("Starting selectMinTemperatureAllCities with Parameters [Timestamp: " + timestamp + "]");
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+
+		em.getTransaction().begin();
+		TypedQuery<Object[]> tQry = em.createQuery(
+				"SELECT w.city,w.humidity as humidity FROM WeatherData w where w.humidity =(SELECT MIN(w.humidity) from WeatherData w where w.datatimestamp = :timestamp) and w.datatimestamp = :timestamp",
+				Object[].class);
+
+		tQry.setParameter("timestamp", timestamp);
+
+		List<Object[]> dbresult = tQry.getResultList();
+
+		em.close();
+		
+		List<WeatherData> weatherDataList = new ArrayList<WeatherData>();
+		for (Object[] result : dbresult) {
+			WeatherData wd = new WeatherData((City)result[0], timestamp,-99,-99, (Double) result[1]);
+			weatherDataList.add(wd);
+			Log.info(wd.toString());
+		}
+
+		
+
+		Log.info("These are the WeatherData found, shown with their toString() method:");
+
+		return weatherDataList;
+	}
+	
 	/**
 	 * This Query returns a Weatherdata Object with the min
 	 * temperature,pressure,humidity for a all Cities and given timestamp (specified
@@ -283,7 +484,7 @@ public class DbHelper {
 	 * @param timestamp - The timestamp for which the Weatherdata should be fetched
 	 * @return Weatherdata Object matching with the parameters given
 	 */
-	public WeatherData selectMinWeatherDataAllCity(Timestamp timestamp) {
+	public WeatherData selectWeatherDataAllCity(Timestamp timestamp) {
 
 		Log.info("Starting selectMinWeatherDataAllCity with Parameters [Timestamp: " + timestamp + "]");
 
@@ -308,7 +509,7 @@ public class DbHelper {
 
 		return wd;
 	}
-
+	
 	/**
 	 * 
 	 * This query returns a single user matching with the where condition

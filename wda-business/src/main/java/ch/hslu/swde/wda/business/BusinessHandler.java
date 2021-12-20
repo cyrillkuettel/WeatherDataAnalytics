@@ -84,10 +84,20 @@ public interface BusinessHandler extends Remote {
 	 * 
 	 * @param timestamp The timestamp for which the data should be fetched
 	 */
-	public String selectMaxWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException;
+	public List<String> selectMaxTemperatureAllCities(Timestamp inputTimeStamp) throws RemoteException;
 
 	
-	public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException;
+	public List<String> selectMinTemperatureAllCities(Timestamp inputTimeStamp) throws RemoteException;
+	
+	
+	public List<String> selectMaxPressureAllCities(Timestamp inputTimeStamp) throws RemoteException;
+	
+	public List<String> selectMinPressureAllCities(Timestamp inputTimeStamp) throws RemoteException;
+	
+	public List<String> selectMaxHumidityAllCities(Timestamp inputTimeStamp) throws RemoteException;
+
+	
+	public List<String> selectMinHumidityAllCities(Timestamp inputTimeStamp) throws RemoteException;
 
 	
 	public List<User> getUserNamesAsList() throws RemoteException;

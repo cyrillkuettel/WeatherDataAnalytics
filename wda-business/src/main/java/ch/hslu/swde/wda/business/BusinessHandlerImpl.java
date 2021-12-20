@@ -92,7 +92,7 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		String temp = String.valueOf(weatherDataMAXIMUM.getTemp());
 
 		String maxDescription = String.format(
-				"Maximum Values for temperatur, pressure and humidity for %s:" + " %s, %s and %s", cityname, temp,
+				"Maximale Werte für Temperatur, Druck und Feuchtigkeit für Ortschaft %s:" + " %s, %s and %s", cityname, temp,
 				pressure, humidity);
 
 		return maxDescription;
@@ -118,34 +118,113 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 	}
 
 	@Override
-	public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException {
+	public List<String> selectMinTemperatureAllCities(Timestamp inputTimeStamp) throws RemoteException {
 
-		WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(inputTimeStamp);
-		String humidity = String.valueOf(weatherDataMinAll.getHumidity());
-		String pressure = String.valueOf(weatherDataMinAll.getPressure());
-		String temp = String.valueOf(weatherDataMinAll.getTemp());
+		List<WeatherData> weatherDataMinAll = DbHelper.selectMinTemperatureAllCities(inputTimeStamp);
+		List<String> descriptionList = new ArrayList();
+		String minDescription = "";
+		for(WeatherData w : weatherDataMinAll) {
+			String temp = String.valueOf(w.getTemp());
+			String city = w.getCity().getName();
+			 minDescription = String.format(
+					"Minimaler Wert für Temperatur in Ortschaft %s:" + '\n' + " %s",
+					city,temp);
+			 descriptionList.add(minDescription);
+		}
 
-		String minDescription = String.format(
-				"Minimum Values for temperatur, pressure and humidity over all cities are:" + '\n' + " %s, %s and %s",
-				temp, pressure, humidity);
-
-		return minDescription;
+		return descriptionList;
 	}
 
 	@Override
-	public String selectMaxWeatherDataAllCity(Timestamp inputTimeStamp) throws RemoteException {
+	public List<String> selectMaxTemperatureAllCities(Timestamp inputTimeStamp) throws RemoteException {
 
-		WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(inputTimeStamp);
+		List<WeatherData> weatherDataMinAll = DbHelper.selectMaxTemperatureAllCities(inputTimeStamp);
+		List<String> descriptionList = new ArrayList();
+		String minDescription = "";
+		for(WeatherData w : weatherDataMinAll) {
+			String temp = String.valueOf(w.getTemp());
+			String city = w.getCity().getName();
+			 minDescription = String.format(
+					"Maximaler Wert für Temperatur in Ortschaft %s:" + '\n' + " %s",
+					city,temp);
+			 descriptionList.add(minDescription);
+		}
 
-		String humidity = String.valueOf(weatherDataMaxAll.getHumidity());
-		String pressure = String.valueOf(weatherDataMaxAll.getPressure());
-		String temp = String.valueOf(weatherDataMaxAll.getTemp());
-
-		String maxDescription = String.format(
-				"Maximale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + " %s, %s and %s", temp,
-				pressure, humidity);
-		return maxDescription;
+		return descriptionList;
 	}
+	
+	@Override
+	public List<String> selectMinPressureAllCities(Timestamp inputTimeStamp) throws RemoteException {
+
+		List<WeatherData> weatherDataMinAll = DbHelper.selectMinPressureAllCities(inputTimeStamp);
+		List<String> descriptionList = new ArrayList();
+		String minDescription = "";
+		for(WeatherData w : weatherDataMinAll) {
+			String temp = String.valueOf(w.getTemp());
+			String city = w.getCity().getName();
+			 minDescription = String.format(
+					"Minimaler Wert für Luftdruck in Ortschaft %s:" + '\n' + " %s",
+					city,temp);
+			 descriptionList.add(minDescription);
+		}
+
+		return descriptionList;
+	}
+
+	@Override
+	public List<String> selectMaxPressureAllCities(Timestamp inputTimeStamp) throws RemoteException {
+
+		List<WeatherData> weatherDataMinAll = DbHelper.selectMaxPressureAllCities(inputTimeStamp);
+		List<String> descriptionList = new ArrayList();
+		String minDescription = "";
+		for(WeatherData w : weatherDataMinAll) {
+			String temp = String.valueOf(w.getTemp());
+			String city = w.getCity().getName();
+			 minDescription = String.format(
+					"Maximaler Wert für Luftdruck in Ortschaft %s:" + '\n' + " %s",
+					city,temp);
+			 descriptionList.add(minDescription);
+		}
+
+		return descriptionList;
+	}
+	
+	@Override
+	public List<String> selectMinHumidityAllCities(Timestamp inputTimeStamp) throws RemoteException {
+
+		List<WeatherData> weatherDataMinAll = DbHelper.selectMinHumidityAllCities(inputTimeStamp);
+		List<String> descriptionList = new ArrayList();
+		String minDescription = "";
+		for(WeatherData w : weatherDataMinAll) {
+			String temp = String.valueOf(w.getTemp());
+			String city = w.getCity().getName();
+			 minDescription = String.format(
+					"Minimaler Wert für Luftfeuchtigkeit in Ortschaft %s:" + '\n' + " %s",
+					city,temp);
+			 descriptionList.add(minDescription);
+		}
+
+		return descriptionList;
+	}
+
+	@Override
+	public List<String> selectMaxHumidityAllCities(Timestamp inputTimeStamp) throws RemoteException {
+
+		List<WeatherData> weatherDataMinAll = DbHelper.selectMaxHumidityAllCities(inputTimeStamp);
+		List<String> descriptionList = new ArrayList();
+		String minDescription = "";
+		for(WeatherData w : weatherDataMinAll) {
+			String temp = String.valueOf(w.getTemp());
+			String city = w.getCity().getName();
+			 minDescription = String.format(
+					"Maximaler Wert für Luftfeuchtigkeit in Ortschaft %s:" + '\n' + " %s",
+					city,temp);
+			 descriptionList.add(minDescription);
+		}
+
+		return descriptionList;
+	}
+
 
 	@Override
 	public List<User> getUserNamesAsList() throws RemoteException {

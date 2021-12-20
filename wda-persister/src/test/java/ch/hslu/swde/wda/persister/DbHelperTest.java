@@ -197,32 +197,81 @@ public class DbHelperTest {
 
 	// Test for Query A05 - MAX Value
 	@Test
-	void testSelectMaxWeatherDataAllCity() {
+	void testselectMaxTemperatureAllCities() {
 
 		// Run the select
-		WeatherData weatherData = DbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
+		List<WeatherData> weatherData = DbHelper.selectMaxTemperatureAllCities(Timestamp.valueOf("2021-01-01 12:00:00"));
 
-		assertEquals(20, weatherData.getTemp());
-		assertEquals(120, weatherData.getPressure());
-		assertEquals(220, weatherData.getHumidity());
+		assertEquals(20, weatherData.get(0).getTemp());
+		assertEquals(1, weatherData.size());
+
 
 	}
 
 	// Test for Query A05 - MIN Value
 
 	@Test
-	void testSelectMinWeatherDataAllCity() {
+	void testselectMinTemperatureAllCities() {
 
 		// Run the select
-		WeatherData weatherData = DbHelper.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 12:00:00"));
+		List<WeatherData> weatherData = DbHelper.selectMinTemperatureAllCities(Timestamp.valueOf("2021-01-01 12:00:00"));
 
-		assertEquals(0, weatherData.getTemp());
-		assertEquals(100, weatherData.getPressure());
-		assertEquals(200, weatherData.getHumidity());
+		assertEquals(0, weatherData.get(0).getTemp());
+		assertEquals(1, weatherData.size());
 
 	}
 	
+	// Test for Query A05 - Pressure MAX Value
+	@Test
+	void testselectMaxPressureAllCities() {
 
+		// Run the select
+		List<WeatherData> weatherData = DbHelper.selectMaxPressureAllCities(Timestamp.valueOf("2021-01-01 12:00:00"));
+
+		assertEquals(120, weatherData.get(0).getPressure());
+		assertEquals(1, weatherData.size());
+
+
+	}
+
+	// Test for Query A05 - Pressure MIN Value
+
+	@Test
+	void testselectMinPressureAllCities() {
+
+		// Run the select
+		List<WeatherData> weatherData = DbHelper.selectMinPressureAllCities(Timestamp.valueOf("2021-01-01 12:00:00"));
+
+		assertEquals(100, weatherData.get(0).getPressure());
+		assertEquals(1, weatherData.size());
+
+	}
+	
+	// Test for Query A05 - Humidity MAX Value
+	@Test
+	void testselectMaxHumidityAllCities() {
+
+		// Run the select
+		List<WeatherData> weatherData = DbHelper.selectMaxHumidityAllCities(Timestamp.valueOf("2021-01-01 12:00:00"));
+
+		assertEquals(220, weatherData.get(0).getHumidity());
+		assertEquals(1, weatherData.size());
+
+
+	}
+
+	// Test for Query A05 - Humidity MIN Value
+
+	@Test
+	void testselectMinHumidityAllCities() {
+
+		// Run the select
+		List<WeatherData> weatherData = DbHelper.selectMinHumidityAllCities(Timestamp.valueOf("2021-01-01 12:00:00"));
+
+		assertEquals(200, weatherData.get(0).getHumidity());
+		assertEquals(1, weatherData.size());
+
+	}
 	
 	@Test
 	void testSelectAllUserData() {
