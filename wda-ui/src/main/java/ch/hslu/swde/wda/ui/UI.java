@@ -77,7 +77,16 @@ public final class UI {
 
         // Server: 10.177.6.157;
 
-        final String rmiServerIP = "10.177.6.157"; // change this
+        String rmiServerIP = "";
+		try {
+			rmiServerIP = getServerIp();
+		} catch (FileNotFoundException e) {
+			Log.error("File not found");
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.error("Error when reading file, please check file content!");
+			e.printStackTrace();
+		} 
         final int rmiPort = 1099;
 
         configureSecurityManager();
@@ -752,5 +761,35 @@ public final class UI {
         stub.insertUser(finn);
 
     }
+    
+    
+    /*
+     * This method returns the ServerIP which is configured in the config.txt file.
+     * Changes to the ServerIP should be done in there so that they are cascaded into the UI component.
+     * This way, the IP of the Server can be changed by the user without needing access to the source code.
+     * 
+     *  @throws FileNotFoundException Exception from FileReader when file wasn't found.
+     *  @throws IOException Exception from BufferedReader
+     * 
+     */
+    private String getServerIp() throws FileNotFoundException, IOException {
+    	
+    	String serverIP = "";
+    	try(BufferedReader br = new BufferedReader(new FileReader("..\\config.txt"))) {
+		    StringBuilder sb = new StringBuilder();
+		    String line = br.readLine();
+
+		    while (line != null) {
+		        sb.append(line);
+		        sb.append(System.lineSeparator());
+		        line = br.readLine();
+		    }
+		    serverIP = sb.toString();
+		    
+		    Log.info(serverIP);
+		}
+    	return serverIP.substring(9).trim();
+    }
+    
 
 }
