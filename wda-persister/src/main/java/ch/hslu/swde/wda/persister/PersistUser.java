@@ -13,7 +13,16 @@ public class PersistUser {
 	private static final Logger Log = LogManager.getLogger(DbHelper.class);
 
 
-
+	/**
+	 * 
+	 * This query persists/inserts a user in the db according to the User Object 
+	 * given. Before a user with the same name and lastname it is checked with
+	 * checkExistingUser method if the userid already exists or not. If yes the
+	 * userid gets changed for the new user.
+	 * 
+	 * @param user - User object which is used for the persist
+	 * @return User Object matching with the parameters given
+	 */
 	public void insertUser(User user) throws EntityExistsException {
 		
 		Log.info("Starting insertUser");
@@ -37,6 +46,19 @@ public class PersistUser {
 
 	}
 
+	/**
+	 * 
+	 * This query updates a user. The method checks if the firstname and lastname
+	 * are changed or if the password is changed. Depending on the change 
+	 * firstname/lastname changed -> user gets deleted and is inserted again
+	 * password changed -> password gets set
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param user - User object which is used for the update
+	 * @return User Object matching with the parameters given
+	 */
 	public void updateUser(User user) throws EntityExistsException {
 
 		Log.info("Starting updateUser");
@@ -70,6 +92,15 @@ public class PersistUser {
 
 	}
 
+	/**
+	 * 
+	 * This method checks if the user which gets inserted is already in the db with the name constellation or not
+	 * if yes the setUseridWithIterator is called and the userid which is created gets an incremental addition
+	 * 
+	 * 
+	 * @param user - user - User object which is searched in the db
+	 * @return User Object matching with the parameters given
+	 */
 	public User checkExistingUser(User user) {
 		
 		Log.info("Starting checkExistingUser ");
@@ -93,6 +124,15 @@ public class PersistUser {
 		return user;
 	}
 
+	/**
+	 * 
+	 * This query deletes a user in the db.
+	 * With the find functionality the wanted user is found 
+	 * and with the remove functionality deleted
+	 * 
+	 * @param user - User object which is deleted in the db
+	 * 
+	 */
 	public void deleteUser(User user) {
 
 		Log.info("Starting deleteUser");

@@ -5,6 +5,7 @@ import ch.hslu.swde.wda.NetworkUtils.Utils;
 import ch.hslu.swde.wda.business.BusinessHandler;
 import ch.hslu.swde.wda.domain.User;
 import ch.hslu.swde.wda.domain.WeatherData;
+import com.mitchtalmadge.asciidata.graph.ASCIIGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,7 +18,6 @@ import java.rmi.RemoteException;
 import java.security.AccessControlException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -77,7 +77,7 @@ public final class UI {
     public BusinessHandler createStub() {
 
         // Server: 10.177.6.157;
-        // cyrill's laptop: 10.155.231.41
+
         final String rmiServerIP = "10.177.6.157"; // change this
         final int rmiPort = 1099;
 
@@ -206,14 +206,9 @@ public final class UI {
             List<WeatherData> weatherDataTrimmed = weatherdata.stream().limit(LIMIT_ROWS).collect(Collectors.toList());
             System.out.println(ANSI_GREEN + weatherDataTrimmed + ANSI_RESET);
 
-            plotTemperature(weatherdata);
+             downloadFileFromServer();
 
-            currentMenu = DOWNLOAD_MENU;
-            showActiveMenu();
-            selectedOption = readOptionFromUser();
-            if (selectedOption == 1) {
-                downloadFileFromServer();
-            }
+            plotTemperature(weatherdata);
             loop_ToggleMaximumAndMinimumAndAverage(selectedCity, selectedTimePeriod);
         } else if (selectedOption == 2) { /* All cities are considered. */
             selectedTimePeriod = getTimePeriod();
@@ -236,13 +231,6 @@ public final class UI {
                 System.out.println(ANSI_GREEN + WeatherOfCity + ANSI_RESET);
             });
 
-            currentMenu = DOWNLOAD_MENU;
-            showActiveMenu();
-            selectedOption = readOptionFromUser();
-            if (selectedOption == 1) {
-                downloadFileFromServer();
-            }
-
             loop_ToggleMaximumAndMinimum(completeWeatherDataList);
 
         }
@@ -254,15 +242,14 @@ public final class UI {
 
         final String downloadDirectoy = System.getProperty("user.dir");
         final String fileName = "WeatherData.csv";
-        final String realpath = downloadDirectoy + "/" + fileName;
-        File clientpathfile = new File(realpath);
+        File clientpathfile = new File(downloadDirectoy + "/" + fileName);
         try (FileOutputStream out = new FileOutputStream(clientpathfile)) {
             out.write(mydata);
             out.flush();
             out.close();
-            System.out.printf("Downloaded File to %s", realpath);
+            System.out.printf("Downloaded File to %s", downloadDirectoy);
         } catch (Exception ex) {
-            Log.warn("There was an Exception writing file.");
+            Log.warn("failed writing file ");
             ex.printStackTrace();
             return false;
         }
@@ -364,20 +351,13 @@ public final class UI {
     }
 
     public void plotTemperature(List<WeatherData> weatherData) {
-        System.out.println(ANSI_CYAN);
-        System.out.println("Plot Temperatur. X-Achse: Zeit / Y-Achse: temp (C)");
         Comparator<WeatherData> weatherDataComparator = Comparator.comparing(WeatherData::getDataTimestamp);
         weatherData.sort(weatherDataComparator);
         final double[] temperatures = weatherData.stream().map(WeatherData::getTemp).mapToDouble(v -> v).toArray();
-        final List<Timestamp> timestamps =
-                weatherData.stream().map(WeatherData::getDataTimestamp).collect(Collectors.toList());
-
         if (temperatures.length > 0) {
             System.out.println();
-            System.out.println(ch.hslu.swde.wda.ui.ASCIIGraph.fromSeries(temperatures)
-                                       .withTickFormat(new DecimalFormat("##0.00"))
-                                       .plot());
-            System.out.println();
+            System.out.println(ANSI_CYAN);
+            System.out.println(ASCIIGraph.fromSeries(temperatures).plot());
             System.out.println(ANSI_RESET);
         }
     }
@@ -487,7 +467,6 @@ public final class UI {
             case TIMESPAN:
             case METADATA_ALL_CITY:
             case SELECT_ACTION_FOR_USER:
-            case DOWNLOAD_MENU:
                 validMenuValues = Arrays.asList(1, 2, 0); // 3 valid actions to choose for each menu
                 break;
             case METADATA:

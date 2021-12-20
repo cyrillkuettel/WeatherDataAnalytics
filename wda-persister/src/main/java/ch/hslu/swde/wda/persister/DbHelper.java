@@ -309,6 +309,15 @@ public class DbHelper {
 		return wd;
 	}
 
+	/**
+	 * 
+	 * This query returns a single user matching with the where condition
+	 * 
+	 * 
+	 * 
+	 * @param username - The username for which the Userdata should be fetched
+	 * @return User Object matching with the parameters given
+	 */
 	public User selectSingleUserData(String username) {
 
 		Log.info("Starting selectSingleUserData with Parameters [" + username + "]");
@@ -323,6 +332,15 @@ public class DbHelper {
 		return user;
 	}
 
+	/**
+	 * 
+	 * This query returns all the users which are available in the db 
+	 * in a ascending order
+	 * 
+	 * 
+	 * @param username - The timestamp for which the Weatherdata should be fetched
+	 * @return User Object matching with the parameters given
+	 */
 	public List<User> selectAllUserData() {
 
 		Log.info("Starting selectAllUserData with Parameters []");
