@@ -9,8 +9,7 @@ import com.mitchtalmadge.asciidata.graph.ASCIIGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -104,36 +103,52 @@ public final class UI {
      * Helper funciton for RMI.
      * Security Manger is currently allowing all permissions.
      */
-    public void configureSecurityManager() {
-        final String projectDir = System.getProperty("user.dir"); // for example: /home/cyrill/Desktop/g07-wda
-        Log.info(String.format("System.getProperty(\"user.dir\") == %s", projectDir));
-        final String clientPolicyRelativeDir = "/wda-ui/client.policy";
+        public void configureSecurityManager() {
 
-        String policy = String.format("file:%s%s", projectDir, clientPolicyRelativeDir);
-
-        Log.info(policy);
-        // policy = "file/"; // write to root
-
-                // adjust path if necesary
-        policy = removeReduntantPathDirectory(policy);
+            final String userHomDirectory = System.getProperty("user.home");
+            writePolicyFileToHomeDir(userHomDirectory);
 
 
-        if (System.getSecurityManager() == null) {
-            System.setProperty("java.security.policy", policy);
-            System.setSecurityManager(new SecurityManager());
-            Log.info(String.format("Installed Security manager at %s", policy));
-        } else {
-            Log.info("There is already an installed security manager. java.security.policy might not have been set");
+            final String fullpath_policy = String.format("file:%s%s", userHomDirectory, "/client.policy");
+
+            if (System.getSecurityManager() == null) {
+                System.setProperty("java.security.policy", fullpath_policy);
+                System.setSecurityManager(new SecurityManager());
+                Log.info(String.format("Installed Security manager at %s", fullpath_policy));
+            } else {
+                Log.info("There is already an installed security manager. java.security.policy might not have been set");
+            }
+
+            try {
+                Log.info(System.getProperty("java.security.policy"));
+            } catch (AccessControlException e) {  // "trick" to check if the security.policy has been set
+                Log.fatal("Could not read the java.security.policy file. Probably because the specified path  does not " +
+                                  "exist.");
+            }
         }
 
+    public void writePolicyFileToHomeDir(String home) {
+
+        final String fullpath = home + "/client.policy";
+
+        PrintWriter writer = null;
         try {
-            Log.info(System.getProperty("java.security.policy"));
-        } catch (AccessControlException e) {  // "trick" to check if the security.policy has been set
-            Log.fatal("Could not read the java.security.policy file. Probably because the specified path  does not " +
-                              "exist.");
+            Log.info(String.format("Attempting to write policy file at %s", fullpath));
+            writer = new PrintWriter(fullpath, "UTF-8");
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            Log.warn("Could not create Printwriter while writing policy file. Path correct?");
+            e.printStackTrace();
         }
-    }
 
+        for (String s : Arrays.asList("grant {", "permission java.security.AllPermission;", "};")) {
+            if (writer != null) {
+                writer.println(s);
+            } else {
+                Log.fatal("writer is Null. aborting creating of security.policy ");
+            }
+        }
+        writer.close();
+    }
 
     /**
      * This is a hacky way to correct incorrect path. The file path for client.policy)is based on the "user.dir.
@@ -145,6 +160,7 @@ public final class UI {
      * @param path The "wrong" poath to be corrected.
      * @return returns the Path to the security.policy file.
      */
+
     public static String removeReduntantPathDirectory(String path) {
         final String word = "wda-ui/";
         int count = 0;

@@ -4,7 +4,7 @@ package ch.hslu.swde.wda.ui;//
 //
 
 // All credit for this class goes to https://github.com/MitchTalmadge/ASCII-Data
-// I have copied it here (instead of using it as a dependency) to allow for making minor adjustments
+// I have copied it here to allow for making minor adjustments.
 
 import com.mitchtalmadge.asciidata.graph.util.SeriesUtils;
 import java.text.DecimalFormat;

@@ -41,6 +41,14 @@ class UITest {
         assertThat(adjustedPath).isEqualTo("/home/cyrill/Desktop/g07-wda/wda-ui/client.policy");
     }
 
+    @Test
+    void testRemoveRedundantPathDirecotry_ShouldNotChangePath() {
+
+        String incorrectPath = "/home/cyrill/Desktop/g07-wda/wda-ui/client.policy";
+        String adjustedPath = UI.removeReduntantPathDirectory(incorrectPath);
+        assertThat(adjustedPath).isEqualTo("/home/cyrill/Desktop/g07-wda/wda-ui/client.policy");
+    }
+
 
     @Test
     @Disabled
