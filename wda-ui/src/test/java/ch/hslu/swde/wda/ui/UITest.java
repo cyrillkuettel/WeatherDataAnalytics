@@ -82,19 +82,6 @@ class UITest {
         }
     }
 
-    @Test
-    void selectMinTemperatur() throws RemoteException {
-        //   simulate user input.
-
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
-        ByteArrayInputStream in =
-                new ByteArrayInputStream("Cyrill Küttel test1234 1 2 1 10.08.2021 11.08.2021 2 1 0".getBytes());
-        System.setIn(in);
-        UI ui = new UI();
-        ui.startFromBeginning();
-        // reset System.in to its original
-        System.setIn(sysInBackup);
-    }
 
 
     @Test
