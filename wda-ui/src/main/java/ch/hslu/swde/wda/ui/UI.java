@@ -823,11 +823,10 @@ public final class UI {
      * 
      */
     private String getServerIp() throws FileNotFoundException, IOException {
-    	final String WINDOWS = "..\\config.txt";
-    	final String UNIX =  "./config.txt";
+    	final String configfile = "config.txt";
 
     	String serverIP = "";
-    	try(BufferedReader br = new BufferedReader(new FileReader(UNIX))) {
+    	try(BufferedReader br = new BufferedReader(new FileReader(configfile))) {
 		    StringBuilder sb = new StringBuilder();
 		    String line = br.readLine();
 
