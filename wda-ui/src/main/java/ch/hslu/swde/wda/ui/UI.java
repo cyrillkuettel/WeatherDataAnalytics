@@ -49,8 +49,6 @@ public final class UI {
 
     Scanner scanner;
 
-    // deprecated. Instead of DatabaseOutputFormatter, we use RMI now.
-    // DatabaseOutputFormatter databaseOutputFormatter = new DatabaseOutputFormatter();
 
     /**
      * Probably the most important field of the application.
