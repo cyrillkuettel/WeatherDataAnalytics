@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -138,6 +137,7 @@ public final class DatabaseOutputFormatter {
 
     }
 
+    /*
     public String selectMinWeatherDataAllCity(Timestamp inputTimeStamp) {
 
         WeatherData weatherDataMinAll = DbHelper.selectMinWeatherDataAllCity(inputTimeStamp);
@@ -152,6 +152,8 @@ public final class DatabaseOutputFormatter {
         return minDescription;
     }
 
+     */
+/*
     public String selectMaxWeatherDataAllCity(Timestamp inputTimeStamp) {
 
         WeatherData weatherDataMaxAll = DbHelper.selectMaxWeatherDataAllCity(inputTimeStamp);
@@ -164,6 +166,8 @@ public final class DatabaseOutputFormatter {
                 String.format("Maximale Werte für Temperatur, Druck und Feuchtigkeit über alle Ortschaften:" + " %s, %s and %s", temp, pressure, humidity);
         return maxDescription;
     }
+
+ */
 
 
 

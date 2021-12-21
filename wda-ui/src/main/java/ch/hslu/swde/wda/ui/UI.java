@@ -119,7 +119,7 @@ public final class UI {
 
 
             final String fullpath_policy = String.format("file:%s%s", userHomDirectory, "/client.policy");
-
+            Log.info(fullpath_policy);
             if (System.getSecurityManager() == null) {
                 System.setProperty("java.security.policy", fullpath_policy);
                 System.setSecurityManager(new SecurityManager());
@@ -192,8 +192,6 @@ public final class UI {
      */
     public void startFromBeginning() throws RemoteException {
 
-
-
         /* The cities could change in the future, so they will to be fetched at starttime dynamically  */
         loadCityNamesToMemory();
 
@@ -260,12 +258,68 @@ public final class UI {
                 System.out.println(ANSI_GREEN + WeatherOfCity + ANSI_RESET);
             });
 
-            loop_ToggleMaximumAndMinimum(completeWeatherDataList);
+            // because the Timestamp has to match to the exact minute to get a valid result, we have to get the "next
+            // best one". This is necessary because we do not ask the user to specify this time, but only the date.
+            // The data offers entries approximately every ~30 minutes.
+            // This results in a slight loss of precision at the for the sake of simplicity.
+            Timestamp timestampForFurtherRequest = completeWeatherDataList.stream()
+                    .flatMap(List::stream)
+                    .map(WeatherData::getDataTimestamp)
+                    .max(Timestamp::compareTo).get();
 
+            askMinMaxForTempPressureOrHumidityLoop(timestampForFurtherRequest);
+
+            downloadFileFromServer();
         }
     }
 
-    private boolean downloadFileFromServer() throws RemoteException {
+    public void askMinMaxForTempPressureOrHumidityLoop(Timestamp timestamp) throws RemoteException {
+        currentMenu = SELECT_MAX_OR_MIN_OR_DOWNLOAD;
+        showActiveMenu();
+        int selectedOption = readOptionFromUser();
+        while (selectedOption != 3) {  // while user does not want to download file and continue
+
+            if (selectedOption == 1) {      //      Min
+                currentMenu = SELECT_TEMP_PRESSURE_OR_HUMIDITY;
+                showActiveMenu();
+                selectedOption = readOptionFromUser();
+                if (selectedOption == 1) {          // temperature
+                    final List<String> minimalTemperatur =
+                            stub.selectMinTemperatureAllCities(timestamp);
+                    System.out.println(minimalTemperatur);
+                } else if (selectedOption == 2) {   // pressure
+                    final List<String> minimalPressure = stub.selectMinPressureAllCities(timestamp);
+                    System.out.println(minimalPressure);
+
+                } else if (selectedOption == 3) {    // humdity
+                    final List<String> minimalHumidity = stub.selectMinHumidityAllCities(timestamp);
+                    System.out.println(minimalHumidity);
+                }
+
+            } else if (selectedOption == 2) { //        Max
+                currentMenu = SELECT_TEMP_PRESSURE_OR_HUMIDITY;
+                showActiveMenu();
+                selectedOption = readOptionFromUser();
+                if (selectedOption == 1) {          // temperature
+                    final List<String> minimalTemperatur =
+                            stub.selectMaxTemperatureAllCities(timestamp);
+                    System.out.println(minimalTemperatur);
+                } else if (selectedOption == 2) {   // pressure
+                    final List<String> minimalPressure = stub.selectMaxPressureAllCities(timestamp);
+                    System.out.println(minimalPressure);
+
+                } else if (selectedOption == 3) {    // humdity
+                    final List<String> minimalHumidity = stub.selectMinHumidityAllCities(timestamp);
+                    System.out.println(minimalHumidity);
+                }
+            }
+            currentMenu = SELECT_MAX_OR_MIN_OR_DOWNLOAD;
+            showActiveMenu();
+            selectedOption = readOptionFromUser();
+        }
+    }
+
+    private void downloadFileFromServer() throws RemoteException {
         byte [] mydata = stub.downloadWeatherDataAsCSV();
         System.out.println("downloading...");
 
@@ -276,13 +330,11 @@ public final class UI {
             out.write(mydata);
             out.flush();
             out.close();
-            System.out.printf("Downloaded File to %s", downloadDirectoy);
+            System.out.printf("Downloaded File to %s", downloadDirectoy + "/" + fileName);
         } catch (Exception ex) {
             Log.warn("failed writing file ");
             ex.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     /**
@@ -391,12 +443,9 @@ public final class UI {
         }
     }
 
-    /**
-     * Loop and prompt User for input on selection option Min or Max.
-     * @param completeWeatherDataList This is the result of the selectWeatherOfAllCitiesInTimeframe method. They are
-     *                                called inside startFromBeginning method.
-     * @throws RemoteException Exception in RMI.
-     */
+
+    /*
+
     public void loop_ToggleMaximumAndMinimum(List<List<WeatherData>> completeWeatherDataList) throws RemoteException {
         currentMenu = METADATA_ALL_CITY;
         showActiveMenu();
@@ -409,7 +458,7 @@ public final class UI {
                 Timestamp minimumTimeStamp_forThisWeatherData = completeWeatherDataList.stream()
                         .flatMap(List::stream)
                         .map(WeatherData::getDataTimestamp)
-                        .max(Timestamp::compareTo).get(); // TODO: isPresent Check
+                        .max(Timestamp::compareTo).get();
 
                 String avg = stub.selectMinWeatherDataAllCity(minimumTimeStamp_forThisWeatherData);
                 System.out.println(ANSI_YELLOW + avg + ANSI_RESET);
@@ -430,11 +479,11 @@ public final class UI {
             selectedOption = readOptionFromUser();
         }
     }
+    */
 
     /**
      * Loop and prompt User for input on selection option:  average, min or max.
-     * Note that this method is almost idential to {@link UI#loop_ToggleMaximumAndMinimum(List)}
-     * However, this method has extended functinality, is supports the average option. That has been implemented like
+     * This method has extended functinality, is supports the average option. That has been implemented like
      * that just because the 'average' option is only provided for single places.
      * @throws RemoteException Exception in RMI.
      * @param city City for which to select this data.
@@ -483,7 +532,8 @@ public final class UI {
     }
 
     /**
-     * Read user input: Numerical in all cases. The actual meaning of the number can be read from the currentMenu.
+     * Read user input: Numerical in all cases.
+     * The actual meaning of the number can be read from the currentMenu.
      * @return the action the user takes as a numerical value.
      */
     public int readOptionFromUser() {
@@ -500,6 +550,8 @@ public final class UI {
                 break;
             case METADATA:
             case WELCOME_MENU:
+            case SELECT_MAX_OR_MIN_OR_DOWNLOAD:
+            case SELECT_TEMP_PRESSURE_OR_HUMIDITY:
                 validMenuValues = Arrays.asList(1, 2, 3, 0);
                 break;
             case USER_EDIT: // we check for valid index when calling the method
@@ -773,9 +825,11 @@ public final class UI {
      * 
      */
     private String getServerIp() throws FileNotFoundException, IOException {
-    	
+    	final String WINDOWS = "..\\config.txt";
+    	final String UNIX =  "./config.txt";
+
     	String serverIP = "";
-    	try(BufferedReader br = new BufferedReader(new FileReader("..\\config.txt"))) {
+    	try(BufferedReader br = new BufferedReader(new FileReader(UNIX))) {
 		    StringBuilder sb = new StringBuilder();
 		    String line = br.readLine();
 

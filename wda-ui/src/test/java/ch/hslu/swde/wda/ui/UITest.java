@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,13 +74,28 @@ class UITest {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
             Date parsedDate = dateFormat.parse("2021-11-28 00:33:30.0");
             Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
-            String max = ui.stub.selectMaxWeatherDataAllCity(timestamp);
-            assertThat(max).isNotBlank();
-            Log.info(max);
+            List<String> min = ui.stub.selectMinTemperatureAllCities(timestamp);
+            assertThat(min.get(0)).isNotBlank();
+            Log.info(min);
         } catch(Exception e) { //this generic but you can control another types of exception
             // look the origin of excption
         }
     }
+
+    @Test
+    void selectMinTemperatur() throws RemoteException {
+        //   simulate user input.
+
+        InputStream sysInBackup = System.in; // backup System.in to restore it later
+        ByteArrayInputStream in =
+                new ByteArrayInputStream("Cyrill Küttel test1234 1 2 1 10.08.2021 11.08.2021 2 1 0".getBytes());
+        System.setIn(in);
+        UI ui = new UI();
+        ui.startFromBeginning();
+        // reset System.in to its original
+        System.setIn(sysInBackup);
+    }
+
 
     @Test
     @Disabled

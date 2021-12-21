@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,17 +63,6 @@ class DatabaseOutputFormatterTest {
         assertThat(averageData).isNotNull();
     }
 
-    @Test /** Query A05 (Just like A04, but all cities) */
-    void testSelectMaxOverAllcities() {
-        DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
-
-
-        String max  = dof.selectMinWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
-        System.out.println(max);
-
-        assertThat(max).isNotBlank();
-
-    }
 
     @Test
     void testGetSingleCityFromDatabase() {
@@ -110,34 +98,6 @@ class DatabaseOutputFormatterTest {
 
         assertTrue(actualCitiesInDB.containsAll(Arrays.asList(cities)));
     }
-
-
-
-
-
-    @Test
-    void testselectMaxWeatherDataAllCity() {
-        DatabaseOutputFormatter dof = new DatabaseOutputFormatter();
-
-        WeatherData  data;
-
-        try {
-            DbHelper dbHelper = new DbHelper();
-           data = dbHelper.selectMaxWeatherDataAllCity(Timestamp.valueOf("2021-01-01 00:00:57"));
-           assertThat(data).isNotNull();
-        } catch (jakarta.persistence.NoResultException e) {
-            Log.warn("that city does not (yet) exist in database");
-            e.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-
-
-    }
-
-
-
 
 
 

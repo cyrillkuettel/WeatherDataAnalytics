@@ -42,8 +42,7 @@ public final class GlobalConstants {
     public static final String REFUTE_NEW_USER_CREATED = "Benutzererstellung nicht erfolgreich.";
     public static final String WELCOME_MENU = "Start [1]      Neuer Benutzer erstellen [2]      vorhandene Benutzer bearbeiten [3]";
     public static final String TIMESPAN = "Zeitspanne festlegen [1]        gesamter Zeitraum (2020 - 2021) [2]       " +
-            "   " +
-            "Beenden [0]";
+            "   ";
     public static final String SELECT_DATA_OR_ALL_MENU =
             "Wetterdaten von einer Ortschaft laden [1]     " + "Wetterdaten über " +
                     "alle " + "Ortschaften laden [2] " + "     " +
@@ -55,7 +54,8 @@ public final class GlobalConstants {
     public static final String METADATA = "Durchschnittswerte dieser Ausgabe berechnen [1]     Maxima dieser Ausgabe berechnen [2]     Mimima dieser Ausgabe berechnen [3]     Beenden [0]";
 
 
-    public static final String METADATA_ALL_CITY = "Maxima aller Ortschaften in diesem Zeitraum berechnen [1]     Maxima aller Ortschaften in diesem Zeitraum berechnen [2]     Beenden [0]";
+    public static final String METADATA_ALL_CITY =
+            "Maxima aller Ortschaften in diesem Zeitraum berechnen [1]     Maxima aller Ortschaften in diesem Zeitraum berechnen [2]     Beenden [0]";
     public static final String USER_EDIT = "Index des Benutzers angeben.";
     public static final String SELECT_ACTION_FOR_USER = "Aktion: Update User [1]     Delete User[2]    ";
     public static final String DOWNLOAD_MENU = "Wetterdaten Herunterladen?  CSV Herunterladen [1]      Überspringen " +
@@ -71,5 +71,11 @@ public final class GlobalConstants {
     public static final int LIMIT_ROWS = 10;
     public static final int MAXIMUM_NUMBER_OF_USERS = 1000;
 
+
+    public static final String SELECT_MAX_OR_MIN_OR_DOWNLOAD = "Maximum [1]        Minimum [2]        [3] Download " +
+            "File and exit";
+
+    public static final String SELECT_TEMP_PRESSURE_OR_HUMIDITY = "Temperatur [1]        Druck [2]        " +
+            "Feuchtigkeit [3]";
 
 }
