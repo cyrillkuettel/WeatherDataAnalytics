@@ -160,6 +160,30 @@ public class PersistUserTest {
 
 		assertEquals(1, userFromDb.size());
 	}
+	
+	@Test
+	void testDeleteUserFirstname() {
+
+		User existingUser = new User("Nilukzil", "Fernando", "test4");
+
+		// Run the delete
+		pu.insertUser(existingUser);
+		// User updates existingUser-userdata in UI here
+		pu.deleteUser(existingUser);
+
+
+		EntityManager em = JpaUtil.createEntityManager(DBCONNECTION);
+
+		em.getTransaction().begin();
+		TypedQuery<User> tQry = em.createQuery("SELECT u FROM User u", User.class);
+
+		/* Get all City-Entities from DB */
+		List<User> userFromDb = tQry.getResultList();
+
+		em.close();
+
+		assertEquals(0, userFromDb.size());
+	}
 
 	@AfterAll
 	static void resetDB() {
