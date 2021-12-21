@@ -160,11 +160,11 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		List<String> descriptionList = new ArrayList();
 		String minDescription = "";
 		for(WeatherData w : weatherDataMinAll) {
-			String temp = String.valueOf(w.getTemp());
+			String pressure = String.valueOf(w.getPressure());
 			String city = w.getCity().getName();
 			 minDescription = String.format(
 					"Minimaler Wert für Luftdruck in Ortschaft %s:" + '\n' + " %s",
-					city,temp);
+					city,pressure);
 			 descriptionList.add(minDescription);
 		}
 
@@ -178,11 +178,11 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		List<String> descriptionList = new ArrayList();
 		String minDescription = "";
 		for(WeatherData w : weatherDataMinAll) {
-			String temp = String.valueOf(w.getTemp());
+			String pressure = String.valueOf(w.getPressure());
 			String city = w.getCity().getName();
 			 minDescription = String.format(
 					"Maximaler Wert für Luftdruck in Ortschaft %s:" + '\n' + " %s",
-					city,temp);
+					city,pressure);
 			 descriptionList.add(minDescription);
 		}
 
@@ -196,11 +196,11 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		List<String> descriptionList = new ArrayList();
 		String minDescription = "";
 		for(WeatherData w : weatherDataMinAll) {
-			String temp = String.valueOf(w.getTemp());
+			String humidity = String.valueOf(w.getHumidity());
 			String city = w.getCity().getName();
 			 minDescription = String.format(
 					"Minimaler Wert für Luftfeuchtigkeit in Ortschaft %s:" + '\n' + " %s",
-					city,temp);
+					city,humidity);
 			 descriptionList.add(minDescription);
 		}
 
@@ -214,11 +214,11 @@ public class BusinessHandlerImpl extends UnicastRemoteObject implements Business
 		List<String> descriptionList = new ArrayList();
 		String minDescription = "";
 		for(WeatherData w : weatherDataMinAll) {
-			String temp = String.valueOf(w.getTemp());
+			String humidity = String.valueOf(w.getHumidity());
 			String city = w.getCity().getName();
 			 minDescription = String.format(
 					"Maximaler Wert für Luftfeuchtigkeit in Ortschaft %s:" + '\n' + " %s",
-					city,temp);
+					city,humidity);
 			 descriptionList.add(minDescription);
 		}
 
