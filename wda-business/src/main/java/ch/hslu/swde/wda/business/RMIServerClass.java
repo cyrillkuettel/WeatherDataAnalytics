@@ -19,7 +19,6 @@ public class RMIServerClass {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println(inetAddress.getHostAddress());
 		// IP Adresse des RMI Servers (von Aussen erreichbar) und die RMI-Port-Nummer
 		String hostIp = inetAddress.getHostAddress();
 		int rmiPort = 1099;

@@ -5,9 +5,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.rmi.RemoteException;
 
-public class demoUI {
+public class MainUI {
 
-	private static final Logger Log = LogManager.getLogger(demoUI.class);
+	private static final Logger Log = LogManager.getLogger(MainUI.class);
 
 	
 	public static void main(String[] args) throws RemoteException {
